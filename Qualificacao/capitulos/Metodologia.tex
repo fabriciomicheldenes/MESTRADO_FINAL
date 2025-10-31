@@ -1,0 +1,78 @@
+A metodologia adotada neste trabalho foi estruturada com base no modelo de \textit{Descoberta de Conhecimento em Bancos de Dados} (DCBD), proposto por Fayyad, Piatetsky-Shapiro e Smyth (1996). Esse modelo estabelece um ciclo sistemático de etapas voltadas à extração de conhecimento útil a partir de grandes volumes de dados, compreendendo as fases de seleção, pré-processamento, transformação, mineração e interpretação dos resultados.
+
+No contexto deste projeto, o modelo DCBD foi adaptado para a realidade do monitoramento de sinais de emissão acústica, de forma que cada etapa corresponde a um processo específico dentro do desenvolvimento do sistema:
+\begin{itemize}
+    \item \textbf{Seleção:} coleta e organização dos sinais provenientes de ensaios experimentais e simulações;
+    \item \textbf{Transformação:} conversão, segmentação e filtragem dos sinais brutos, preparando-os para análise;
+    \item \textbf{Mineração:} aplicação de algoritmos de aprendizado de máquina, especialmente redes neurais convolucionais 1D, para identificação de padrões associados à cavitação e falhas incipientes;
+    \item \textbf{Descoberta de conhecimento:} interpretação dos resultados e extração de informações relevantes para diagnóstico e manutenção preditiva.
+\end{itemize}
+
+Os materiais e ferramentas empregados abrangem tanto os recursos de hardware quanto de software indispensáveis para o desenvolvimento, teste e validação do sistema, incluindo plataformas FPGA, bibliotecas de aprendizado de máquina, e bases de dados de emissão acústica obtidas em bancada e em campo.
+
+Para fins de organização, a metodologia foi estruturada em duas frentes complementares:
+\begin{itemize}
+    \item \textbf{Métodos de Desenvolvimento} — englobam o projeto e implementação dos módulos de aquisição, pré-processamento e análise de dados, bem como o fluxo de inferência em FPGA.
+    \item \textbf{Métodos de Avaliação} — abrangem os procedimentos experimentais de validação, incluindo testes de desempenho, análise de acurácia e robustez do modelo proposto.
+\end{itemize}
+
+Essa divisão permite que a pesquisa mantenha um equilíbrio entre os aspectos teóricos e práticos do problema, assegurando tanto a viabilidade de implementação do sistema quanto a confiabilidade dos resultados obtidos.
+
+\subsection*{Bases de Dados}
+
+A etapa de formação da base de dados é essencial para o desenvolvimento e validação dos modelos de aprendizado de máquina aplicados à detecção de cavitação e falhas mecânicas. Neste trabalho, serão utilizadas três fontes de dados complementares, abrangendo diferentes tipos de sinais, condições de operação e contextos experimentais, conforme descrito a seguir:
+
+\begin{itemize}
+    \item \textbf{Falhas em Rolamentos — Case Western Reserve University (CWRU):}  
+    Conjunto amplamente reconhecido na literatura de diagnóstico de falhas mecânicas, contendo medições de vibração adquiridas sob diferentes condições de carga e níveis de dano. Essa base é utilizada como referência para validação comparativa dos algoritmos de aprendizado supervisionado, permitindo aferir a capacidade de generalização do modelo.  
+    \textit{Disponível em:} \url{https://engineering.case.edu/bearingdatacenter/download-data-file}
+
+    \item \textbf{Cavitação em Bombas — UWA System Health Lab:}  
+    Proveniente da \textit{Prognostics Data Library}, essa base inclui sinais acústicos registrados durante ensaios controlados de cavitação em bombas centrífugas, com variáveis de operação conhecidas. É utilizada para calibrar o modelo de classificação e investigar o comportamento espectral característico da cavitação em diferentes regimes de escoamento.  
+    \textit{Disponível em:} \url{https://systemhealthlab.com/research-tools/prognostics-data-library}
+
+    \item \textbf{Bancada Experimental — Projeto MOMEA (Itaipu Binacional / ParqueTec):}  
+    Conjunto de dados obtido em bancada desenvolvida no âmbito do projeto MOMEA, composta por motobombas instrumentadas com sensores de Emissão Acústica (EA) e vibração. Os ensaios permitem registrar eventos reais de cavitação e anomalias estruturais sob condições de operação controladas, sendo a principal fonte de dados para validação do sistema proposto em ambiente físico.
+\end{itemize}
+
+A combinação dessas três bases — pública, controlada e experimental — possibilita uma avaliação abrangente do modelo, tanto em termos de robustez quanto de aplicabilidade prática, assegurando diversidade de amostras e condições de ruído representativas de cenários industriais reais.
+
+\subsection*{Softwares e Ferramentas}
+
+O desenvolvimento do sistema proposto envolve a integração de ferramentas de software e plataformas de hardware voltadas à síntese, simulação e validação em FPGA. A seguir, apresentam-se os principais recursos tecnológicos empregados:
+
+\begin{itemize}
+    \item \textbf{FINN Framework:}  
+    Framework de código aberto desenvolvido pela Xilinx/AMD Research para aceleração de redes neurais quantizadas (\textit{Quantized Neural Networks — QNNs}) em FPGAs. O FINN permite converter modelos treinados em PyTorch (via Brevitas) em arquiteturas de fluxo de dados altamente otimizadas, com geração automática de IPs em HLS/RTL. Essa ferramenta constitui a base do fluxo de inferência embarcado adotado neste projeto.
+
+    \item \textbf{Vivado Design Suite:}  
+    Ambiente oficial da Xilinx para síntese e implementação de sistemas digitais em HDL (VHDL/Verilog) ou alto nível (C/C++/OpenCL via HLS). É utilizado para o mapeamento físico do hardware, análise de temporização, integração de IPs e geração do \textit{bitstream} final que configura o FPGA.
+
+    \item \textbf{Plataformas FPGA:}  
+    Serão utilizados, em etapas progressivas de desenvolvimento, os dispositivos \textit{Artix-7 35T} (Xilinx) e uma segunda placa de maior capacidade (a confirmar, sob orientação do Prof. Márcio). A escolha definitiva considerará a disponibilidade de blocos DSP, BRAM e recursos lógicos necessários para a execução da CNN quantizada e dos módulos de comunicação.
+\end{itemize}
+
+O uso combinado dessas ferramentas permite transpor o modelo de aprendizado de máquina do domínio de software para uma implementação física eficiente, explorando o paralelismo e a reconfigurabilidade inerentes aos FPGAs para alcançar baixa latência e alta confiabilidade operacional.
+
+\subsection*{Métodos de Desenvolvimento}
+
+Esta subseção descreve as etapas e procedimentos adotados para o desenvolvimento do sistema de aquisição, processamento e análise dos sinais de emissão acústica, bem como a implementação dos algoritmos de aprendizado de máquina e sua integração em FPGA. O foco está em detalhar o fluxo de concepção técnica, desde a captura dos dados experimentais até o mapeamento do modelo neural no hardware reconfigurável.
+
+O desenvolvimento foi conduzido de forma modular, abrangendo três eixos principais:
+\begin{enumerate}
+    \item \textbf{Aquisição e Pré-processamento de Dados:} construção da base de dados de emissão acústica e implementação de técnicas de filtragem e normalização dos sinais;
+    \item \textbf{Modelagem e Treinamento:} aplicação de redes neurais convolucionais unidimensionais (CNN~1D) para detecção e classificação de padrões acústicos associados à cavitação;
+    \item \textbf{Implementação em FPGA:} conversão do modelo treinado para formato quantizado e síntese via framework FINN, permitindo execução embarcada em tempo real.
+\end{enumerate}
+
+O objetivo desta etapa metodológica é garantir um pipeline eficiente, reprodutível e otimizado tanto em termos computacionais quanto de desempenho físico, assegurando a viabilidade da aplicação industrial do sistema proposto.
+
+\subsection*{Métodos de Avaliação}
+
+Nesta subseção, são apresentados os procedimentos adotados para a validação experimental e análise de desempenho do sistema proposto. As avaliações foram conduzidas em dois níveis complementares: desempenho funcional do modelo de aprendizado de máquina e desempenho operacional da implementação em FPGA.
+
+O primeiro nível de avaliação contempla métricas clássicas de aprendizado supervisionado — como acurácia, precisão, sensibilidade, especificidade e matriz de confusão — aplicadas aos resultados de classificação obtidos pela CNN~1D. Já o segundo nível foca em métricas de engenharia de hardware, incluindo utilização de recursos lógicos (LUTs, flip-flops, DSPs, BRAMs), consumo de energia, latência de inferência e throughput.
+
+Adicionalmente, os experimentos de validação foram realizados com base em dados reais de emissão acústica provenientes de ensaios de bancada e simulações controladas de cavitação, de modo a avaliar a robustez e generalização do modelo em diferentes condições de operação.
+
+Esses métodos de avaliação permitem correlacionar diretamente o desempenho do algoritmo com sua eficiência no hardware, oferecendo uma visão integrada do potencial do sistema para aplicações de monitoramento preditivo e diagnóstico inteligente em máquinas rotativas.

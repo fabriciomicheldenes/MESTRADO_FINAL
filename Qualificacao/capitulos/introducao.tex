@@ -1,0 +1,108 @@
+% \chapter{Introdução}
+% \section{Formulação do Problema}
+% A detecção precoce de falhas em equipamentos industriais é essencial para a manutenção da integridade estrutural e o prolongamento da vida útil de componentes mecânicos, reduzindo custos operacionais e evitando paradas inesperadas. Entre os diversos tipo de equipamentos as Bombas hidráulicas são amplamente utilizadas na indústria e na vida diária como um tipo de maquinário de fluidos. Elas são usadas para fornecer a energia necessária para transferir fluidos. Entre os fenômenos que afetam a eficiência e a segurança desses equipamentos, a cavitação em bombas centrífugas representa um desafio significativo, pois provoca erosões, trincas e desgastes superficiais, comprometendo o desempenho e a confiabilidade desses sistemas Várias falhas podem ocorrer durante a operação real. Em geral, a cavitação ocorre quando a pressão estática em algum ponto dentro de uma bomba é menor do que a pressão de vapor do líquido na temperatura de trabalho. Nesse caso, um grande número de bolhas é criado, e essas bolhas entrarão em colapso quando o líquido atingir a zona de alta pressão. Uma vez que a cavitação ocorre, a troca de energia entre o impulsor e o fluido é danificada, a curva de vazão cai e a superfície das peças de passagem do fluxo é severamente desgastada e corroída . Além disso, causará ruído e vibração do corpo da bomba. Portanto, a cavitação é uma questão científica significativa no campo de bombas e um ponto de preocupação atual. A detecção de cavitação se tornou um problema urgente a ser resolvido, o que tem uma importância muito importante em termos de segurança e economia \cite{liu2023review}.
+
+
+% \section{Motivação}
+% O Projeto MOMEA, conduzido pela Itaipu Binacional, busca desenvolver soluções para o monitoramento inteligente da intensidade da cavitação e identificação de regiões propensas à formação de trincas nos rotores de turbinas, visando aprimorar a segurança e a eficiência de seus equipamentos. No entanto, sistemas tradicionais de monitoramento dependem de análises posteriores às inspeções físicas ou de métodos que exigem conhecimento especializado para a interpretação dos dados coletados. Nesse contexto, abordagens baseadas em aprendizado de máquina apresentam-se como uma solução promissora para a análise automatizada de sinais de sensores instalados em equipamentos industriais, permitindo a identificação de padrões anormais e a previsão de falhas antes que se tornem críticas \textcolor{red}{(SOUZA et al., 2022)}.
+
+
+% \section{Justificativa}
+% O método de detecção de falhas de cavitação baseado em sinal é baseado no fato de que o fenômeno de cavitação que o acompanha mudará os sinais acústicos, de vibração e de pulsação de pressão dentro da bomba. Há uma certa relação entre a mudança no sinal e a ocorrência de cavitação. Sensores de sinal são instalados em diferentes posições da bomba, coletando o sinal de dados no estado operacional da bomba para análise. Ao mesmo tempo, algoritmos de inteligência artificial, como aprendizado de máquina e aprendizado profundo, são usados para obter extração de características e reconhecimento de estado. O processo básico de detecção de falhas de cavitação é mostrado na Figura 1. Comparado com outros métodos de detecção, o método de detecção de cavitação baseado em diferentes sinais pode ser aplicado a sistemas complexos e não lineares e tem baixos requisitos do ambiente de campo. Ao mesmo tempo, os métodos de sinal são úteis para melhorar o desempenho do sistema de detecção. Portanto, os pesquisadores realizaram um extenso trabalho nesta área \cite{liu2023review}.
+
+
+% Entretanto, a implementação de modelos de aprendizado de máquina em sistemas embarcados enfrenta desafios relacionados ao processamento de grandes volumes de dados em tempo real e ao consumo de energia. O uso de Field Programmable Gate Arrays (FPGAs) para a execução desses modelos pode superar essas limitações, pois oferece alto desempenho computacional, baixa latência e eficiência energética em comparação com soluções baseadas em CPUs ou GPUs.
+
+
+% Diante desse contexto, surge a necessidade de desenvolver um modelo de aprendizado de máquina embarcado em FPGA capaz de classificar a intensidade da cavitação em bombas centrífugas, utilizando dados obtidos por sensores de Emissão Acústica (EA) e acelerômetros. O desafio central consiste em projetar um sistema eficiente, que possa processar os sinais em tempo real e fornecer diagnósticos precisos, contribuindo assim para a melhoria da manutenção preditiva e a otimização da operação de equipamentos industriais.
+
+
+% \section{Contribuições}
+% As possíveis contribuições deste projeto incluem o desenvolvimento de uma metodologia inovadora para a detecção e classificação da intensidade da cavitação em bombas centrífugas, permitindo a identificação precoce de falhas e a mitigação de danos estruturais. A utilização de aprendizado de máquina embarcado em FPGA possibilita a análise de sinais com pouco atraso em na identificação da ocorrência de um problema e sua detecção, reduzindo a dependência de inspeções físicas e facilitando a manutenção preditiva. Além disso, o projeto contribui para a otimização da operação de equipamentos industriais, aumentando sua eficiência e confiabilidade, ao mesmo tempo em que reduz custos operacionais e o consumo de energia. A implementação de sensores de Emissão Acústica (EA) e acelerômetros aprimora a precisão na detecção de padrões anômalos, proporcionando uma abordagem mais robusta para o monitoramento de bombas centrífugas. Adicionalmente, este estudo fortalece a aplicação de tecnologias de hardware reconfigurável para tarefas de inteligência artificial, demonstrando a viabilidade do uso de FPGAs para o processamento eficiente de grandes volumes de dados em sistemas embarcados industriais.
+\section{Formulação do Problema}
+
+A detecção precocíssima (ou: em estágio inicial) de falhas em equipamentos industriais revela-se essencial para assegurar a integridade estrutural dos ativos, prolongar a vida útil dos componentes mecânicos, reduzir os custos operacionais e prevenir paradas inesperadas. Dentre os diversos tipos de equipamentos, as bombas hidráulicas se sobressaem pela sua ampla utilização nos setores industriais e em aplicações cotidianas, desempenhando um papel central no transporte de fluidos.
+
+No conjunto de fenômenos que comprometem a eficiência e a confiabilidade desses dispositivos, a cavitação em bombas centrífugas destaca-se como um desafio relevante. Este fenômeno induz erosão, trincas e desgaste superficial nos componentes, afetando o desempenho hidráulico e reduzindo a vida útil do sistema. A cavitação ocorre quando a pressão estática em uma determinada região da bomba cai abaixo da pressão de vapor do líquido na respectiva temperatura de operação. Nessa situação, formam-se bolhas de vapor que, ao migrarem para zonas de pressão mais elevada, colapsam com liberação de energia intensa, ocasionando impactos capazes de danificar o impulsor e provocar a degradação da curva característica de vazão.
+
+Além dos danos mecânicos diretos, a cavitação gera ruído e vibração elevados, o que amplifica os riscos de falha catastrófica. Consequentemente, a detecção e o monitoramento desse fenômeno constituem um problema de relevância tanto científica quanto tecnológica, com implicações diretas na segurança dos sistemas de bombeamento e na economia industrial \cite{liu2023review}.
+
+A detecção por meios não‐invasivos assume particular importância, visto que evita a interrupção das operações e não exige desmontagens ou alterações significativas no sistema. Nesse sentido, métodos que viabilizem o monitoramento contínuo oferecem uma contribuição relevante para a manutenção preditiva e para a extensão da vida útil dos equipamentos. Técnicas baseadas em emissão acústica (acoustic emission – AE) têm-se mostrado promissoras na literatura, pois permitem captar ondas elásticas geradas por processos de colapso de bolhas ou erosão incipiente, oferecendo elevado nível de sensibilidade mesmo nas fases iniciais de falha \cite{Neill1997Detection, Osete2024}.
+
+Essa abordagem não invasiva e contínua abre o caminho para sistemas inteligentes de monitoramento em tempo real, capazes de identificar sinais precursores da cavitação antes que manifestem consequências visíveis no desempenho hidráulico ou na integridade mecânica.
+
+\section{Motivação e Justificativa}
+
+O Projeto MOMEA, conduzido pela Itaipu Binacional, busca desenvolver soluções inovadoras para o monitoramento inteligente da cavitação e para a identificação de regiões propensas à formação de trincas em rotores de turbinas. O objetivo é aumentar a segurança e a eficiência operacional de seus equipamentos críticos.
+
+Contudo, os métodos tradicionais de monitoramento dependem de inspeções físicas ou da interpretação especializada de sinais, o que limita a detecção precoce e a tomada de decisão em tempo hábil. Nesse cenário, abordagens baseadas em aprendizado de máquina surgem como alternativas promissoras, pois permitem a análise automatizada de dados de sensores instalados em campo, possibilitando a identificação de padrões anormais e a previsão de falhas antes que se tornem críticas \cite{manikandan2023vibration}.
+
+% \section{Justificativa}
+
+A detecção de falhas de cavitação por meio de sinais fundamenta-se na observação de que o fenômeno altera as características acústicas, vibracionais e de pressão do escoamento. Assim, sensores instalados em diferentes pontos da bomba podem registrar essas variações em tempo real, fornecendo dados para análise e diagnóstico.
+
+O uso de algoritmos de inteligência artificial, em especial os de aprendizado profundo, permite extrair características relevantes dos sinais e classificar o estado operacional do equipamento. Em comparação com outras abordagens, os métodos baseados em sinais são adequados para sistemas complexos e não lineares, apresentam menor dependência de condições de campo e oferecem maior robustez para aplicações práticas \cite{liu2023review}.
+
+Entretanto, a implementação desses modelos em sistemas embarcados impõe desafios relacionados ao processamento em tempo real e ao consumo energético. Nesse contexto, os Field-Programmable Gate Arrays (FPGAs) destacam-se por oferecer alto desempenho computacional, baixa latência e maior eficiência energética em relação a soluções baseadas em CPUs ou GPUs.
+
+\section{Objetivos da Pesquisa}
+
+O objetivo desta pesquisa é desenvolver e implementar um sistema embarcado baseado em redes neurais artificiais (RNA) — especificamente uma Rede Neural Convolucional Unidimensional (CNN-1D) — sobre um dispositivo do tipo Field-Programmable Gate Array (FPGA), para a análise de sinais de emissão acústica, com vistas à detecção rápida e eficiente de falhas em motobombas.
+
+Esse sistema visa superar as limitações dos métodos tradicionais de monitoramento, proporcionando uma solução de diagnóstico em tempo real, capaz de identificar padrões característicos de cavitação e outros fenômenos que possam comprometer a integridade estrutural dos equipamentos. A implementação em FPGA permite um processamento altamente otimizado, com baixa latência e eficiência energética superior, em comparação com abordagens baseadas exclusivamente em CPU ou GPU.
+
+Adicionalmente, o projeto almeja contribuir para a manutenção preditiva de sistemas hidráulicos, reduzindo custos operacionais e minimizando o risco de falhas inesperadas, por meio de uma plataforma de monitoramento contínuo e inteligente.
+
+O fluxograma geral dos objetivos é mostrado na Figura~\ref{fig:fluxograma_geral}, que apresenta as etapas principais do processo — desde o treinamento offline da rede neural em ambiente de simulação até o pipeline embarcado de inferência em tempo real. O diagrama ilustra a integração entre as fases de pré-processamento, quantização, compilação e execução, destacando o papel do framework \textit{FINN} (AMD/Xilinx) na geração dos aceleradores de CNN em FPGA e na análise de desempenho teórico.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\linewidth]{figs/Fluxograma_Objetivo.pdf}
+    \caption{Fluxograma geral dos objetivos do projeto, contemplando as etapas de desenvolvimento e inferência da CNN-1D em FPGA.}
+    \label{fig:fluxograma_geral}
+\end{figure}
+
+Durante o desenvolvimento, pretende-se definir e avaliar métricas quantitativas de desempenho — como latência de processamento, consumo energético e taxa de detecção de falhas — de modo a estabelecer valores-alvo representativos (por exemplo, latência inferior a alguns segundos, consumo reduzido de energia e taxa de acerto superior a um patamar mínimo de referência). Esses parâmetros serão ajustados e refinados ao longo da pesquisa, conforme os resultados experimentais e as limitações práticas do hardware utilizado.
+
+\textcolor{red}{Sobre os dois paragrafos a seguir, eles ficam melhor aqui no fim para ser a última coisa que o leitor terá em mente? ou seria melhor no começo? deixando claro que não será feita a implementação fisica}
+
+A proposta visa demonstrar a viabilidade teórica e computacional de um sistema de diagnóstico em tempo real capaz de identificar padrões característicos de cavitação e outros fenômenos de degradação estrutural, a partir de dados disponíveis na literatura científica.
+
+A implementação será realizada em ambiente de simulação, utilizando ferramentas de modelagem e frameworks voltados à aceleração de redes neurais em FPGA, como o FINN (da AMD/Xilinx). O foco está na avaliação do desempenho teórico do modelo quanto a latência, acurácia e consumo estimado de recursos lógicos, com base em métricas quantitativas que serão definidas e ajustadas ao longo do desenvolvimento da pesquisa.
+
+% \section{Objetivos Específicos}
+
+Com base nesse objetivo geral, delineiam-se a seguir os objetivos específicos que orientam as etapas do desenvolvimento, desde o tratamento dos dados e o treinamento da rede neural até a validação e análise de desempenho do sistema proposto.
+
+\begin{enumerate}[label=\textbf{\arabic*.}]
+    \item \textbf{Selecionar e tratar dados de emissão acústica provenientes da literatura}:
+Compilar bases de dados públicas e resultados experimentais reportados em estudos anteriores, contendo sinais de emissão acústica de motobombas em operação normal e sob condições de falha. Realizar o pré-processamento desses dados, aplicando técnicas de filtragem, normalização e segmentação temporal, de modo a garantir sua adequação para o treinamento da CNN-1D.
+
+    \item \textbf{Treinar o modelo de rede neural}:
+Desenvolver e ajustar uma CNN-1D capaz de classificar padrões de emissão acústica associados à cavitação e a outras anomalias mecânicas, utilizando dados simulados e/ou provenientes da literatura. Avaliar o modelo por meio de métricas como acurácia, precisão, sensibilidade e F-score, buscando uma configuração otimizada para aplicação embarcada.
+
+    \item \textbf{Simular a implementação em FPGA}:
+Modelar e simular a execução do modelo em FPGA, com o auxílio de ferramentas de síntese e frameworks de otimização como o FINN ou equivalentes, avaliando o uso teórico de recursos (LUTs, DSPs, BRAMs) e estimando a latência e o consumo energético do sistema sob diferentes parâmetros de quantização.
+
+    \item \textbf{Avaliar o desempenho e a viabilidade do sistema}:
+Realizar testes comparativos em ambiente de simulação, confrontando o desempenho estimado da solução em FPGA com abordagens equivalentes em CPU ou GPU, considerando eficiência computacional, tempo de resposta e consumo energético projetado.
+
+    \item \textbf{Definir e refinar métricas quantitativas de avaliação}:
+Estabelecer indicadores de desempenho teórico — como latência simulada inferior a alguns milissegundos, eficiência energética estimada e taxa de detecção mínima aceitável — que serão ajustados ao longo da pesquisa conforme os resultados obtidos nas simulações e análises comparativas.
+\end{enumerate}
+
+\section{Contribuições}
+
+As principais contribuições esperadas deste trabalho incluem:
+
+\begin{enumerate}[label=\textbf{\arabic*.}]
+    \item \textbf{Proposição de uma metodologia inovadora} para a detecção e classificação da cavitação em bombas centrífugas, baseada em redes neurais convolucionais unidimensionais (CNN-1D) aplicadas a sinais de emissão acústica.
+    
+    \item \textbf{Desenvolvimento e validação, por meio de simulação}, de um modelo de CNN-1D otimizado para execução em dispositivos do tipo \textit{Field-Programmable Gate Array} (FPGA), utilizando a biblioteca \textbf{FINN}, demonstrando a viabilidade teórica do uso de hardware reconfigurável em aplicações de Inteligência Artificial voltadas ao monitoramento industrial.
+    
+    \item \textbf{Redução da dependência de inspeções físicas e de análises manuais}, por meio da automatização do diagnóstico e da identificação de padrões acústicos associados a falhas, favorecendo estratégias de manutenção preditiva e o uso de técnicas não invasivas de monitoramento.
+    
+    \item \textbf{Avaliação comparativa de desempenho} entre diferentes plataformas computacionais — FPGA, CPU e GPU — em termos de latência, eficiência energética e acurácia, com base em dados simulados e métricas quantitativas obtidas durante o estudo.
+    
+    \item \textbf{Avanço no estado da arte do uso de FPGAs simulados em sistemas embarcados industriais}, consolidando sua aplicabilidade como plataforma promissora para o monitoramento inteligente em tempo real de equipamentos hidráulicos.
+\end{enumerate}

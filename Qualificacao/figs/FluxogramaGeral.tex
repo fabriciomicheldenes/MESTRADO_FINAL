@@ -1,0 +1,71 @@
+\begin{sidewaysfigure}
+\centering
+\begin{tikzpicture}[
+    font=\sffamily\small,
+  node distance=10mm and 12mm,
+  >=Latex,
+  box/.style={draw, rounded corners=2mm, align=center, minimum width=32mm, minimum height=9mm, very thick, fill=white},
+  proc/.style={box, fill=gray!10},
+  data/.style={box, fill=blue!8},
+  hw/.style={box, fill=orange!12},
+  outbox/.style={box, fill=green!12},
+  line/.style={-Latex, very thick},
+  dashedline/.style={-Latex, dashed, very thick},
+  group/.style={draw, rounded corners=4mm, inner sep=4pt, thick}
+]
+
+%=== TÍTULOS DE TRILHOS ===
+\node[align=left] (title_off) {\large \textbf{Treinamento Offline (host)}};
+\node[align=left, right=70mm of title_off] (title_rt) {\large \textbf{Inferência em Tempo Real (FPGA)}};
+
+%=== TREINAMENTO OFFLINE ===
+\node[data, below=6mm of title_off] (dataset) {Dados rotulados\\(EA/vibração)};
+\node[proc, right=of dataset] (prep) {Pré-processamento\\(filtro, normalização, janelas)};
+\node[proc, right=of prep] (train) {Treinamento CNN-1D\\(PyTorch)};
+\node[proc, right=of train] (quant) {Quantização/Podas\\(INT8/INT4/BNN)};
+\node[proc, right=of quant] (finn) {Compilação com FINN\\(\textit{HLS} / IPs CNN)};
+\node[hw, right=of finn] (bit) {Geração do \textit{bitstream}\\+ integração SoC};
+
+\draw[line] (dataset) -- (prep);
+\draw[line] (prep) -- (train);
+\draw[line] (train) -- (quant);
+\draw[line] (quant) -- (finn);
+\draw[line] (finn) -- (bit);
+
+%=== INFERÊNCIA TEMPO REAL (FPGA) ===
+\node[data, below=22mm of dataset, xshift=72mm] (acq) {Aquisição\\Sensores EA / Acelerômetro};
+\node[proc, right=of acq] (pp) {Pré-processamento\\(filtro BP, ganho,\\\textit{window}/segmentação)};
+\node[proc, right=of pp] (buf) {Buffer/Streaming\\(DMA / FIFO)};
+\node[hw, right=of buf] (cnn) {Inferência CNN-1D\\(FINN no FPGA)};
+\node[outbox, right=of cnn] (cls) {Classificação\\(cavitação / normal / outros)};
+\node[outbox, right=of cls] (act) {Ação \& Registro\\(alarme, log,\\API/MODBUS)};
+
+\draw[line] (acq) -- (pp);
+\draw[line] (pp) -- (buf);
+\draw[line] (buf) -- (cnn);
+\draw[line] (cnn) -- (cls);
+\draw[line] (cls) -- (act);
+
+%=== CONEXÕES ENTRE TRILHOS ===
+\draw[dashedline] ($(bit.south)+(0,-2mm)$) |- ($(cnn.north)+(0,2mm)$);
+
+%=== GRUPOS / CAIXAS ===
+\node[group, fit=(dataset)(prep)(train)(quant)(finn)(bit), label={[anchor=north west,yshift=1mm,xshift=1mm]\textbf{Pipeline de desenvolvimento}}] (gdev) {};
+\node[group, fit=(acq)(pp)(buf)(cnn)(cls)(act), label={[anchor=north west,yshift=1mm,xshift=1mm]\textbf{Pipeline embarcado}}] (grt) {};
+
+%=== ANOTAÇÕES ===
+\node[align=left, above=1mm of finn] (note1) {\footnotesize Geração de IPs/accelerators CNN};
+\node[align=left, below=1mm of cnn] (note2) {\footnotesize Baixa latência, \textit{throughput} determinístico};
+
+%=== LEGENDA ===
+\begin{scope}[shift={(0,-36mm)}]
+  \node[box, fill=blue!8] (lg1) {Dados};
+  \node[box, fill=gray!10, right=5mm of lg1] (lg2) {Processamento/Software};
+  \node[box, fill=orange!12, right=5mm of lg2] (lg3) {Hardware/FPGA};
+  \node[box, fill=green!12, right=5mm of lg3] (lg4) {Saída/Ação};
+  \node[right=5mm of lg4] (lg5) {\footnotesize \tikz{\draw[dashedline] (0,0)--(8mm,0);} \; \footnotesize Deploy do modelo};
+\end{scope}
+
+\end{tikzpicture}
+\caption{Fluxograma do sistema proposto.}
+\end{sidewaysfigure}

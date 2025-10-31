@@ -1,0 +1,81 @@
+\chapter{A Importância e Aplicações da Técnica de Pruning em Redes Neurais Convolucionais}
+
+\section{Introdução}
+
+O crescimento exponencial do uso de redes neurais profundas trouxe avanços significativos em diversas áreas, como reconhecimento de imagem, processamento de sinais, análise de séries temporais, etc. Entretanto, a complexidade e o alto custo computacional dessas redes representam desafios, especialmente em aplicações embarcadas e em tempo real. Nesse contexto, a técnica de pruning (poda) emerge como uma solução eficaz para reduzir a redundância e otimizar o desempenho das redes neurais convolucionais, sem comprometer significativamente a precisão do modelo.
+
+A técnica de pruning (“poda”, em tradução livre) em redes neurais convolucionais (CNNs) consiste na remoção seletiva de parâmetros ou componentes menos relevantes da rede, como conexões, neurônios ou mapas de características. O objetivo é reduzir a complexidade computacional e os requisitos de memória durante a inferência, tornando os modelos mais eficientes sem comprometer significativamente a precisão. Essa técnica é especialmente relevante para aplicações em dispositivos embarcados ou sistemas com restrições de processamento e consumo de energia.
+
+\subsection{Importância do Pruning}
+
+A poda de redes neurais tem um impacto significativo na viabilização do uso de CNNs em ambientes com restrições de hardware, como smartphones, drones e sistemas de visão computacional embarcados. Além disso, reduzir a complexidade computacional da rede pode acelerar a inferência, diminuindo a latência e melhorando a experiência do usuário em aplicações em tempo real.
+
+O artigo "Pruning Convolutional Neural Networks for Resource Efficient Inference" (Molchanov et al., 2017) introduz um método de poda baseado na expansão de Taylor, permitindo a remoção eficiente de mapas de características inteiros sem exigir grande re-treinamento. Esse critério supera abordagens clássicas como Optimal Brain Damage (LeCun et al., 1990) e métodos baseados na magnitude dos pesos, demonstrando correlação mais forte com o critério ótimo de poda (oracle pruning).
+
+Sze et al. (2017) também discutem a importância de técnicas de compressão, como poda e quantização, para tornar redes neurais mais eficientes em diferentes plataformas de hardware, incluindo CPUs, GPUs e FPGAs. Eles destacam que a combinação de pruning e quantização pode reduzir drasticamente a carga computacional sem afetar significativamente a acurácia do modelo.
+
+\subsection{Resultados Obtidos com o Pruning}
+
+Os resultados apresentados por Molchanov et al. (2017) mostram que a poda pode reduzir em mais de 10 vezes o número de operações de convolução em redes adaptadas sem perdas significativas de desempenho. Aplicando a técnica a modelos populares como AlexNet e VGG-16 em tarefas de reconhecimento de imagens (como as bases Birds-200 e Flowers-102), os autores demonstram que:
+
+O método baseado na expansão de Taylor melhora a precisão dos modelos podados em comparação com métodos tradicionais;
+
+A inferência pode ser acelerada em até 3,4x em GPUs modernas e 5,2x em GPUs embarcadas, permitindo uma redução significativa do tempo de processamento;
+
+Redes podadas podem ser executadas com maior eficiência em dispositivos embarcados sem necessidade de hardware especializado.
+
+\subsection{Otimização em FPGA}
+
+A implementação de CNNs em FPGAs é uma solução promissora para aplicações embarcadas, oferecendo alto desempenho com eficiência energética. Zhang et al. (2015) propõem um modelo baseado na técnica roofline, analisando o throughput computacional e a largura de banda necessária para otimizar o uso dos recursos de FPGA. Eles mostram que através de técnicas como loop tiling e transformation, é possível encontrar um equilíbrio entre o uso de memória e capacidade computacional, maximizando a eficiência da execução de CNNs.
+
+A abordagem de Zhang et al. alcançou um desempenho de 61.62 GFLOPS em um FPGA VC707 operando a 100 MHz, superando implementações anteriores. Essa eficiência demonstra o potencial da combinação de pruning e otimizações específicas de FPGA para reduzir consumo de energia e tempo de processamento em dispositivos embarcados.
+
+\subsection{Necessidade do Pruning em Redes Neurais Convolucionais}
+
+As CNNs são caracterizadas por um grande número de parâmetros, principalmente devido às camadas convolucionais e totalmente conectadas. Essa complexidade resulta em:
+
+Alto custo computacional: O treinamento e a inferência de redes profundas exigem grande capacidade de processamento e memória.
+
+Maior consumo de energia: Fundamental para aplicações em dispositivos embarcados e IoT.
+
+Superadaptação: Redes muito complexas podem memorizar padrões irrelevantes dos dados de treinamento, reduzindo sua capacidade de generalização.
+
+Dificuldade na implementação em hardware: Modelos grandes são difíceis de serem implantados em dispositivos com restrições de memória e processamento, como microcontroladores e FPGAs.
+
+O pruning tem o objetivo de mitigar esses problemas, reduzindo a quantidade de parâmetros desnecessários e tornando as redes mais eficientes.
+
+\subsection{Técnicas de Pruning}
+
+Existem diversas abordagens para aplicar pruning em redes neurais convolucionais, sendo as principais:
+
+Pruning baseado em magnitude: Remove conexões cujos pesos têm valores pequenos, assumindo que esses parâmetros contribuem pouco para o resultado final.
+
+Pruning estruturado: Remove neurônios, filtros ou canais inteiros, reduzindo significativamente o tamanho da rede e o custo computacional.
+
+Pruning não estruturado: Remove conexões individuais sem comprometer a estrutura global da rede, exigindo hardware especializado para obter ganhos reais de eficiência.
+
+Pruning dinâmico: Remove pesos durante o treinamento e pode reintroduzi-los conforme necessário, ajustando dinamicamente a arquitetura.
+
+Pruning iterativo: Aplica a remoção de parâmetros em múltiplas etapas, com reaferimento da rede para manter o desempenho.
+
+\subsection{Pruning em CNNs e CNN1D}
+
+As CNNs tradicionais (2D) são amplamente utilizadas em processamento de imagens, enquanto as CNN1D são empregadas no processamento de sinais e séries temporais. Ambas se beneficiam do pruning, com algumas diferenças importantes:
+
+CNNs (2D): A poda de filtros convolucionais pode reduzir significativamente a complexidade, mantendo a capacidade de extração de padrões espaço-temporais.
+
+CNN1D: Muito utilizadas em sinais biomédicos, financeiros e acústicos, a remoção de canais irrelevantes pode acelerar a inferência sem perda significativa de informação.
+
+Aplicações Práticas do Pruning
+
+Visão Computacional: Redução do tamanho de redes como ResNet e VGG para execução eficiente em dispositivos móveis.
+
+Processamento de Sinais Biomédicos: Análise de ECG e EEG utilizando CNN1D, reduzindo o tempo de inferência sem comprometer a acurácia do diagnóstico.
+
+Detecção de Falhas em Equipamentos: Pruning em CNN1D para análise de sinais acústicos, possibilitando inferência em tempo real.
+
+Edge Computing e IoT: Implementação de modelos eficientes em hardwares embarcados, como FPGAs e microcontroladores.
+
+Conclusão
+
+A técnica de pruning é essencial para a eficiência de redes neurais convolucionais, permitindo execução otimizada em ambientes com restrições computacionais. Seu uso em CNNs e CNN1D tem impulsionado avanços em diversas áreas, desde a visão computacional até a análise de sinais biomédicos e acústicos. Com a crescente demanda por modelos mais eficientes, espera-se que novas abordagens de pruning sejam desenvolvidas para maximizar a relação entre desempenho e eficiência computacional.
