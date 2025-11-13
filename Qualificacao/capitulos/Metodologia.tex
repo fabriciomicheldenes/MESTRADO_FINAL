@@ -76,3 +76,15 @@ O primeiro nível de avaliação contempla métricas clássicas de aprendizado s
 Adicionalmente, os experimentos de validação foram realizados com base em dados reais de emissão acústica provenientes de ensaios de bancada e simulações controladas de cavitação, de modo a avaliar a robustez e generalização do modelo em diferentes condições de operação.
 
 Esses métodos de avaliação permitem correlacionar diretamente o desempenho do algoritmo com sua eficiência no hardware, oferecendo uma visão integrada do potencial do sistema para aplicações de monitoramento preditivo e diagnóstico inteligente em máquinas rotativas.
+
+\subsection*{Fluxograma da metodologia}
+O fluxograma geral da metodologia é mostrado na Figura~\ref{fig:fluxograma_geral}, que apresenta as etapas principais do processo — desde o treinamento offline da rede neural em ambiente de simulação até o pipeline embarcado de inferência em tempo real. O diagrama ilustra a integração entre as fases de pré-processamento, quantização, compilação e execução, destacando o papel do framework \textit{FINN} (AMD/Xilinx) na geração dos aceleradores de CNN em FPGA e na análise de desempenho teórico.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\linewidth]{figs/Fluxograma_Objetivo.pdf}
+	\caption{Fluxograma geral dos objetivos do projeto, contemplando as etapas de desenvolvimento e inferência da CNN-1D em FPGA.}
+	\label{fig:fluxograma_geral}
+\end{figure}
+
+Durante o desenvolvimento, pretende-se definir e avaliar métricas quantitativas de desempenho — como latência de processamento, consumo energético e taxa de detecção de falhas — de modo a estabelecer valores-alvo representativos (por exemplo, latência inferior a alguns segundos, consumo reduzido de energia e taxa de acerto superior a um patamar mínimo de referência). Esses parâmetros serão ajustados e refinados ao longo da pesquisa, conforme os resultados experimentais e as limitações práticas do hardware utilizado.

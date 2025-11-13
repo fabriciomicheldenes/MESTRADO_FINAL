@@ -53,19 +53,6 @@ Esse sistema visa superar as limitações dos métodos tradicionais de monitoram
 
 Adicionalmente, o projeto almeja contribuir para a manutenção preditiva de sistemas hidráulicos, reduzindo custos operacionais e minimizando o risco de falhas inesperadas, por meio de uma plataforma de monitoramento contínuo e inteligente.
 
-O fluxograma geral dos objetivos é mostrado na Figura~\ref{fig:fluxograma_geral}, que apresenta as etapas principais do processo — desde o treinamento offline da rede neural em ambiente de simulação até o pipeline embarcado de inferência em tempo real. O diagrama ilustra a integração entre as fases de pré-processamento, quantização, compilação e execução, destacando o papel do framework \textit{FINN} (AMD/Xilinx) na geração dos aceleradores de CNN em FPGA e na análise de desempenho teórico.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.95\linewidth]{figs/Fluxograma_Objetivo.pdf}
-    \caption{Fluxograma geral dos objetivos do projeto, contemplando as etapas de desenvolvimento e inferência da CNN-1D em FPGA.}
-    \label{fig:fluxograma_geral}
-\end{figure}
-
-Durante o desenvolvimento, pretende-se definir e avaliar métricas quantitativas de desempenho — como latência de processamento, consumo energético e taxa de detecção de falhas — de modo a estabelecer valores-alvo representativos (por exemplo, latência inferior a alguns segundos, consumo reduzido de energia e taxa de acerto superior a um patamar mínimo de referência). Esses parâmetros serão ajustados e refinados ao longo da pesquisa, conforme os resultados experimentais e as limitações práticas do hardware utilizado.
-
-\textcolor{red}{Sobre os dois paragrafos a seguir, eles ficam melhor aqui no fim para ser a última coisa que o leitor terá em mente? ou seria melhor no começo? deixando claro que não será feita a implementação fisica}
-
 A proposta visa demonstrar a viabilidade teórica e computacional de um sistema de diagnóstico em tempo real capaz de identificar padrões característicos de cavitação e outros fenômenos de degradação estrutural, a partir de dados disponíveis na literatura científica.
 
 A implementação será realizada em ambiente de simulação, utilizando ferramentas de modelagem e frameworks voltados à aceleração de redes neurais em FPGA, como o FINN (da AMD/Xilinx). O foco está na avaliação do desempenho teórico do modelo quanto a latência, acurácia e consumo estimado de recursos lógicos, com base em métricas quantitativas que serão definidas e ajustadas ao longo do desenvolvimento da pesquisa.
@@ -93,16 +80,14 @@ Estabelecer indicadores de desempenho teórico — como latência simulada infer
 
 \section{Contribuições}
 
-As principais contribuições esperadas deste trabalho incluem:
+À luz dos objetivos delineados, as contribuições esperadas deste trabalho situam-se no âmbito de um estudo de viabilidade técnica, com foco em modelagem, simulação e análise de desempenho de arquiteturas de aprendizado de máquina embarcadas em FPGA. De forma sintética, podem ser descritas como:
 
 \begin{enumerate}[label=\textbf{\arabic*.}]
-    \item \textbf{Proposição de uma metodologia} para a detecção e classificação da cavitação em bombas centrífugas, baseada em redes neurais convolucionais unidimensionais (CNN-1D) aplicadas a sinais de emissão acústica.
-    
-    \item \textbf{Desenvolvimento e validação, por meio de simulação}, de um modelo de CNN-1D otimizado para execução em dispositivos do tipo \textit{Field-Programmable Gate Array} (FPGA), utilizando a biblioteca \textbf{FINN}, demonstrando a viabilidade teórica do uso de hardware reconfigurável em aplicações de Inteligência Artificial voltadas ao monitoramento industrial.
-    
-%    \item \textbf{Redução da dependência de inspeções físicas e de análises manuais}, por meio da automatização do diagnóstico e da identificação de padrões acústicos associados a falhas, favorecendo estratégias de manutenção preditiva e o uso de técnicas não invasivas de monitoramento.
-    
-%    \item \textbf{Avaliação comparativa de desempenho} entre diferentes plataformas computacionais — FPGA, CPU e GPU — em termos de latência, eficiência energética e acurácia, com base em dados simulados e métricas quantitativas obtidas durante o estudo.
-    
-%    \item \textbf{Avanço no estado da arte do uso de FPGAs simulados em sistemas embarcados industriais}, consolidando sua aplicabilidade como plataforma promissora para o monitoramento inteligente em tempo real de equipamentos hidráulicos.
+	\item \textbf{Proposição e análise de uma metodologia computacional} para a detecção e classificação da cavitação em bombas centrífugas, baseada em redes neurais convolucionais unidimensionais (CNN-1D) aplicadas a sinais de emissão acústica provenientes de bases de dados públicas e de experimentos do Projeto MOMEA.
+	
+	\item \textbf{Desenvolvimento, treinamento e avaliação em ambiente de simulação} de um modelo de CNN-1D otimizado e quantizado, preparado para mapeamento em dispositivos do tipo \textit{Field-Programmable Gate Array} (FPGA) com o uso da biblioteca \textbf{FINN}, de modo a avaliar a viabilidade teórica do emprego de hardware reconfigurável em aplicações de Inteligência Artificial voltadas ao monitoramento de motobombas.
+	
+	\item \textbf{Sistematização de um fluxo de projeto de ponta a ponta}, integrando as etapas de seleção e preparação dos sinais, definição da arquitetura de rede, treinamento da CNN-1D e estimativa de implementação em FPGA, de forma a fornecer uma referência metodológica para trabalhos futuros que venham a contemplar a prototipagem física do sistema.
 \end{enumerate}
+
+Ressalta-se que, no escopo desta qualificação/dissertação, todas as análises relacionadas à implementação em FPGA serão conduzidas em ambiente de simulação, caracterizando o estudo como uma etapa preliminar de viabilidade técnica, a partir da qual poderão ser planejadas futuras extensões com implementação física do hardware.
