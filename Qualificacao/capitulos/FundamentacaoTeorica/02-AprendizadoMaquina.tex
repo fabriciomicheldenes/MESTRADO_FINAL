@@ -1,7 +1,6 @@
 \section{Aprendizado de Máquina}
 
-Esta seção dedica-se à apresentação dos fundamentos conceituais e matemáticos do Aprendizado de Máquina, com ênfase nas abordagens supervisionadas e profundas aplicadas à análise de sinais. Inicialmente, discorrem-se os paradigmas de aprendizado, os principais algoritmos utilizados e suas respectivas áreas de aplicação. Em seguida, introduz-se o Aprendizado Profundo, \textit{Deep Learning, DL}, e as Redes Neurais Convolucionais Unidimensionais, destacando seu papel na extração automática de padrões complexos em sinais acústicos, como os gerados por fenômenos de cavitação e falhas incipientes em equipamentos rotativos.
-
+Esta seção dedica-se à apresentação dos fundamentos conceituais e matemáticos do Aprendizado de Máquina, com ênfase nas abordagens supervisionadas e profundas aplicadas à análise de sinais. Inicialmente, discorrem-se os paradigmas de aprendizado, os principais algoritmos utilizados e suas respectivas áreas de aplicação. Em seguida, introduz-se o Aprendizado Profundo, e as Redes Neurais Convolucionais Unidimensionais, destacando seu papel na extração automática de padrões complexos em sinais acústicos, como os gerados por fenômenos de cavitação e falhas incipientes em equipamentos rotativos.
 
 A Inteligência Artificial é um campo interdisciplinar da ciência da computação voltado ao desenvolvimento de sistemas capazes de executar tarefas tipicamente associadas à inteligência humana, como percepção, raciocínio, reconhecimento de padrões e tomada de decisão. Seu objetivo fundamental é reproduzir — e em certos casos, ampliar — aspectos do pensamento humano por meio de processos computacionais baseados em dados e em modelos matemáticos de inferência.
 
@@ -13,13 +12,13 @@ Um subconjunto mais avançado e especializado do ML é o Aprendizado Profundo, q
 
 Nos últimos anos, a combinação entre aprendizado profundo e dispositivos de alto desempenho, como GPUs e FPGAs, tem ampliado significativamente o escopo de aplicação dessas técnicas, tornando viável a análise em tempo real de dados de alta taxa de amostragem — como os provenientes de sensores acústicos e vibrométricos empregados no monitoramento de máquinas rotativas. Essa integração entre IA e instrumentação digital representa um dos pilares do paradigma da manutenção preditiva inteligente, na qual modelos treinados são utilizados para detectar anomalias, prever falhas e otimizar a operação de sistemas industriais complexos.
 
-O campo do aprendizado de máquina abrange diferentes abordagens de treinamento, cada uma fundamentada na forma como o modelo interage com os dados e aprende a partir deles. De maneira geral, essas abordagens são organizadas em três grandes paradigmas: o aprendizado supervisionado, o aprendizado não supervisionado e o aprendizado por reforço. Cada paradigma apresenta características próprias, vantagens e limitações, sendo aplicável a diferentes tipos de problemas de modelagem, classificação e controle em sistemas complexos.
+O campo do aprendizado de máquina abrange diferentes abordagens de treinamento, cada uma fundamentada na forma como o modelo interage com os dados e aprende a partir deles. De maneira geral, essas abordagens são organizadas em três grandes paradigmas: o aprendizado supervisionado, o aprendizado não supervisionado e o aprendizado por reforço. Cada paradigma apresenta características próprias, vantagens e limitações, sendo aplicável a diferentes tipos de problemas de modelagem, classificação e \mbox{controle em sistemas complexos.}
 
 Os três paradigmas são sistematizados na Figura~\ref{fig:AprendizadoDeMaquinaConceitos}, que apresenta uma visão comparativa das principais estratégias de aprendizado e suas aplicações típicas em contextos industriais. Cada paradigma difere quanto à forma de aprendizado, à disponibilidade de rótulos nos dados e ao tipo de \textit{feedback} recebido durante o processo de treinamento.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.45\linewidth]{figs/AprendizadoDeMaquina/AprendizadoDeMaquinaConceitos.pdf}
+    \includegraphics[width=0.7\linewidth]{figs/AprendizadoDeMaquina/AprendizadoDeMaquinaConceitos.pdf}
     \caption{Paradigmas do aprendizado de máquina e exemplos de aplicação industrial.\\Fonte: O autor.}
     \label{fig:AprendizadoDeMaquinaConceitos}
 \end{figure}
@@ -83,193 +82,193 @@ A arquitetura típica de uma CNN é composta por diferentes tipos de camadas, ca
     \item \textbf{Camadas Convolucionais:} realizam a operação de convolução, extraindo padrões locais (por exemplo, bordas em imagens ou picos em sinais de emissão acústica).
     \item \textbf{Camadas de Pooling:} reduzem a dimensionalidade dos mapas de ativação, preservando as informações mais relevantes e diminuindo o custo computacional.
     \item \textbf{Camadas Totalmente Conectadas (Fully Connected):} integram as características extraídas nas etapas anteriores para a tomada de decisão final, como a classificação do tipo de falha.
-    \item \textbf{Funções de Ativação (ex.: ReLU, sigmoid, softmax):} introduzem não linearidade ao modelo, permitindo capturar relações complexas entre as variáveis e melhorar a capacidade de generalização.
+    \item \textbf{Funções de Ativação (ex., ReLU, sigmoid, softmax):} introduzem não linearidade ao modelo, permitindo capturar relações complexas entre as variáveis e melhorar a capacidade de generalização.
 \end{itemize}
 
 Esses elementos, combinados em múltiplos níveis, formam uma estrutura profunda e adaptável, capaz de aprender automaticamente as representações mais relevantes dos dados — característica essencial para aplicações em manutenção preditiva, diagnóstico de falhas e monitoramento inteligente de sistemas industriais.
 
-\subsection{Redes Neurais Convolucionais Unidimensionais (CNN-1D)}
+\subsection{Redes Neurais Convolucionais Unidimensionais (CNN1D)}
 
 \textcolor{red}{Ainda estou trabalhando nesta seção}
 
 
-As Redes Neurais Convolucionais Unidimensionais (CNN-1D) representam uma extensão natural das CNNs originalmente aplicadas a imagens, adaptadas para o processamento de sinais temporais. Diferentemente das CNNs bidimensionais, nas quais os filtros convolucionais percorrem duas dimensões espaciais (altura e largura da imagem), as CNN-1D operam exclusivamente sobre a dimensão temporal dos dados, tornando-as especialmente adequadas para o tratamento de séries temporais, \mbox{vibrações e sinais de emissão acústica (EA)}.
-
-\subsection*{Fundamentos Matemáticos}
-
-A operação fundamental de uma CNN-1D é a \textit{convolução discreta}, na qual um filtro ou kernel $w = [w_1, w_2, ..., w_k]$ é aplicado sobre um vetor de entrada $x = [x_1, x_2, ..., x_n]$ para extrair características locais. Matematicamente, a convolução de \mbox{primeira camada é expressa por:}
-
-\[
-y_i = (x * w)_i = \sum_{j=1}^{k} x_{i+j-1} \cdot w_j + b
-\]
-
-onde:
-\begin{enumerate}
-    \item $x$ é o sinal de entrada;
-    \item $w$ é o vetor de pesos do filtro convolucional (kernel);
-    \item $b$ é o termo de viés (\textit{bias});
-    \item $y_i$ é a ativação resultante na posição $i$.
-\end{enumerate}
-
-O deslocamento (ou \textit{stride}) do filtro define o intervalo entre posições sucessivas da convolução, influenciando diretamente a resolução temporal do mapa de características resultante.  
-Cada filtro aprende um padrão distinto — como picos abruptos, pulsos periódicos ou oscilações rápidas — correspondentes a comportamentos \mbox{físicos específicos do sinal de EA.}
-
-\subsubsection*{Não-linearidade e Funções de Ativação}
-
-A saída da operação de convolução é linear. Para que a rede possa aprender fronteiras de decisão complexas e não-lineares, aplica-se uma função de ativação elemento a elemento sobre o mapa de características. A função mais comum em CNNs modernas é a \textit{Rectified Linear Unit} (ReLU). 
-Matematicamente, para uma entrada $z$, a ativação $a$ é dada por:
-
-$$
-a_i = \text{ReLU}(y_i) = \max(0, y_i)
-$$
-
-A utilização da ReLU mitiga o problema do desvanecimento do gradiente (\textit{vanishing gradient}) e induz esparsidade na representação, o que acelera a convergência do treinamento em comparação com funções sigmoides ou tangente hiperbólica \cite{Goodfellow2016}.
-
-\subsubsection*{Subamostragem (Pooling)}
-
-Para reduzir a dimensionalidade dos mapas de características e conferir invariância a pequenas translações temporais no sinal, utiliza-se a camada de subamostragem ou \textit{Pooling}. A técnica mais comum é o \textit{Max Pooling}, que seleciona o valor máximo dentro de uma janela deslizante de tamanho $p$.
-
-Seja $a$ o mapa de características ativado, a saída $s$ da camada de pooling na posição $j$ é:
-
-$$
-s_j = \max_{(j-1)p < i \leq jp} (a_i)
-$$
-
-Essa operação reduz a quantidade de parâmetros a serem computados nas camadas subsequentes e ajuda a filtrar ruídos, mantendo apenas as ativações mais proeminentes do sinal de Emissão Acústica, como picos de alta energia \cite{Kiranyaz2021}.
-
-\subsection*{Arquitetura e Camadas Totalmente Conectadas}
-
-Uma arquitetura típica de CNN-1D é composta por uma sequência de blocos de extração de características (Convolução + Ativação + Pooling), seguidos por camadas de classificação ou regressão.
-
-Após a última camada de pooling, os mapas de características resultantes são "achatados" (\textit{flattening}) em um único vetor unidimensional. Este vetor serve de entrada para as Camadas Totalmente Conectadas (\textit{Fully Connected Layers} - FC), semelhantes às de um Perceptron Multicamadas (MLP).
-
-A saída final da rede depende da tarefa:
-\begin{itemize}
-	\item \textbf{Classificação:} Utiliza-se geralmente a função \textit{Softmax} para gerar uma distribuição de probabilidade sobre as classes (ex: defeito vs. normal).
-	\item \textbf{Regressão:} Utiliza-se uma ativação linear para prever um valor contínuo (ex: tempo de vida útil restante).
-\end{itemize}
-
-\subsection*{Fluxo de Processamento (Forward Propagation)}
-
-O funcionamento algorítmico de uma passagem direta (\textit{forward pass}) em uma CNN-1D para processamento de um sinal temporal pode ser descrito pelo Algoritmo \ref{alg:cnn1d}.
-
-%\begin{algorithm}
-%	\caption{Propagação em CNN-1D para Classificação de Sinais}
-%	\label{alg:cnn1d}
-%	\begin{algorithmic}[1]
-%		
-%		\Require Sinal de entrada $X \in \mathbb{R}^{T \times 1}$ (série temporal)
-%		\Ensure Classe prevista $C$
-%		
-%		\STATE \textbf{Etapa 1: Extração de Características}
-%		
-%		\FOR{cada camada convolucional $l = 1$ até $L$}
-%		\STATE Convolução: $Y^{(l)} \gets X^{(l-1)} * W^{(l)} + b^{(l)}$
-%		\STATE Ativação: $A^{(l)} \gets \mathrm{ReLU}(Y^{(l)})$
-%		\STATE Subamostragem: $X^{(l)} \gets \mathrm{MaxPooling}(A^{(l)})$
-%		\ENDFOR
-%		
-%		\STATE \textbf{Etapa 2: Classificação}
-%		\STATE Achatamento: $V \gets \mathrm{Flatten}(X^{(L)})$
-%		\STATE Camada densa: $Z \gets W_{fc} \cdot V + b_{fc}$
-%		\STATE Probabilidades: $P \gets \mathrm{Softmax}(Z)$
-%		
-%		\Return $C \gets \operatorname{argmax}(P)$
-%		
-%	\end{algorithmic}
-%\end{algorithm}
-
-% \subsection*{Camadas de Pooling e Redução de Dimensionalidade}
-
-% Após a convolução, aplica-se geralmente uma operação de \textit{pooling}, que reduz a dimensionalidade dos mapas de ativação, preservando as informações mais relevantes e minimizando a sensibilidade a variações locais.  
-% As duas formas mais comuns são:
-% \[
-% \text{MaxPooling: } y_i = \max(x_{i:i+p-1}), \quad
-% \text{AveragePooling: } y_i = \frac{1}{p}\sum_{j=i}^{i+p-1} x_j
-% \]
-% onde $p$ é o tamanho da janela de pooling.
-
-% Essa etapa atua como uma filtragem temporal adicional, suprimindo pequenas flutuações e enfatizando as características dominantes do sinal, como picos de energia acústica associados a eventos de cavitação.
-
-% \subsection*{Camadas Densas e Classificação}
-
-% As ativações resultantes das camadas convolucionais e de pooling são achatadas em um vetor unidimensional e conectadas a uma ou mais \textit{camadas totalmente conectadas} (fully connected).  
-% Cada neurônio dessas camadas combina as entradas ponderadas por pesos $w_{ij}$, produzindo uma saída $z_i$ dada por:
-% \[
-% z_i = f\left(\sum_j w_{ij} a_j + b_i \right)
-% \]
-% em que $f(\cdot)$ é a função de ativação (tipicamente ReLU, $\text{ReLU}(x) = \max(0, x)$, ou softmax na camada de saída).
-
-% Essas camadas densas executam a etapa de decisão, convertendo as representações aprendidas em probabilidades associadas a cada classe — por exemplo, \textit{sem cavitação}, \textit{cavitação incipiente} ou \textit{cavitação severa}.
-
-% \subsection*{Aprendizado e Otimização}
-
-% O treinamento da CNN-1D consiste em ajustar os pesos $w$ e vieses $b$ para minimizar uma função de perda $\mathcal{L}$, usualmente definida como a entropia cruzada:
-% \[
-% \mathcal{L} = -\sum_{i=1}^{C} y_i \log(\hat{y}_i)
-% \]
-% onde $y_i$ é o rótulo verdadeiro e $\hat{y}_i$ é a probabilidade prevista pelo modelo para cada classe $i$.
-
-% A minimização é realizada por algoritmos de otimização baseados em gradiente, como o \textit{Adam} ou o \textit{Stochastic Gradient Descent} (SGD), com retropropagação do erro (\textit{backpropagation}) através das camadas convolucionais e densas.
-
-% \subsection*{Camadas de Pooling e Redução de Dimensionalidade}  
-% Após a etapa de convolução, é usual aplicar operações de \textit{pooling}, cujo objetivo fundamental é reduzir a dimensionalidade dos mapas de ativação enquanto se preservam as principais características extraídas dos dados. Como observado por \citeonline{krichen2023survey}, tais camadas ajudam a tornar a rede menos sensível a pequenas variações locais nos dados de entrada. As duas formas de pooling mais recorrentes são:
-% \[
-% \text{MaxPooling: } y_i = \max\bigl(x_{i:i+p-1}\bigr),
-% \qquad
-% \text{AveragePooling: } y_i = \frac{1}{p} \sum_{j=i}^{i+p-1} x_j
-% \]
-% em que \(p\) representa o tamanho da janela de pooling. Em uma análise comparativa detalhada, \citeonline{zafar2022comparison} verificaram que o max pooling tende a preservar de forma mais eficiente características muito discriminativas, enquanto o average pooling proporciona maior suavização do mapa de ativação. Além disso, embora grande parte da literatura se concentre em aplicações de visão computacional, \citeonline{nirthika2022pooling} salientam que a escolha da técnica de pooling exerce impacto direto no desempenho de tarefas de classificação — o que sugere que estudos com sinais acústicos também devem considerar essa decisão com atenção.  
-% No contexto de sinais de emissão acústica gerados por cavitação, a camada de pooling pode atuar como um filtro temporal adicional, suprimindo flutuações menores e realçando eventos dominantes — tais como picos de energia acústica associados ao colapso de bolhas.
-
-% \subsection*{Camadas Densas e Classificação}  
-% As ativações geradas pelas camadas convolucionais e de pooling são então convertidas para um vetor unidimensional (flatten) e encaminhadas a uma ou mais camadas totalmente conectadas (\textit{fully connected layers}). Cada neurônio dessas camadas calcula:
-% \[
-% z_i = f\left(\sum_j w_{ij}\,a_j + b_i\right)
-% \]
-% em que \(w_{ij}\) indica o peso sináptico, \(b_i\) o viés, e \(f(\cdot)\) é a função de ativação — normalmente \(\mathrm{ReLU}(x)=\max(0,x)\) nas camadas intermediárias e a função \(\mathrm{softmax}\) na camada de saída para tarefa de classificação multiclasses. Conforme descrito por \citeonline{krichen2023survey}, essas camadas densas realizam a etapa de decisão final da rede, convertendo as representações extraídas em probabilidades associadas a cada categoria — por exemplo: “sem cavitação”, “cavitação incipiente” ou “cavitação severa”.
-
-% \subsection*{Aprendizado e Otimização}  
-% O processo de treinamento de uma rede CNN-1D envolve a atualização iterativa dos parâmetros \(w\) e \(b\) por meio da minimização de uma função de perda \(\mathcal{L}\), comumente definida pela entropia cruzada:
-% \[
-% \mathcal{L} = - \sum_{i=1}^{C} y_i \,\log(\hat y_i)
-% \]
-% onde \(y_i\) corresponde ao rótulo verdadeiro (codificação one-hot) da classe \(i\), e \(\hat y_i\) é a probabilidade prevista para a classe \(i\). A minimização dessa função é realizada por algoritmos baseados em gradiente — como \textit{Adam} ou \textit{Stochastic Gradient Descent} (SGD) — empregando o método de retropropagação (\textit{backpropagation}) para propagar o erro através das camadas da rede. Tal abordagem, conforme detalhado por \citeonline{krichen2023survey}, permite que a rede aprenda automaticamente representações discriminativas a partir dos dados brutos, reduzindo ou eliminando a necessidade de extração manual de características.
-
-\subsection{Aplicação em Emissão Acústica (EA)}
-
-\textcolor{red}{Ainda estou trabalhando nesta seção}
-
-No contexto da detecção de cavitação por emissão acústica, a CNN-1D apresenta vantagens relevantes:
-\begin{itemize}
-    \item Processa diretamente o sinal bruto ou ligeiramente filtrado, dispensando o cálculo manual de atributos estatísticos como RMS, curtose ou entropia espectral;
-    \item Aprende automaticamente assinaturas espectro-temporais associadas ao colapso de bolhas de cavitação, trincas e impactos internos;
-    \item É robusta à presença de ruído e à variabilidade do sinal entre diferentes condições operacionais;
-    \item Permite inferência em tempo real quando implementada em hardware reconfigurável (como FPGAs), com baixa latência e consumo energético reduzido.
-\end{itemize}
-
-Assim, a CNN-1D constitui uma ferramenta poderosa para análise de sinais não estacionários em ambientes industriais, conciliando desempenho computacional e capacidade de generalização — aspectos essenciais para o monitoramento inteligente e a manutenção preditiva de sistemas hidráulicos.
-
-De modo geral, o aprendizado de máquina consolida-se como um pilar central na construção de sistemas inteligentes capazes de reconhecer padrões complexos e realizar inferências autônomas. A aplicação dessas técnicas à análise de sinais de emissão acústica e vibração possibilita não apenas a identificação automática de falhas, mas também a previsão de seu surgimento em estágios incipientes. Na próxima subseção, são analisados trabalhos recentes que integram aprendizado profundo e processamento de sinais industriais, destacando as arquiteturas, métricas e estratégias de modelagem que influenciam diretamente o desempenho em aplicações de diagnóstico de cavitação.
-
-%\subsection{Modelos e Aplicações em Diagnóstico de Falhas}
+%As Redes Neurais Convolucionais Unidimensionais (CNN1D) representam uma extensão natural das CNNs originalmente aplicadas a imagens, adaptadas para o processamento de sinais temporais. Diferentemente das CNNs bidimensionais, nas quais os filtros convolucionais percorrem duas dimensões espaciais (altura e largura da imagem), as CNN1D operam exclusivamente sobre a dimensão temporal dos dados, tornando-as especialmente adequadas para o tratamento de séries temporais, \mbox{vibrações e sinais de emissão acústica (EA)}.
 %
-%\textcolor{red}{Ainda estou selecionado/lendo/resumindo os artigos}
-
-% \textcolor{red}{Em processo de busca de trabalhos relacionados e leitura para depois escrever esta seção}
-
-
-% LeCun, Y., Bengio, Y., & Hinton, G. (2015). Deep learning. Nature.
-% – Artigo seminal sobre DL, cita CNN como pilar fundamental.
-
-% Kiranyaz, S., et al. (2019). 1D convolutional neural networks and applications: A survey. Mechanical Systems and Signal Processing.
-% – Revisão completa sobre CNNs 1D aplicadas a sinais.
-
-% Zhao, R., Yan, R., Chen, Z., Mao, K., Wang, P., & Gao, R. X. (2019). Deep learning and its applications to machine health monitoring. Mechanical Systems and Signal Processing.
-% – Relaciona DL, incluindo CNNs, a manutenção preditiva.
-
-% Zhang, W., et al. (2020). A review on deep learning applications in fault diagnosis of rotating machinery. Mechanical Systems and Signal Processing.
-% – Revisão com foco em falhas de máquinas rotativas, bem próximo do tema.
-
-% Zhao, X., et al. (2021). Applications of deep learning in fault diagnosis of rotating machinery: A review. Frontiers in Mechanical Engineering.
-% – Outra revisão ampla, com foco em EA e vibração.
+%\subsection*{Fundamentos Matemáticos}
+%
+%A operação fundamental de uma CNN1D é a \textit{convolução discreta}, na qual um filtro ou kernel $w = [w_1, w_2, ..., w_k]$ é aplicado sobre um vetor de entrada $x = [x_1, x_2, ..., x_n]$ para extrair características locais. Matematicamente, a convolução de \mbox{primeira camada é expressa por:}
+%
+%\[
+%y_i = (x * w)_i = \sum_{j=1}^{k} x_{i+j-1} \cdot w_j + b
+%\]
+%
+%onde:
+%\begin{enumerate}
+%    \item $x$ é o sinal de entrada;
+%    \item $w$ é o vetor de pesos do filtro convolucional (kernel);
+%    \item $b$ é o termo de viés (\textit{bias});
+%    \item $y_i$ é a ativação resultante na posição $i$.
+%\end{enumerate}
+%
+%O deslocamento (ou \textit{stride}) do filtro define o intervalo entre posições sucessivas da convolução, influenciando diretamente a resolução temporal do mapa de características resultante.  
+%Cada filtro aprende um padrão distinto — como picos abruptos, pulsos periódicos ou oscilações rápidas — correspondentes a comportamentos \mbox{físicos específicos do sinal de EA.}
+%
+%\subsubsection*{Não-linearidade e Funções de Ativação}
+%
+%A saída da operação de convolução é linear. Para que a rede possa aprender fronteiras de decisão complexas e não-lineares, aplica-se uma função de ativação elemento a elemento sobre o mapa de características. A função mais comum em CNNs modernas é a \textit{Rectified Linear Unit} (ReLU). 
+%Matematicamente, para uma entrada $z$, a ativação $a$ é dada por:
+%
+%$$
+%a_i = \text{ReLU}(y_i) = \max(0, y_i)
+%$$
+%
+%A utilização da ReLU mitiga o problema do desvanecimento do gradiente (\textit{vanishing gradient}) e induz esparsidade na representação, o que acelera a convergência do treinamento em comparação com funções sigmoides ou tangente hiperbólica \cite{Goodfellow2016}.
+%
+%\subsubsection*{Subamostragem (Pooling)}
+%
+%Para reduzir a dimensionalidade dos mapas de características e conferir invariância a pequenas translações temporais no sinal, utiliza-se a camada de subamostragem ou \textit{Pooling}. A técnica mais comum é o \textit{Max Pooling}, que seleciona o valor máximo dentro de uma janela deslizante de tamanho $p$.
+%
+%Seja $a$ o mapa de características ativado, a saída $s$ da camada de pooling na posição $j$ é:
+%
+%$$
+%s_j = \max_{(j-1)p < i \leq jp} (a_i)
+%$$
+%
+%Essa operação reduz a quantidade de parâmetros a serem computados nas camadas subsequentes e ajuda a filtrar ruídos, mantendo apenas as ativações mais proeminentes do sinal de Emissão Acústica, como picos de alta energia \cite{Kiranyaz2021}.
+%
+%\subsection*{Arquitetura e Camadas Totalmente Conectadas}
+%
+%Uma arquitetura típica de CNN1D é composta por uma sequência de blocos de extração de características (Convolução + Ativação + Pooling), seguidos por camadas de classificação ou regressão.
+%
+%Após a última camada de pooling, os mapas de características resultantes são "achatados" (\textit{flattening}) em um único vetor unidimensional. Este vetor serve de entrada para as Camadas Totalmente Conectadas (\textit{Fully Connected Layers} - FC), semelhantes às de um Perceptron Multicamadas (MLP).
+%
+%A saída final da rede depende da tarefa:
+%\begin{itemize}
+%	\item \textbf{Classificação:} Utiliza-se geralmente a função \textit{Softmax} para gerar uma distribuição de probabilidade sobre as classes (ex: defeito vs. normal).
+%	\item \textbf{Regressão:} Utiliza-se uma ativação linear para prever um valor contínuo (ex: tempo de vida útil restante).
+%\end{itemize}
+%
+%\subsection*{Fluxo de Processamento (Forward Propagation)}
+%
+%O funcionamento algorítmico de uma passagem direta (\textit{forward pass}) em uma CNN1D para processamento de um sinal temporal pode ser descrito pelo Algoritmo \ref{alg:cnn1d}.
+%
+%%\begin{algorithm}
+%%	\caption{Propagação em CNN1D para Classificação de Sinais}
+%%	\label{alg:cnn1d}
+%%	\begin{algorithmic}[1]
+%%		
+%%		\Require Sinal de entrada $X \in \mathbb{R}^{T \times 1}$ (série temporal)
+%%		\Ensure Classe prevista $C$
+%%		
+%%		\STATE \textbf{Etapa 1: Extração de Características}
+%%		
+%%		\FOR{cada camada convolucional $l = 1$ até $L$}
+%%		\STATE Convolução: $Y^{(l)} \gets X^{(l-1)} * W^{(l)} + b^{(l)}$
+%%		\STATE Ativação: $A^{(l)} \gets \mathrm{ReLU}(Y^{(l)})$
+%%		\STATE Subamostragem: $X^{(l)} \gets \mathrm{MaxPooling}(A^{(l)})$
+%%		\ENDFOR
+%%		
+%%		\STATE \textbf{Etapa 2: Classificação}
+%%		\STATE Achatamento: $V \gets \mathrm{Flatten}(X^{(L)})$
+%%		\STATE Camada densa: $Z \gets W_{fc} \cdot V + b_{fc}$
+%%		\STATE Probabilidades: $P \gets \mathrm{Softmax}(Z)$
+%%		
+%%		\Return $C \gets \operatorname{argmax}(P)$
+%%		
+%%	\end{algorithmic}
+%%\end{algorithm}
+%
+%% \subsection*{Camadas de Pooling e Redução de Dimensionalidade}
+%
+%% Após a convolução, aplica-se geralmente uma operação de \textit{pooling}, que reduz a dimensionalidade dos mapas de ativação, preservando as informações mais relevantes e minimizando a sensibilidade a variações locais.  
+%% As duas formas mais comuns são:
+%% \[
+%% \text{MaxPooling: } y_i = \max(x_{i:i+p-1}), \quad
+%% \text{AveragePooling: } y_i = \frac{1}{p}\sum_{j=i}^{i+p-1} x_j
+%% \]
+%% onde $p$ é o tamanho da janela de pooling.
+%
+%% Essa etapa atua como uma filtragem temporal adicional, suprimindo pequenas flutuações e enfatizando as características dominantes do sinal, como picos de energia acústica associados a eventos de cavitação.
+%
+%% \subsection*{Camadas Densas e Classificação}
+%
+%% As ativações resultantes das camadas convolucionais e de pooling são achatadas em um vetor unidimensional e conectadas a uma ou mais \textit{camadas totalmente conectadas} (fully connected).  
+%% Cada neurônio dessas camadas combina as entradas ponderadas por pesos $w_{ij}$, produzindo uma saída $z_i$ dada por:
+%% \[
+%% z_i = f\left(\sum_j w_{ij} a_j + b_i \right)
+%% \]
+%% em que $f(\cdot)$ é a função de ativação (tipicamente ReLU, $\text{ReLU}(x) = \max(0, x)$, ou softmax na camada de saída).
+%
+%% Essas camadas densas executam a etapa de decisão, convertendo as representações aprendidas em probabilidades associadas a cada classe — por exemplo, \textit{sem cavitação}, \textit{cavitação incipiente} ou \textit{cavitação severa}.
+%
+%% \subsection*{Aprendizado e Otimização}
+%
+%% O treinamento da CNN1D consiste em ajustar os pesos $w$ e vieses $b$ para minimizar uma função de perda $\mathcal{L}$, usualmente definida como a entropia cruzada:
+%% \[
+%% \mathcal{L} = -\sum_{i=1}^{C} y_i \log(\hat{y}_i)
+%% \]
+%% onde $y_i$ é o rótulo verdadeiro e $\hat{y}_i$ é a probabilidade prevista pelo modelo para cada classe $i$.
+%
+%% A minimização é realizada por algoritmos de otimização baseados em gradiente, como o \textit{Adam} ou o \textit{Stochastic Gradient Descent} (SGD), com retropropagação do erro (\textit{backpropagation}) através das camadas convolucionais e densas.
+%
+%% \subsection*{Camadas de Pooling e Redução de Dimensionalidade}  
+%% Após a etapa de convolução, é usual aplicar operações de \textit{pooling}, cujo objetivo fundamental é reduzir a dimensionalidade dos mapas de ativação enquanto se preservam as principais características extraídas dos dados. Como observado por \citeonline{krichen2023survey}, tais camadas ajudam a tornar a rede menos sensível a pequenas variações locais nos dados de entrada. As duas formas de pooling mais recorrentes são:
+%% \[
+%% \text{MaxPooling: } y_i = \max\bigl(x_{i:i+p-1}\bigr),
+%% \qquad
+%% \text{AveragePooling: } y_i = \frac{1}{p} \sum_{j=i}^{i+p-1} x_j
+%% \]
+%% em que \(p\) representa o tamanho da janela de pooling. Em uma análise comparativa detalhada, \citeonline{zafar2022comparison} verificaram que o max pooling tende a preservar de forma mais eficiente características muito discriminativas, enquanto o average pooling proporciona maior suavização do mapa de ativação. Além disso, embora grande parte da literatura se concentre em aplicações de visão computacional, \citeonline{nirthika2022pooling} salientam que a escolha da técnica de pooling exerce impacto direto no desempenho de tarefas de classificação — o que sugere que estudos com sinais acústicos também devem considerar essa decisão com atenção.  
+%% No contexto de sinais de emissão acústica gerados por cavitação, a camada de pooling pode atuar como um filtro temporal adicional, suprimindo flutuações menores e realçando eventos dominantes — tais como picos de energia acústica associados ao colapso de bolhas.
+%
+%% \subsection*{Camadas Densas e Classificação}  
+%% As ativações geradas pelas camadas convolucionais e de pooling são então convertidas para um vetor unidimensional (flatten) e encaminhadas a uma ou mais camadas totalmente conectadas (\textit{fully connected layers}). Cada neurônio dessas camadas calcula:
+%% \[
+%% z_i = f\left(\sum_j w_{ij}\,a_j + b_i\right)
+%% \]
+%% em que \(w_{ij}\) indica o peso sináptico, \(b_i\) o viés, e \(f(\cdot)\) é a função de ativação — normalmente \(\mathrm{ReLU}(x)=\max(0,x)\) nas camadas intermediárias e a função \(\mathrm{softmax}\) na camada de saída para tarefa de classificação multiclasses. Conforme descrito por \citeonline{krichen2023survey}, essas camadas densas realizam a etapa de decisão final da rede, convertendo as representações extraídas em probabilidades associadas a cada categoria — por exemplo: “sem cavitação”, “cavitação incipiente” ou “cavitação severa”.
+%
+%% \subsection*{Aprendizado e Otimização}  
+%% O processo de treinamento de uma rede CNN1D envolve a atualização iterativa dos parâmetros \(w\) e \(b\) por meio da minimização de uma função de perda \(\mathcal{L}\), comumente definida pela entropia cruzada:
+%% \[
+%% \mathcal{L} = - \sum_{i=1}^{C} y_i \,\log(\hat y_i)
+%% \]
+%% onde \(y_i\) corresponde ao rótulo verdadeiro (codificação one-hot) da classe \(i\), e \(\hat y_i\) é a probabilidade prevista para a classe \(i\). A minimização dessa função é realizada por algoritmos baseados em gradiente — como \textit{Adam} ou \textit{Stochastic Gradient Descent} (SGD) — empregando o método de retropropagação (\textit{backpropagation}) para propagar o erro através das camadas da rede. Tal abordagem, conforme detalhado por \citeonline{krichen2023survey}, permite que a rede aprenda automaticamente representações discriminativas a partir dos dados brutos, reduzindo ou eliminando a necessidade de extração manual de características.
+%
+%\subsection{Aplicação em Emissão Acústica (EA)}
+%
+%\textcolor{red}{Ainda estou trabalhando nesta seção}
+%
+%No contexto da detecção de cavitação por emissão acústica, a CNN1D apresenta vantagens relevantes:
+%\begin{itemize}
+%    \item Processa diretamente o sinal bruto ou ligeiramente filtrado, dispensando o cálculo manual de atributos estatísticos como RMS, curtose ou entropia espectral;
+%    \item Aprende automaticamente assinaturas espectro-temporais associadas ao colapso de bolhas de cavitação, trincas e impactos internos;
+%    \item É robusta à presença de ruído e à variabilidade do sinal entre diferentes condições operacionais;
+%    \item Permite inferência em tempo real quando implementada em hardware reconfigurável (como FPGAs), com baixa latência e consumo energético reduzido.
+%\end{itemize}
+%
+%Assim, a CNN1D constitui uma ferramenta poderosa para análise de sinais não estacionários em ambientes industriais, conciliando desempenho computacional e capacidade de generalização — aspectos essenciais para o monitoramento inteligente e a manutenção preditiva de sistemas hidráulicos.
+%
+%De modo geral, o aprendizado de máquina consolida-se como um pilar central na construção de sistemas inteligentes capazes de reconhecer padrões complexos e realizar inferências autônomas. A aplicação dessas técnicas à análise de sinais de emissão acústica e vibração possibilita não apenas a identificação automática de falhas, mas também a previsão de seu surgimento em estágios incipientes. Na próxima subseção, são analisados trabalhos recentes que integram aprendizado profundo e processamento de sinais industriais, destacando as arquiteturas, métricas e estratégias de modelagem que influenciam diretamente o desempenho em aplicações de diagnóstico de cavitação.
+%
+%%\subsection{Modelos e Aplicações em Diagnóstico de Falhas}
+%%
+%%\textcolor{red}{Ainda estou selecionado/lendo/resumindo os artigos}
+%
+%% \textcolor{red}{Em processo de busca de trabalhos relacionados e leitura para depois escrever esta seção}
+%
+%
+%% LeCun, Y., Bengio, Y., & Hinton, G. (2015). Deep learning. Nature.
+%% – Artigo seminal sobre DL, cita CNN como pilar fundamental.
+%
+%% Kiranyaz, S., et al. (2019). 1D convolutional neural networks and applications: A survey. Mechanical Systems and Signal Processing.
+%% – Revisão completa sobre CNNs 1D aplicadas a sinais.
+%
+%% Zhao, R., Yan, R., Chen, Z., Mao, K., Wang, P., & Gao, R. X. (2019). Deep learning and its applications to machine health monitoring. Mechanical Systems and Signal Processing.
+%% – Relaciona DL, incluindo CNNs, a manutenção preditiva.
+%
+%% Zhang, W., et al. (2020). A review on deep learning applications in fault diagnosis of rotating machinery. Mechanical Systems and Signal Processing.
+%% – Revisão com foco em falhas de máquinas rotativas, bem próximo do tema.
+%
+%% Zhao, X., et al. (2021). Applications of deep learning in fault diagnosis of rotating machinery: A review. Frontiers in Mechanical Engineering.
+%% – Outra revisão ampla, com foco em EA e vibração.

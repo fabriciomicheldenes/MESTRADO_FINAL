@@ -82,7 +82,7 @@
 %\usepackage[final,expansion=true,protrusion=true]{microtype}
 \usepackage{microtype}
 \linepenalty=50        % você usou 100; 50–100 é razoável, teste valores
-\emergencystretch=3em  % permite “espichar” um pouco mais os parágrafos
+\emergencystretch=1em  % permite “espichar” um pouco mais os parágrafos
 \tolerance=2000
 
 %\raggedbottom          % evita o LaTeX tentar “forçar” altura de página igual
@@ -126,9 +126,9 @@
 % ---
 % Informações de dados para CAPA e FOLHA DE ROSTO
 % ---
-\titulo{Uso de um modelo CNN1D embarcado em FPGA para Detecção de falhas em motobombas}
+\titulo{Uso de um Modelo CNN1D Embarcado em FPGA para Detecção de Falhas em Motobombas}
 \autor{Fabricio Michel Denes}
-\newcommand{\tituloen}{Use of embedded AI in FPGA for fault detection in motor pumps}
+\newcommand{\tituloen}{Use of a CNN1D Model Embedded in an FPGA for Fault Detection in Motor Pumps}
 \local{Cascavel-PR}
 \data{2025}
 \orientador[Orientador(a):]{Dr. Marcio Seiji Oyamada }
@@ -142,7 +142,7 @@
 \tipotrabalho{Dissertação (Mestrado)}
 % O preambulo deve conter o tipo do trabalho, o objetivo, 
 % o nome da instituição e a área de concentração 
-\preambulo{Dissertação apresentada como requisito parcial para a obtenção do grau de Mestre pelo Programa de Pós-Graduação em Ciência da Computação (PPGComp) da Universidade Estadual do Oeste do Paraná \\ Unioeste, campus de Cascavel.}
+\preambulo{Exame de qualificação apresentada como requisito parcial para a obtenção do grau de Mestre pelo Programa de Pós-Graduação em Ciência da Computação (PPGComp) da Universidade Estadual do Oeste do Paraná \\ Unioeste, campus de Cascavel.}
 % ---
 
 
@@ -296,13 +296,15 @@
 	\imprimirdata.}\\
 	
 	\hspace{0.5cm}
-		1. Palavra-chave1.
-		2. Palavra-chave2.
-		2. Palavra-chave3.
-		I. Orientador.
-		II. Universidade xxx.
-		III. Faculdade de xxx.
-		IV. Título 			
+	1. Emissão Acústica (EA)
+	2. Cavitação
+	3. FPGA
+	4. Processamento Embarcado
+	5. Redes Neurais Convolucionais (CNN1D)
+%		I. Orientador.
+%		II. Universidade Estadual do Oeste do Paraná.
+%		III. Faculdade de xxx.
+%		IV. Título 			
 	\end{minipage}}
 	\end{center}
 \end{fichacatalografica}
@@ -370,7 +372,7 @@
     \vspace*{\fill}
    \end{center}
         
-   Trabalho aprovado. \imprimirlocal, 24 de novembro de 2012:
+   \imprimirlocal, 08 de dezembro de 2025:
 
    \assinatura{\textbf{\imprimirorientador} \\ Orientador(a)} 
    \assinatura{\textbf{Dr(a). Nome Professor(a) 1} \\ Instituição do Professor}
@@ -449,18 +451,18 @@
 \setlength{\absparsep}{18pt} % ajusta o espaçamento dos parágrafos do resumo
 %\begin{resumo}
 %% Este trabalho apresenta os resultados parciais e a proposta de continuidade da pesquisa voltada ao desenvolvimento de uma arquitetura embarcada para detecção de cavitação em bombas centrífugas, baseada na análise de sinais de Emissão Acústica (EA). A investigação integra-se ao escopo do projeto MOMEA — \textit{Monitoramento Online pelo Método de Emissão Acústica}, conduzido pelo grupo de pesquisa do Itaipu ParqueTec, cujo objetivo é desenvolver soluções de diagnóstico inteligentes e de baixo custo para sistemas hidráulicos industriais. 
-%% Na fase atual, foi implementada uma plataforma de aquisição e processamento contínuo (\textbf{MomeaProbe/MomeaCapture}), capaz de coletar sinais de EA em alta taxa de amostragem via interface USB~3.0 e realizar a análise espectro-temporal dos dados por meio da Transformada Rápida de Fourier (FFT) janelada. A geração de espectrogramas possibilitou o uso de redes neurais convolucionais bidimensionais (\textbf{CNN-2D}) para classificação de estágios de cavitação, alcançando resultados promissores em termos de acurácia e capacidade de generalização. No entanto, observou-se como limitação o elevado volume de dados gerados e o tempo de processamento necessário, o que inviabiliza sua aplicação direta em monitoramento embarcado em tempo real. 
-%% Como proposta de avanço, está em desenvolvimento e simulação uma arquitetura de \textbf{inferência em FPGA} empregando uma \textbf{CNN-1D} otimizada e quantizada para análise direta de sinais acústicos compactados. Essa abordagem visa combinar o poder discriminativo das redes neurais convolucionais — capazes de identificar padrões sutis em domínios temporais — com a eficiência e o paralelismo inerentes ao hardware reconfigurável. 
+%% Na fase atual, foi implementada uma plataforma de aquisição e processamento contínuo (\textbf{MomeaProbe/MomeaCapture}), capaz de coletar sinais de EA em alta taxa de amostragem via interface USB~3.0 e realizar a análise espectro-temporal dos dados por meio da Transformada Rápida de Fourier (FFT) janelada. A geração de espectrogramas possibilitou o uso de redes neurais convolucionais bidimensionais (\textbf{CNN2D}) para classificação de estágios de cavitação, alcançando resultados promissores em termos de acurácia e capacidade de generalização. No entanto, observou-se como limitação o elevado volume de dados gerados e o tempo de processamento necessário, o que inviabiliza sua aplicação direta em monitoramento embarcado em tempo real. 
+%% Como proposta de avanço, está em desenvolvimento e simulação uma arquitetura de \textbf{inferência em FPGA} empregando uma \textbf{CNN1D} otimizada e quantizada para análise direta de sinais acústicos compactados. Essa abordagem visa combinar o poder discriminativo das redes neurais convolucionais — capazes de identificar padrões sutis em domínios temporais — com a eficiência e o paralelismo inerentes ao hardware reconfigurável. 
 %% Espera-se, com essa arquitetura, reduzir significativamente a latência de processamento e o volume de dados transmitidos, mantendo elevada sensibilidade na detecção de eventos acústicos. Dessa forma, o sistema poderá entregar em tempo quase real apenas os alertas de falhas ou anomalias detectadas, configurando uma solução eficiente para monitoramento contínuo de equipamentos hidráulicos e contribuindo para a implementação de estratégias de manutenção preditiva em ambientes industriais.
-%Este trabalho investiga o uso de FPGAs combinados a redes neurais convolucionais unidimensionais (\textbf{CNN-1D}) para a detecção de cavitação em bombas centrífugas a partir de sinais de Emissão Acústica (EA). Inserido no escopo do projeto MOMEA — \textit{Monitoramento Online pelo Método de Emissão Acústica} — o estudo busca desenvolver e simular uma arquitetura de inferência embarcada otimizada e quantizada, capaz de operar em tempo quase real com baixo consumo de recursos. A etapa anterior do projeto implementou um sistema de análise espectro-temporal baseado em FFT janelada e CNN-2D, que apresentou alta acurácia, porém elevado custo computacional. A proposta atual visa reduzir significativamente a latência e o volume de dados processados, mantendo a sensibilidade do diagnóstico. Espera-se que a arquitetura FPGA+CNN1D contribua para a criação de sistemas de monitoramento inteligente e manutenção preditiva aplicáveis a ambientes industriais complexos.
+%Este trabalho investiga o uso de FPGAs combinados a redes neurais convolucionais unidimensionais (\textbf{CNN1D}) para a detecção de cavitação em bombas centrífugas a partir de sinais de Emissão Acústica (EA). Inserido no escopo do projeto MOMEA — \textit{Monitoramento Online pelo Método de Emissão Acústica} — o estudo busca desenvolver e simular uma arquitetura de inferência embarcada otimizada e quantizada, capaz de operar em tempo quase real com baixo consumo de recursos. A etapa anterior do projeto implementou um sistema de análise espectro-temporal baseado em FFT janelada e CNN2D, que apresentou alta acurácia, porém elevado custo computacional. A proposta atual visa reduzir significativamente a latência e o volume de dados processados, mantendo a sensibilidade do diagnóstico. Espera-se que a arquitetura FPGA+CNN1D contribua para a criação de sistemas de monitoramento inteligente e manutenção preditiva aplicáveis a ambientes industriais complexos.
 %\end{resumo}
 
 \begin{resumo}
 	Este trabalho investiga técnicas de detecção de cavitação em bombas centrífugas por meio da análise de sinais de Emissão Acústica (EA), com foco na implementação de arquiteturas de processamento eficientes para monitoramento contínuo. A pesquisa \textcolor{red}{complementa} o Projeto MOMEA — \textit{Monitoramento Online pelo Método de Emissão Acústica} — desenvolvido pelo grupo Itaipu ParqueTec em parceria com a Itaipu Binacional, cujo objetivo é criar soluções de diagnóstico inteligentes e de baixo custo aplicáveis a sistemas hidráulicos industriais.	
-	Na etapa inicial do projeto, foi desenvolvida a plataforma \textbf{MomeaProbe/MomeaCapture}, composta por um hardware de aquisição de alta taxa (ADC de 12 bits a 8~MSps por canal, interface USB~3.0) e um ambiente de software responsável pela transferência, compactação, armazenamento e visualização dos sinais. A infraestrutura construída permitiu a captura contínua de longas séries temporais, bem como a geração de mapas espectro-temporais por meio de FFT janelada. A partir desses espectrogramas, redes neurais convolucionais bidimensionais (\textbf{CNN-2D}) foram treinadas para classificar diferentes estágios de cavitação, obtendo resultados promissores de acurácia.	
+	Na etapa inicial do projeto, foi desenvolvida a plataforma \textbf{MomeaProbe/MomeaCapture}, composta por um hardware de aquisição de alta taxa (ADC de 12 bits a 8~MSps por canal, interface USB~3.0) e um ambiente de software responsável pela transferência, compactação, armazenamento e visualização dos sinais. A infraestrutura construída permitiu a captura contínua de longas séries temporais, bem como a geração de mapas espectro-temporais por meio de FFT janelada. A partir desses espectrogramas, redes neurais convolucionais bidimensionais (\textbf{CNN2D}) foram treinadas para classificar diferentes estágios de cavitação, obtendo resultados promissores de acurácia.	
 	No entanto, os experimentos revelaram limitações significativas relacionadas ao \textbf{elevado volume de dados produzidos} (dezenas de GB por hora) e ao \textbf{alto custo computacional} associado à compressão, gravação e processamento contínuo via CPU generalista. A complexidade crescente do software — envolvendo multithreading, buffers circulares, compactação LZMA, uso experimental de Redis e posterior substituição por estruturas \textit{lock-free} — evidenciou desafios de escalabilidade e de manutenção de fluxo contínuo em regime de alta taxa. Ensaios comparativos mostraram que, mesmo com otimizações, a compactação em CPU torna-se um gargalo quando o sistema opera em níveis de atividade mais elevados.	
-	Diante dessas limitações, este trabalho propõe o desenvolvimento e a simulação de uma arquitetura embarcada baseada em \textbf{FPGA}, empregando a técnica de \textbf{HIT Detection} para filtrar eventos relevantes diretamente no hardware e uma \textbf{CNN-1D quantizada} para inferência em tempo quase real. A filtragem embarcada reduz drasticamente a granularidade e o volume de dados antes mesmo da transmissão, tornando viável o uso de uma interface Ethernet de 100~Mb/s em substituição à USB~3.0. Essa redistribuição do processamento diminui a carga computacional no sistema hospedeiro e cria um pipeline muito mais eficiente e previsível para monitoramento em campo.	
-	Espera-se que a combinação FPGA + HIT + CNN-1D permita reduzir latência, consumo de energia e volume transmitido, mantendo elevada sensibilidade na detecção de cavitação incipiente e microfalhas estruturais. Assim, o presente estudo contribui para a construção de uma plataforma de monitoramento inteligente, robusta e adequada ao ambiente industrial, alinhando a precisão das técnicas de aprendizado profundo ao desempenho e paralelismo do hardware reconfigurável.
+	Diante dessas limitações, este trabalho propõe o desenvolvimento e a simulação de uma arquitetura embarcada baseada em \textbf{FPGA}, empregando a técnica de \textbf{HIT Detection} para filtrar eventos relevantes diretamente no hardware e uma \textbf{CNN1D quantizada} para inferência em tempo quase real. A filtragem embarcada reduz drasticamente a granularidade e o volume de dados antes mesmo da transmissão, tornando viável o uso de uma interface Ethernet de 100~Mb/s em substituição à USB~3.0. Essa redistribuição do processamento diminui a carga computacional no sistema hospedeiro e cria um pipeline muito mais eficiente e previsível para monitoramento em campo.	
+	Espera-se que a combinação FPGA + HIT + CNN1D permita reduzir latência, consumo de energia e volume transmitido, mantendo elevada sensibilidade na detecção de cavitação incipiente e microfalhas estruturais. Assim, o presente estudo contribui para a construção de uma plataforma de monitoramento inteligente, robusta e adequada ao ambiente industrial, alinhando a precisão das técnicas de aprendizado profundo ao desempenho e paralelismo do hardware reconfigurável.
 	
 \end{resumo}
 
@@ -472,7 +474,7 @@
 
 \begin{abstract}
 	This work investigates techniques for cavitation detection in centrifugal pumps through the analysis of Acoustic Emission (AE) signals, with a focus on implementing efficient processing architectures for continuous monitoring. The research is part of the MOMEA Project -- \textit{Online Monitoring by the Acoustic Emission Method} -- developed by the Itaipu ParqueTec research group in partnership with Itaipu Binacional, whose goal is to create intelligent and low-cost diagnostic solutions for industrial hydraulic systems.	
-	In the initial stage of the project, the \textbf{MomeaProbe/MomeaCapture} platform was developed, comprising a high-rate acquisition hardware (12-bit ADC operating at 8~MSps per channel, USB~3.0 interface) and a software environment responsible for data transfer, compression, storage and visualization. This infrastructure enabled continuous capture of long time series as well as the generation of time–frequency maps via windowed FFT. Based on these spectrograms, two-dimensional convolutional neural networks (\textbf{CNN-2D}) were trained to classify different cavitation stages, achieving promising accuracy.	
+	In the initial stage of the project, the \textbf{MomeaProbe/MomeaCapture} platform was developed, comprising a high-rate acquisition hardware (12-bit ADC operating at 8~MSps per channel, USB~3.0 interface) and a software environment responsible for data transfer, compression, storage and visualization. This infrastructure enabled continuous capture of long time series as well as the generation of time–frequency maps via windowed FFT. Based on these spectrograms, two-dimensional convolutional neural networks (\textbf{CNN2D}) were trained to classify different cavitation stages, achieving promising accuracy.	
 	However, the experiments revealed significant limitations related to the \textbf{large volume of data produced} (tens of GB per hour) and the \textbf{high computational cost} associated with continuous compression, storage and processing on a general-purpose CPU. The increasing complexity of the software --- involving multithreading, circular buffers, LZMA compression, experimental use of Redis and subsequent replacement by \textit{lock-free} structures --- highlighted scalability challenges and difficulties in sustaining a continuous high-rate data flow. Comparative tests showed that, even with optimizations, CPU-based compression becomes a bottleneck when the system operates under higher activity levels.
 	In response to these limitations, this work proposes the development and simulation of an embedded architecture based on \textbf{FPGA}, employing \textbf{HIT Detection} to filter relevant events directly in hardware and a quantized \textbf{1D-CNN} for near real-time inference. The embedded filtering drastically reduces data granularity and volume prior to transmission, making it feasible to replace the USB~3.0 link with a 100~Mb/s Ethernet interface. This redistribution of processing load reduces the computational burden on the host system and yields a much more efficient and predictable pipeline for field monitoring.	
 	It is expected that the combined FPGA + HIT + 1D-CNN approach will reduce latency, energy consumption and transmitted volume, while maintaining high sensitivity to incipient cavitation and structural micro-failures. Thus, this study contributes to the construction of a robust intelligent monitoring platform suitable for industrial environments, aligning the accuracy of deep learning techniques with the performance and parallelism of reconfigurable hardware.	
@@ -505,70 +507,68 @@
 % ---
 % inserir lista de abreviaturas e siglas
 % ---
-\begin{siglas}	
-	\item[ADC] \textit{Analog-to-Digital Converter}, conversor analógico-digital.
-	\item[AMD] \textit{Advanced Micro Devices}, fabricante de dispositivos semicondutores.
-	\item[ANN] \textit{Artificial Neural Network}, rede neural artificial.
-	\item[API] \textit{Application Programming Interface}, interface de comunicação entre softwares.
-	\item[ARM Cortex] Família de processadores ARM de alto desempenho.
-	\item[ARM] Arquitetura de processadores de baixo consumo amplamente utilizada em sistemas embarcados.
-	\item[ASIC] \textit{Application-Specific Integrated Circuit}, circuito integrado especializado.
-	\item[AUC] \textit{Area Under the Curve}, métrica associada à curva ROC.
-	\item[BRAM] \textit{Block RAM}, memória interna de alta velocidade integrada ao FPGA.
-	\item[CBL] \textit{Cable} (quando aplicável), ou \textit{Convolutional Block Layer} em ML (verifique contexto).
-	\item[CNN-1D] Rede Neural Convolucional unidimensional aplicada diretamente a sinais temporais.
-	\item[CNN-2D] Rede Neural Convolucional bidimensional utilizada para análise de espectrogramas.
-	\item[CPU] \textit{Central Processing Unit}, processador de propósito geral.
-	\item[CWT] \textit{Continuous Wavelet Transform}, transformada wavelet contínua.
-	\item[DDR] \textit{Double Data Rate}, memória síncrona de alta largura de banda.
-	\item[DIE] Área ativa do chip semicondutor.
-	\item[DL] \textit{Deep Learning}, aprendizado profundo.
-	\item[DSP] \textit{Digital Signal Processing Block}, unidade dedicada para multiplicações e MACs em FPGAs.
+\begin{siglas}
+	\item[ADC] \textit{Analog-to-Digital Converter}.
+	\item[AMD] \textit{Advanced Micro Devices}.
+	\item[ANN] \textit{Artificial Neural Network}.
+	\item[API] \textit{Application Programming Interface}.
+	\item[ARM] \textit{Advanced RISC Machines}.
+	\item[ASIC] \textit{Application-Specific Integrated Circuit}.
+	\item[AUC] \textit{Area Under the Curve}.
+	\item[BNN] \textit{Binary Neural Network}.
+	\item[BRAM] \textit{Block RAM}.
+	\item[CBL] \textit{Convolutional Block Layer}.
+	\item[CNN1D] \textit{1D Convolutional Neural Network}.
+	\item[CNN2D] \textit{2D Convolutional Neural Network}.
+	\item[CPU] \textit{Central Processing Unit}.
+	\item[CWRU] \textit{Case Western Reserve University}.
+	\item[CWT] \textit{Continuous Wavelet Transform}.
+	\item[DDR] \textit{Double Data Rate}.
+%	\item[DIE] \textit{Die} (área ativa do chip semicondutor).
+	\item[DL] \textit{Deep Learning}.
+	\item[DSP] \textit{Digital Signal Processing Block} .
 	\item[EA] Emissão Acústica.
-	\item[F1] Métrica harmônica entre precisão e sensibilidade.
-	\item[FFT] \textit{Fast Fourier Transform}, algoritmo para cálculo eficiente da transformada de Fourier.
-	\item[FINN] Framework da AMD/Xilinx para aceleração de redes neurais quantizadas em FPGA.
-	\item[FPGA] \textit{Field-Programmable Gate Array}, dispositivo lógico reconfigurável para implementação de hardware digital.
-	\item[GB] (gigabyte) unidade decimal que representa \(10^{9}\) bytes (1.000.000.000 bytes).
-	\item[Gbps] Gigabits por segundo.
-	\item[GiB] (gibibyte) unidade binária que representa \(2^{30}\) bytes (1.073.741.824 bytes).
-	\item[GMM] \textit{Gaussian Mixture Model}, modelo de mistura de gaussianas.
-	\item[GPU] \textit{Graphics Processing Unit}, processador massivamente paralelo voltado a operações matriciais.
-	\item[HDL] \textit{Hardware Description Language}, linguagem para projeto de circuitos digitais.
-	\item[HIT] Técnica de detecção de eventos de Emissão Acústica baseada em ultrapassagem de limiar.
-	\item[hit] Evento individual detectado pelo método de HIT.
-	\item[HLS] \textit{High-Level Synthesis}, síntese de hardware a partir de código em C/C++.
+	\item[F1] \textit{F1-Score}.
+	\item[FFT] \textit{Fast Fourier Transform}.
+	\item[FINN] \textit{A Framework for Fast, Scalable Binarized Neural Network Inference}.
+	\item[FPGA] \textit{Field-Programmable Gate Array}.
+	\item[GB] \textit{Gigabyte}.
+	\item[Gbps] \textit{Gigabits per second} .
+	\item[GiB] \textit{Gibibyte}.
+	\item[GMM] \textit{Gaussian Mixture Model}.
+	\item[GPU] \textit{Graphics Processing Unit}.
+	\item[HDL] \textit{Hardware Description Language}.
+%	\item[HIT] \textit{Hit Detection} (técnica de detecção de eventos por limiar).
+%	\item[hit] Evento individual detectado pelo método HIT.
+	\item[HLS] \textit{High-Level Synthesis} .
 	\item[IA] Inteligência Artificial.
-	\item[JTAG] \textit{Joint Test Action Group}, interface padrão para depuração e programação.
-	\item[kHz] Quilohertz, unidade de frequência equivalente a \(10^{3}\) hertz.
-	\item[k-NN] \textit{k-Nearest Neighbors}, método de classificação baseado em vizinhos mais próximos.
-	\item[LSTM] \textit{Long Short-Term Memory}, rede neural recorrente para séries temporais.
-	\item[LUT] \textit{Look-Up Table}, bloco lógico básico utilizado em FPGAs.
-	\item[LVDS] \textit{Low-Voltage Differential Signaling}, tecnologia de transmissão diferencial de alta velocidade.
-	\item[LZMA] Algoritmo de compressão de dados de alta taxa baseado em dicionários e codificação por entropia.
-	\item[MARSE] \textit{Modal Acoustic Resonance-based Source Evaluation}, parâmetro para caracterização de eventos de EA.
-	\item[MB] (megabyte) unidade decimal que representa \(10^{6}\) bytes (1.000.000 de bytes).
-	\item[MHz] Megahertz, unidade de frequência equivalente a \(10^{6}\) hertz.
-	\item[MiB] (mebibyte) unidade binária que representa \(2^{20}\) bytes (1.048.576 bytes).
-	\item[ML] \textit{Machine Learning}, aprendizado de máquina.
-	\item[MODBUS] Protocolo industrial de comunicação serial mestre–escravo.
-	\item[MW] \textit{Moving Window}, janela móvel utilizada em processamento de sinais.
-	\item[PCIe] \textit{Peripheral Component Interconnect Express}, barramento de alta velocidade.
-	\item[PTZ] Cerâmica piezoelétrica de titanato-zirconato de chumbo utilizada em sensores de EA.
-	\item[Random Forest] Modelo de aprendizado baseado em múltiplas árvores de decisão.
-	\item[RISC-V] Arquitetura aberta de conjunto de instruções baseada em RISC.
-	\item[RMS] \textit{Root Mean Square}, valor eficaz de um sinal.
+	\item[JTAG] \textit{Joint Test Action Group}.
+	\item[k-NN] \textit{k-Nearest Neighbors}.
+	\item[LSTM] \textit{Long Short-Term Memory} .
+	\item[LUT] \textit{Look-Up Table}.
+	\item[LVDS] \textit{Low-Voltage Differential Signaling}.
+	\item[LZMA] \textit{Lempel–Ziv–Markov Algorithm}.
+	\item[MARSE] \textit{Modal Acoustic Resonance-based Source Evaluation}.
+%	\item[MB] Megabyte — unidade decimal equivalente a \(10^{6}\) bytes.
+%	\item[MHz] Megahertz — \(10^{6}\) hertz.
+%	\item[MiB] Mebibyte — unidade binária equivalente a \(2^{20}\) bytes.
+	\item[ML] \textit{Machine Learning}.
+%	\item[MODBUS] Protocolo industrial de comunicação mestre–escravo.
+	\item[MW] \textit{Moving Window} .
+	\item[PCIe] \textit{Peripheral Component Interconnect Express}.
+	\item[PLL] \textit{Phase Locked Loop}
+	\item[PTZ] \textit{Lead Zirconate Titanate}.
+	\item[RMS] \textit{Root Mean Square}.
 	\item[RNA] Rede Neural Artificial.
-	\item[SCADA] \textit{Supervisory Control and Data Acquisition}, sistema supervisório industrial.
-	\item[SoC] \textit{System-on-Chip}, sistema completo integrado em um único chip.
-	\item[SPI] \textit{Serial Peripheral Interface}, protocolo de comunicação serial síncrona.
-	\item[STFT] \textit{Short-Time Fourier Transform}, transformada de Fourier de tempo curto.
-	\item[SVM] \textit{Support Vector Machine}, método de classificação supervisionada.
-	\item[URAM] \textit{UltraRAM}, memória interna de alta densidade disponível em FPGAs avançados.
-	\item[USB] \textit{Universal Serial Bus}, interface de comunicação universal.
-	\item[Verilog] Linguagem de descrição de hardware amplamente utilizada.
-	\item[VHDL] \textit{VHSIC Hardware Description Language}, linguagem de descrição de hardware.
-	\item[Xilinx] Fabricante de FPGAs e ferramentas de síntese, atualmente parte da AMD.
+	\item[SCADA] \textit{Supervisory Control and Data Acquisition}.
+	\item[SNR] \textit{Signal Noise Ratio}
+	\item[SoC] \textit{System-on-Chip}.
+	\item[SPI] \textit{Serial Peripheral Interface}.
+	\item[STFT] \textit{Short-Time Fourier Transform} .
+	\item[SVM] \textit{Support Vector Machine}.
+	\item[URAM] \textit{UltraRAM}.
+	\item[USB] \textit{Universal Serial Bus}.
+	\item[VHDL] \textit{VHSIC Hardware Description Language}.
 \end{siglas}
 
 % ---
