@@ -1,12 +1,11 @@
 \section{Field-Programmable Gate Arrays (FPGAs)}
 
-Nesta seção, discutem-se os princípios de funcionamento, a arquitetura e o fluxo de desenvolvimento de sistemas baseados em Field-Programmable Gate Arrays (FPGAs), dispositivos semicondutores programáveis amplamente utilizados em aplicações de processamento digital em tempo real. São abordadas as principais estruturas internas — como blocos lógicos configuráveis, memórias internas e blocos de DSP — e as vantagens oferecidas por esse tipo de hardware em termos de paralelismo, reconfigurabilidade e eficiência energética. Por fim, destaca-se o potencial dos FPGAs como plataforma para a implementação de algoritmos de aprendizado de máquina embarcados, consolidando seu papel em sistemas inteligentes de monitoramento e diagnóstico industrial.
+Nesta seção, discutem-se os princípios de funcionamento, a arquitetura e o fluxo de desenvolvimento de sistemas baseados em Field-Programmable Gate Arrays (FPGAs), dispositivos semicondutores programáveis amplamente utilizados em aplicações de processamento digital em tempo real. São abordadas as principais estruturas internas — como blocos lógicos configuráveis, memórias internas e blocos de DSP, e as vantagens oferecidas por esse tipo de hardware em termos de paralelismo, reconfigurabilidade e eficiência energética. Por fim, destaca-se o potencial dos FPGAs como plataforma para a implementação de algoritmos de aprendizado de máquina embarcados, consolidando seu papel em sistemas inteligentes de monitoramento e diagnóstico industrial.
 
-Os \textit{Field-Programmable Gate Arrays} (FPGAs) são dispositivos semicondutores programáveis que permitem a reconfiguração de sua lógica interna mesmo após a fabricação. Essa característica os diferencia dos \textit{Application-Specific Integrated Circuits} (ASICs), projetados para executar uma única função fixa e imutável. Nos FPGAs, o comportamento do hardware é definido por meio de uma descrição de hardware (\textit{Hardware Description Language} — HDL), como VHDL ou Verilog, que é sintetizada em uma matriz de blocos lógicos interconectáveis, possibilitando a criação de circuitos digitais personalizados.
+Os FPGAs são dispositivos semicondutores programáveis que permitem a reconfiguração de sua lógica interna mesmo após a fabricação. Essa característica os diferencia dos \textit{Application-Specific Integrated Circuits} (ASICs), projetados para executar uma única função fixa e imutável. Nos FPGAs, o comportamento do hardware é definido por meio de uma descrição de hardware (\textit{Hardware Description Language},HDL), como VHDL ou Verilog, que é sintetizada em uma matriz de blocos lógicos interconectáveis, possibilitando a criação de circuitos digitais personalizados.
 
-A principal vantagem dessa arquitetura reside na \textbf{reconfigurabilidade}, que permite alterar ou atualizar a funcionalidade do sistema sem modificar o hardware físico. Essa flexibilidade torna os FPGAs especialmente atrativos para prototipagem rápida, validação de novas arquiteturas digitais e desenvolvimento de sistemas embarcados adaptáveis. Além disso, os FPGAs combinam desempenho próximo ao de soluções ASIC com o benefício de um tempo de desenvolvimento significativamente menor.
+A principal vantagem dessa arquitetura reside na \textbf{reconfigurabilidade}, que permite alterar ou atualizar a funcionalidade do sistema sem modificar o hardware físico. Essa flexibilidade torna os FPGAs especialmente atrativos para prototipagem rápida, validação de novas arquiteturas digitais e desenvolvimento de sistemas embarcados adaptáveis. Além disso, os FPGAs combinam desempenho próximo ao de soluções ASIC com o benefício de um tempo de desenvolvimento significativamente menor. Entre as vantagens mais relevantes, destacam-se:
 
-Entre as vantagens mais relevantes, destacam-se:
 \begin{itemize}
     \item \textbf{Flexibilidade e reconfigurabilidade pós-produção:} possibilitam ajustes no hardware conforme mudanças de requisitos ou algoritmos;
     \item \textbf{Prototipagem rápida:} permitem testar novas arquiteturas digitais sem necessidade de fabricação de chips dedicados;
@@ -16,15 +15,15 @@ Entre as vantagens mais relevantes, destacam-se:
 
 Apesar das vantagens, o uso de FPGAs também apresenta desafios significativos. O desenvolvimento demanda conhecimento especializado em eletrônica digital, linguagens HDL e ferramentas de síntese e roteamento, resultando em uma curva de aprendizado acentuada. Além disso, há limitações intrínsecas relacionadas ao número de blocos lógicos disponíveis, à quantidade de memória interna (BRAM) e ao consumo energético, que pode superar o de soluções ASIC quando operando continuamente.
 
-Nos últimos anos, o avanço das aplicações em \textbf{Inteligência Artificial (IA)} e \textbf{Aprendizado Profundo (Deep Learning)} impulsionou o uso de FPGAs como plataformas de aceleração computacional. Diferentemente das GPUs, que oferecem paralelismo massivo mas com arquitetura fixa, os FPGAs permitem \textit{customizar o fluxo de dados e a precisão dos cálculos}, adequando-se ao modelo neural e às restrições de desempenho e energia. Esse fator é particularmente relevante em aplicações de inferência em tempo real, onde o equilíbrio entre latência, throughput e consumo energético é crítico.
+Nos últimos anos, o avanço das aplicações em Inteligência Artificial e Aprendizado Profundo  impulsionou o uso de FPGAs como plataformas de aceleração computacional. Diferentemente das GPUs, que oferecem paralelismo massivo mas com arquitetura fixa, os FPGAs permitem customizar o fluxo de dados e a precisão dos cálculos, adequando-se ao modelo neural e às restrições de desempenho e energia. Esse fator é particularmente relevante em aplicações de inferência em tempo real, onde o equilíbrio entre latência, \textit{throughput} e consumo energético é crítico.
 
 Um dos avanços mais importantes nessa área é a utilização de técnicas de \textbf{quantização de redes neurais}, que reduzem a precisão numérica dos pesos e ativações (por exemplo, de 32 bits para 8 ou 4 bits), mantendo desempenho próximo ao original e reduzindo drasticamente o custo computacional. Essa abordagem viabiliza a implementação de modelos complexos em hardware reconfigurável, preservando acurácia e eficiência.
 
-Dessa forma, os FPGAs consolidam-se como uma plataforma versátil para aplicações em IA embarcada e processamento de sinais industriais, oferecendo uma solução intermediária entre a flexibilidade dos processadores convencionais e a eficiência dos ASICs dedicados.
+Dessa forma, os FPGAs consolidam-se como uma plataforma versátil para aplicações em IA embarcada e processamento de sinais industriais, oferecendo uma solução intermediária entre a flexibilidade dos processadores convencionais \mbox{e a eficiência dos ASICs dedicados.}
 
 Compreendidos os princípios gerais de funcionamento e as motivações que tornam os FPGAs atraentes para aplicações de processamento paralelo e aprendizado de máquina embarcado, torna-se relevante examinar sua estrutura interna com maior detalhe. A compreensão dos blocos constituintes e de suas interconexões é essencial para o correto aproveitamento dos recursos de hardware disponíveis e para o desenvolvimento de arquiteturas otimizadas em termos de desempenho, latência e consumo energético.  
 
-Na subseção a seguir, é apresentada a arquitetura interna de um FPGA moderno, destacando-se seus principais componentes — como blocos lógicos configuráveis, memórias internas, blocos DSP e transceptores seriais — e a forma como esses elementos interagem para viabilizar a implementação de circuitos digitais complexos em um ambiente reconfigurável.
+Na subseção a seguir, é apresentada a arquitetura interna de um FPGA moderno, destacando-se seus principais componentes, como blocos lógicos configuráveis, memórias internas, blocos DSP e transceptores seriais, e a forma como esses elementos interagem para viabilizar a implementação de \mbox{circuitos digitais complexos em um ambiente reconfigurável.}
 
 \subsection*{Arquitetura Interna de um FPGA}
 
@@ -32,24 +31,24 @@ O desempenho e a flexibilidade dos FPGAs decorrem diretamente de sua arquitetura
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\linewidth]{figs/FPGA/Simplified-view-of-a-modern-FPGA-architecture.png}
-    \caption{Arquiterura interna de um FPGA. Fonte: \citeonline{langhammer2014design}}
+    \includegraphics[width=0.65\linewidth]{figs/FPGA/FPGA.pdf}
+    \caption{Arquitetura interna de um FPGA. Adaptado de \citeonline{langhammer2014design}}
     \label{fig:FPGA_internal_architeture}
 \end{figure}
 
 De modo geral, a arquitetura de um FPGA moderno pode ser compreendida como um arranjo matricial de elementos lógicos, conectados por uma rede de roteamento programável e complementados por blocos dedicados de memória, processamento aritmético e comunicação Figura~\ref{fig:FPGA_internal_architeture}. Essa organização possibilita a construção de circuitos personalizados, capazes de operar de forma determinística e com latência previsível — características essenciais em sistemas embarcados e aplicações de tempo real.
 
-Os principais componentes que compõem essa arquitetura, enfatizando suas funções e a forma como interagem na implementação de sistemas digitais complexos são listado a seguir:
+Os principais componentes que compõem essa arquitetura, enfatizando suas funções e a forma como interagem na implementação de \mbox{sistemas digitais complexos são listado a seguir:}
 
 \begin{itemize}
 	\item \textbf{Blocos Lógicos Configuráveis (CLBs / Logic Elements)}
-	Cada bloco lógico geralmente contém uma Look-Up Table (LUT), flip-flops (registradores) e lógica de seleção (multiplexadores). As LUTs são usadas para implementar funções lógicas arbitrárias (até uma certa fan-in). Os flip-flops armazenam estado, e a lógica de interconexão dentro do bloco permite configuração de lógica combinacional ou sequencial.
+	Cada bloco lógico geralmente contém uma \textit{Look-Up Table, LU)}, \textit{flip-flops} (registradores) e lógica de seleção (multiplexadores). As LUTs são usadas para implementar funções lógicas arbitrárias (até uma certa \textit{fan-in}). Os \textit{flip-flops} armazenam estado, e a lógica de interconexão dentro do bloco permite configuração de lógica combinacional ou sequencial.
 	
 	\item \textbf{Rede de Interconexão Programável}
-	Os blocos lógicos são conectados por uma malha (ou rede) de trilhas metálicas (vias, linhas horizontais e verticais) e switches programáveis (crossbars, multiplexadores, buffers). Essa rede determina como os sinais trafegam entre blocos. O desafio de roteamento (satisfazer todas as conexões com restrições de timing) é crítico para o desempenho final.
+	Os blocos lógicos são conectados por uma malha (ou rede) de trilhas metálicas (vias, linhas horizontais e verticais) e \textit{switches} programáveis (\textit{crossbars}, multiplexadores, \textit{buffers}). Essa rede determina como os sinais trafegam entre blocos. O desafio de roteamento (satisfazer todas as conexões com restrições de temporização\textit{timing}) é crítico para o desempenho final.
 	
 	\item \textbf{Blocos de Entrada/Saída (I/O Blocks)}
-	Permitem a interface com sinais externos (barramentos, memórias externas, sensores, periféricos). Tipicamente suportam múltiplos padrões de tensão e protocolos (por exemplo, LVDS, PCIe, DDR, interfaces de alta velocidade).
+	Permitem a interface com sinais externos (barramentos, memórias externas, sensores, periféricos). Tipicamente suportam múltiplos padrões de tensão e protocolos \mbox{(por exemplo, LVDS, PCIe, DDR, interfaces de alta velocidade).}
 	
 	\item \textbf{Blocos de Memória (BRAM / Block RAM)}
 	Memórias internas, distribuídas dentro do FPGA, oferecem armazenamento rápido e local para dados intermediários, buffers, tabelas etc. São mais rápidas e eficientes que acessar memória externa.
@@ -58,13 +57,13 @@ Os principais componentes que compõem essa arquitetura, enfatizando suas funç�
 	Otimizados para operações aritméticas, especialmente multiplicações, multiplicações acumuladas e outras operações de ponto fixo ou ponto flutuante limitada. Permitem acelerar operações pesadas tipicamente usadas em filtros, transformadas, redes neurais etc.
 	
 	\item \textbf{Transceptores Seriais de Alta Velocidade}
-	Alguns FPGAs integram transceptores seriais (links de alta velocidade) que permitem comunicação externa (por exemplo, PCIe, Ethernet de alta velocidade, canais seriais até várias dezenas ou centenas de Gbps).
+	Alguns FPGAs integram transceptores seriais (links de alta velocidade) que permitem comunicação externa (por exemplo, PCIe, Ethernet de alta velocidade, \mbox{canais seriais até várias dezenas ou centenas de Gbps).}
 	
 	\item \textbf{Sistemas em Chip (SoC) Integrados}
 	Muitos FPGAs modernos incorporam processadores (por exemplo, ARM Cortex, RISC-V) no mesmo chip, compartilhando recursos com a lógica reconfigurável. Isso possibilita uma arquitetura heterogênea: parte do sistema roda em software (no processador), outra parte em lógica personalizada (hardware), com comunicação interna eficiente entre os dois.
 	
 	\item \textbf{Suporte a Recursos Avançados}
-	FPGAs mais recentes podem possuir recursos como reconfiguração parcial dinâmica (partial reconfiguration), blocos de lógica adaptativa (AI engines, blocos especializados), interconexão multi-die (em FPGAs grandes), e suporte a lógica adaptativa para redes neurais (por exemplo, engines de multiplicação de baixa precisão, compressão, suporte a sparsidade, etc.).
+	FPGAs mais recentes podem possuir recursos como reconfiguração parcial dinâmica, blocos de lógica adaptativa (motores de IA, blocos especializados), interconexão multi-DIE (em FPGAs grandes), e suporte a lógica adaptativa para redes neurais (por exemplo, motores de multiplicação de baixa precisão, compressão, suporte a esparsidade, etc.).
 \end{itemize}
 
 %A Tabela ~\ref{tab:arquitetura_fpga}, detalha os principais componentes que compõem essa arquitetura, enfatizando suas funções e a forma como interagem na implementação de sistemas digitais complexos:
@@ -107,12 +106,12 @@ Os principais componentes que compõem essa arquitetura, enfatizando suas funç�
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\linewidth]{figs/FPGA/generatecnologias.es_en_pga_architecture_CBL.jpg}
-    \caption{Imagem ilustrativa de um CBL. Fonte:\citeonline{genera_technologies_fpga}}
+    \includegraphics[width=0.7\linewidth]{figs/FPGA/CBL.pdf}
+    \caption{Imagem ilustrativa de um \textit{CBL}. Adaptado de \citeonline{genera_technologies_fpga}}
     \label{fig:FPGA_CBL}
 \end{figure}
 
-Além disso, o modelo de temporização (timing) nos FPGAs é fundamental: cada sinal tem um caminho entre flip-flops, com restrições de tempo (setup, hold), e o roteamento de pistas e buffers intermediários afetam a latência e taxa máxima de clock que pode ser alcançada.
+Além disso, o modelo de temporização, timing, nos FPGAs é fundamental: cada sinal tem um caminho entre flip-flops, com restrições de tempo (\textit{setup}, \textit{hold}), e o roteamento de pistas e \textit{buffers} intermediários afetam a latência e \mbox{taxa máxima de \textit{clock} que pode ser alcançada.}
 
 % \subsection*{Fluxo de Desenvolvimento com FPGA}
 
@@ -152,7 +151,7 @@ Além disso, o modelo de temporização (timing) nos FPGAs é fundamental: cada 
 
 O fluxo de desenvolvimento em FPGAs segue uma sequência bem definida de etapas, que vão desde a concepção do algoritmo até a implementação e validação física do projeto no dispositivo. Esse processo é especialmente relevante em aplicações de Inteligência Artificial (IA) e aprendizado profundo, nas quais o equilíbrio entre desempenho, consumo e utilização de recursos é determinante para a viabilidade do sistema.
 
-O fluxo de desenvolvimento em FPGA, com ênfase em aplicações de Inteligência Artificial, pode ser descrito como uma sequência de etapas encadeadas, que vão desde a definição conceitual do modelo até a validação em hardware e as iterações finais de otimização.
+O fluxo de desenvolvimento em FPGA, com ênfase em aplicações de Inteligência Artificial, pode ser descrito como uma sequência de etapas encadeadas, que vão desde a definição conceitual do modelo até a validação em hardware e as \mbox{iterações finais de otimização.}
 
 Inicialmente, na \textbf{definição do algoritmo ou modelo}, estabelece-se o comportamento desejado do sistema digital. Em aplicações de IA, essa etapa envolve a escolha ou o projeto de uma arquitetura de rede neural adequada (por exemplo, definição do número de camadas, tipos de ativação, organização convolucional e tamanho dos filtros), considerando simultaneamente requisitos de precisão, latência, uso de recursos e complexidade computacional. Trata-se de uma fase predominantemente algorítmica, na qual ainda não se impõem, de forma explícita, as restrições do dispositivo FPGA alvo.
 
@@ -160,9 +159,9 @@ Em seguida, ocorre a \textbf{quantização e otimização do modelo}, cujo objet
 
 A arquitetura já otimizada é então traduzida para uma \textbf{descrição em HDL ou HLS (High-Level Synthesis)}. Nessa fase, o projeto é implementado em linguagens de descrição de hardware tradicionais, como VHDL ou Verilog, ou em linguagens de mais alto nível (C/C++/OpenCL) que serão sintetizadas por ferramentas de HLS. Embora o HLS facilite o desenvolvimento e aumente o nível de abstração, ele exige uma análise cuidadosa da qualidade do hardware gerado, sobretudo no que diz respeito à área ocupada, ao grau de paralelismo explorado e à latência dos caminhos críticos.
 
-A etapa seguinte corresponde à \textbf{sintese lógica}, na qual a descrição funcional é convertida em uma rede lógica equivalente composta por LUTs, flip-flops, blocos DSP e memórias internas (BRAMs) do FPGA. As ferramentas de síntese aplicam otimizações de lógica booleana, realizam o mapeamento para os recursos específicos do dispositivo e geram uma representação intermediária que servirá de base para o processo de implementação física.
+A etapa seguinte corresponde à \textbf{sintese lógica}, na qual a descrição funcional é convertida em uma rede lógica equivalente composta por LUTs, flip-flops, blocos DSP e memórias internas (BRAMs) do FPGA. As ferramentas de síntese aplicam otimizações de lógica booleana, realizam o mapeamento para os recursos específicos do dispositivo e geram uma representação intermediária que servirá de base para o \mbox{processo de implementação física.}
 
-Concluída a síntese, procede-se à \textbf{implementação física (\textit{place \& route})}. Nessa fase, os elementos lógicos são posicionados na matriz do FPGA (\textit{placement}) e as conexões elétricas entre eles são estabelecidas (\textit{routing}). A forma como os blocos (CLBs, DSPs, BRAMs) são distribuídos e interligados impacta diretamente a frequência máxima de operação e o consumo de energia. Congestionamentos na rede de interconexão ou rotas excessivamente longas podem impedir o cumprimento das metas de temporização definidas no projeto.
+Concluída a síntese, procede-se à \textbf{implementação física (\textit{place \& route})}. Nessa fase, os elementos lógicos são posicionados na matriz do FPGA (\textit{placement}) e as conexões elétricas entre eles são estabelecidas (\textit{routing}). A forma como os blocos (CLBs, DSPs, BRAMs) são distribuídos e interligados impacta diretamente a frequência máxima de operação e o consumo de energia. Congestionamentos na rede de interconexão ou rotas excessivamente longas podem impedir o cumprimento das metas de \mbox{temporização definidas no projeto.}
 
 Após o roteamento, realiza-se a \textbf{análise de tempo e o \textit{timing closure}}. Por meio de análise estática de temporização, verificam-se as restrições de \textit{setup} e \textit{hold} em todos os caminhos relevantes. Caso os caminhos críticos excedam o período de clock especificado, torna-se necessário aplicar técnicas de otimização, tais como inserção de estágios adicionais de pipeline, replicação de lógica, refinamento de restrições ou reorganização de blocos. O objetivo é garantir que o design opere de forma confiável na frequência alvo.
 
@@ -170,7 +169,7 @@ Uma vez satisfeitas as restrições de temporização, procede-se à \textbf{ger
 
 Na sequência, ocorre a fase de \textbf{verificação e testes em hardware}, em que o design é validado fisicamente no FPGA. São realizados testes funcionais, medições de desempenho, análise de estabilidade e avaliação do consumo energético. Em aplicações de IA, é usual executar a inferência diretamente no hardware, comparando-se a acurácia e o tempo de resposta com aqueles obtidos em simulação ou em plataformas de referência (CPU/GPU), especialmente após a quantização e outras otimizações.
 
-Por fim, o processo raramente se encerra em uma única passagem. Assim, fala-se em \textbf{iterações e otimizações finais}, nas quais o projetista retorna a etapas anteriores para ajustar parâmetros, refinar o pipeline, melhorar o paralelismo, reorganizar buffers de memória local e equilibrar a utilização de recursos lógicos e de comunicação. Esse ciclo iterativo é característico do desenvolvimento em FPGA e permite gradualmente aproximar o projeto dos requisitos almejados de latência, throughput, consumo de energia e área ocupada.
+Por fim, o processo raramente se encerra em uma única passagem. Assim, fala-se em \textbf{iterações e otimizações finais}, nas quais o projetista retorna a etapas anteriores para ajustar parâmetros, refinar o pipeline, melhorar o paralelismo, reorganizar \textit{buffers} de memória local e equilibrar a utilização de recursos lógicos e de comunicação. Esse ciclo iterativo é característico do desenvolvimento em FPGA e permite gradualmente aproximar o projeto dos requisitos almejados de latência, \textit{throughput}, \mbox{consumo de energia e área ocupada.}
 
 
 %O fluxo de desenvolvimento em FPGAs segue uma sequência bem definida de etapas, que vão desde a concepção do algoritmo até a implementação e validação física do projeto no dispositivo. Esse processo, representado de forma resumida na Tabela~\ref{tab:fluxo_fpga}, é especialmente relevante em aplicações de Inteligência Artificial (IA) e aprendizado profundo, nas quais o equilíbrio entre desempenho, consumo e utilização de recursos é determinante para a viabilidade do sistema.
@@ -214,29 +213,29 @@ Por fim, o processo raramente se encerra em uma única passagem. Assim, fala-se 
 %\end{tabular}}
 %\end{table}
 
-O processo de desenvolvimento e otimização de projetos em FPGA pode ser sintetizado na Figura~\ref{fig:FluxoDesenvolvimentoFPGA}, que apresenta, de forma esquemática, o ciclo completo desde a definição inicial do algoritmo até a validação em hardware. Esse fluxo evidencia o caráter iterativo do desenvolvimento em dispositivos reconfiguráveis, no qual a cada etapa — da modelagem à implementação física — o projetista deve buscar o equilíbrio entre desempenho, consumo e utilização de recursos lógicos.
+O processo de desenvolvimento e otimização de projetos em FPGA pode ser sintetizado na Figura~\ref{fig:FluxoDesenvolvimentoFPGA}, que apresenta, de forma esquemática, o ciclo completo desde a definição inicial do algoritmo até a validação em hardware. Esse fluxo evidencia o caráter iterativo do desenvolvimento em dispositivos reconfiguráveis, no qual a cada etapa — da modelagem à implementação física — o projetista deve buscar o equilíbrio entre desempenho, \mbox{consumo e utilização de recursos lógicos.}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\linewidth]{figs/FPGA/FluxoOtimização.png}
+    \includegraphics[width=0.8\linewidth]{figs/FPGA/FluxoOtimização.pdf}
     \caption{Fluxo de desenvolvimento e otimização de projetos em FPGA}
     \label{fig:FluxoDesenvolvimentoFPGA}
 \end{figure}
 
-A Figura~\ref{fig:FluxoDesenvolvimentoFPGA} destaca a sequência típica de etapas: inicia-se pela definição do modelo ou algoritmo, seguida pela quantização e otimização, que reduzem a complexidade computacional. Na sequência, a descrição em HDL ou por meio de ferramentas de \textit{High-Level Synthesis} (HLS) permite traduzir o comportamento algorítmico em lógica digital reconfigurável. As fases de síntese e \textit{place \& route} realizam o mapeamento físico do projeto sobre os blocos lógicos e interconexões do FPGA, seguidas da análise de temporização, responsável por assegurar que todas as restrições de tempo de propagação sejam satisfeitas. Por fim, ocorre a geração do \textit{bitstream}, etapa na qual o projeto é convertido em um arquivo de configuração e carregado no dispositivo para verificação e validação funcional.
+A Figura~\ref{fig:FluxoDesenvolvimentoFPGA} destaca a sequência típica de etapas: inicia-se pela definição do modelo ou algoritmo, seguida pela quantização e otimização, que reduzem a complexidade computacional. Na sequência, a descrição em HDL ou por meio de ferramentas de HLS permite traduzir o comportamento algorítmico em lógica digital reconfigurável. As fases de síntese e \textit{place \& route} realizam o mapeamento físico do projeto sobre os blocos lógicos e interconexões do FPGA, seguidas da análise de temporização, responsável por assegurar que todas as restrições de tempo de propagação sejam satisfeitas. Por fim, ocorre a geração do \textit{bitstream}, etapa na qual o projeto é convertido em um arquivo de configuração e carregado no dispositivo para verificação e validação funcional.
 
-Ao final do ciclo, ajustes e otimizações adicionais são frequentemente necessários, refletindo o caráter experimental e refinável do processo. Essa natureza iterativa é fundamental em aplicações de Inteligência Artificial, nas quais a eficiência do hardware depende diretamente do grau de paralelismo, da largura de barramento e da arquitetura da rede neural mapeada no FPGA.
+Ao final do ciclo, ajustes e otimizações adicionais são frequentemente necessários, refletindo o caráter experimental e aprimorável do processo. Essa natureza iterativa é fundamental em aplicações de Inteligência Artificial, nas quais a eficiência do hardware depende diretamente do grau de paralelismo, da largura de barramento e da arquitetura da rede neural mapeada no FPGA.
 
 
-O sucesso do projeto depende da integração eficiente entre as etapas de síntese, implementação e análise de tempo. Pequenas variações no roteamento ou na granularidade do paralelismo podem impactar significativamente a taxa máxima de clock e o consumo energético do sistema, sobretudo em aplicações de aprendizado profundo com restrições de latência e throughput.
+O sucesso do projeto depende da integração eficiente entre as etapas de síntese, implementação e análise de tempo. Pequenas variações no roteamento ou na granularidade do paralelismo podem impactar significativamente a taxa máxima de \textit{clock} e o consumo energético do sistema, sobretudo em aplicações de aprendizado profundo com restrições de latência e \textit{throughput}.
 
-No contexto de aplicações de Inteligência Artificial, algumas etapas do fluxo de desenvolvimento em FPGA exigem atenção especial para garantir eficiência e desempenho. O \textit{quantization-aware training}, por exemplo, permite que o modelo seja treinado levando em consideração os efeitos da quantização, preservando a acurácia mesmo com representações de baixa precisão. O mapeamento eficiente de multiplicações binárias ou quantizadas — frequentemente implementadas em blocos DSP — é essencial para maximizar o paralelismo e reduzir o consumo de área lógica. Da mesma forma, o suporte à esparsidade (valores nulos) e a utilização otimizada de memórias locais (BRAM e URAM) são fatores decisivos para minimizar a dependência de acessos à memória externa, os quais representam um dos principais gargalos de desempenho em arquiteturas reconfiguráveis.  
+No contexto de aplicações de Inteligência Artificial, algumas etapas do fluxo de desenvolvimento em FPGA exigem atenção especial para garantir eficiência e desempenho. O \textit{quantization-aware training}, por exemplo, permite que o modelo seja treinado levando em consideração os efeitos da quantização, preservando a acurácia mesmo com representações de baixa precisão. O mapeamento eficiente de multiplicações binárias ou quantizadas — frequentemente implementadas em blocos DSP — é essencial para maximizar o paralelismo e reduzir o consumo de área lógica. Da mesma forma, o suporte à ``esparsidade'' de valores nulos e a utilização otimizada de memórias locais (BRAM e URAM) são fatores decisivos para minimizar a dependência de acessos à memória externa, os quais representam um dos principais gargalos de desempenho em arquiteturas reconfiguráveis.  
 
 Essas estratégias de otimização, quando bem empregadas, tornam os FPGAs especialmente adequados para aplicações embarcadas de IA e aprendizado profundo, nas quais o equilíbrio entre consumo energético, latência e throughput é determinante para a viabilidade prática do sistema. A subseção a seguir apresenta uma análise comparativa das principais vantagens e limitações desses dispositivos, considerando seu uso em aceleração de algoritmos de inteligência artificial.
 
 \subsection*{Vantagens e Desvantagens dos FPGAs (na perspectiva de IA)}
 
-O uso de FPGAs em aplicações de Inteligência Artificial apresenta um conjunto de vantagens que os torna particularmente atrativos para a implementação de algoritmos de aprendizado profundo e de processamento de sinais em tempo real. Em especial, destacam-se aspectos como flexibilidade de reconfiguração, exploração de paralelismo em nível de hardware e potencial de eficiência energética em cenários de inferência embarcada e de borda (\textit{edge computing}). A seguir, são sintetizados alguns dos principais pontos fortes associados a essa tecnologia:
+O uso de FPGAs em aplicações de Inteligência Artificial apresenta um conjunto de vantagens que os torna particularmente atrativos para a implementação de algoritmos de aprendizado profundo e de processamento de sinais em tempo real. Em especial, destacam-se aspectos como flexibilidade de reconfiguração, exploração de paralelismo em nível de hardware e potencial de eficiência energética em cenários de inferência embarcada e de borda, \textit{edge computing}. A seguir, são sintetizados alguns dos principais pontos fortes associados a essa tecnologia:
 
 \begin{itemize}
 	\item \textbf{Reconfigurabilidade e adaptabilidade:} possibilita modificar o hardware após a fabricação, permitindo ajustar a arquitetura à medida que o modelo de IA ou os requisitos do sistema evoluem, sem necessidade de projetar um novo circuito integrado dedicado.
@@ -296,7 +295,7 @@ Apesar de seus benefícios, o uso de FPGAs em aplicações de Inteligência Arti
 	
 	\item \textbf{Consumo em uso contínuo:} em aplicações de longa duração e alta taxa de utilização, o consumo energético total pode superar o de soluções especializadas ou de chips dedicados, sobretudo quando o projeto não explora plenamente recursos de desligamento parcial, \textit{clock gating} ou outras técnicas de economia de energia.
 	
-	\item \textbf{Tempo de desenvolvimento elevado:} etapas como implementação física (\textit{place \& route}), fechamento de temporização (\textit{timing closure}), balanceamento de pipeline e ajuste fino de restrições podem demandar múltiplas iterações, aumentando significativamente o tempo total de desenvolvimento em comparação com arquiteturas puramente de software.
+	\item \textbf{Tempo de desenvolvimento elevado:} etapas como implementação física, \textit{place \& route}, fechamento de temporização, \textit{timing closure}, balanceamento de pipeline e ajuste fino de restrições podem demandar múltiplas iterações, aumentando significativamente o tempo total de desenvolvimento em comparação com arquiteturas puramente de software.
 	
 	\item \textbf{Gargalos de memória externa:} o acesso frequente à memória DRAM externa pode introduzir latência adicional e elevar o consumo de energia. Isso exige estratégias cuidadosas de uso de memória local (BRAMs, buffers e caches) e de reutilização de dados para evitar que a banda de memória se torne o principal limitante do desempenho.
 	
@@ -339,31 +338,39 @@ Apesar de seus benefícios, o uso de FPGAs em aplicações de Inteligência Arti
 %\end{tabular}}
 %\end{table}
 
-Diante desse conjunto de vantagens e limitações, o uso de FPGAs em aplicações de Inteligência Artificial caracteriza-se por um claro compromisso entre desempenho, flexibilidade e complexidade de desenvolvimento. Por um lado, a possibilidade de explorar paralelismo em nível de hardware, customizar a precisão numérica e integrar, em um único dispositivo, funções de aquisição, processamento e decisão torna os FPGAs particularmente atraentes para sistemas de monitoramento em tempo real baseados em aprendizado de máquina. Por outro, a necessidade de lidar com recursos restritos, fluxos de projeto mais complexos e desafios de quantização demanda uma fase prévia de estudo e modelagem cuidadosa antes de se partir para a implementação física. Nesse contexto, o presente trabalho concentra-se em um \textit{estudo de viabilidade} por meio de simulação de uma arquitetura baseada em CNN-1D embarcada em FPGA, utilizando o framework FINN como ferramenta de apoio ao mapeamento em hardware. O objetivo é compreender, de forma sistemática, como os trade-offs entre acurácia, latência e uso de recursos podem ser equilibrados em um cenário de detecção de cavitação por emissão acústica, fornecendo subsídios técnicos para futuras etapas de prototipagem e implementação real.
+Diante desse conjunto de vantagens e limitações, o uso de FPGAs em aplicações de Inteligência Artificial caracteriza-se por um claro compromisso entre desempenho, flexibilidade e complexidade de desenvolvimento. 
+
+Por um lado, a possibilidade de explorar paralelismo em nível de hardware, customizar a precisão numérica e integrar, em um único dispositivo, funções de aquisição, processamento e decisão torna os FPGAs particularmente atraentes para sistemas de monitoramento em tempo real baseados em aprendizado de máquina. Por outro, a necessidade de lidar com recursos restritos, fluxos de projeto mais complexos e desafios de quantização demanda uma fase prévia de estudo e modelagem cuidadosa antes de se partir para a implementação física. 
+
+Nesse contexto, o presente trabalho concentra-se em um \textit{estudo de viabilidade} por meio de simulação de uma arquitetura baseada em CNN-1D embarcada em FPGA, utilizando o framework FINN como ferramenta de apoio ao mapeamento em hardware.
+
+O objetivo é compreender, de forma sistemática, como os trade-offs entre acurácia, latência e uso de recursos podem ser equilibrados em um cenário de detecção de cavitação por emissão acústica, fornecendo subsídios técnicos para futuras etapas de prototipagem e implementação real.
 
 
 \subsection{Otimização de IA em FPGAs: técnicas, desafios e tendências}
 
-Para que redes neurais sejam mapeadas de forma eficiente em FPGAs, é necessário aplicar um conjunto de técnicas de otimização que atuam simultaneamente sobre a arquitetura do modelo, a representação numérica dos dados e a própria organização do hardware. Em linhas gerais, essas estratégias buscam reduzir latência, consumo de energia e uso de área lógica, preservando, tanto quanto possível, a acurácia do modelo. A seguir, são apresentadas algumas das principais abordagens relatadas na literatura recente para aceleração de redes neurais em FPGAs:
+Para que redes neurais sejam mapeadas de forma eficiente em FPGAs, é necessário aplicar um conjunto de técnicas de otimização que atuam simultaneamente sobre a arquitetura do modelo, a representação numérica dos dados e a própria organização do hardware. 
+
+Em linhas gerais, essas estratégias buscam reduzir latência, consumo de energia e uso de área lógica, preservando, tanto quanto possível, a acurácia do modelo. A seguir, são apresentadas algumas das principais abordagens relatadas na literatura recente para aceleração de redes neurais em FPGAs:
 
 \begin{itemize}
 	\item \textbf{Quantização:} consiste em reduzir a largura de bits de pesos e ativações (por exemplo, para 8, 4, 2 ou mesmo 1 bit), diminuindo o uso de DSPs e de memória interna. Quando combinada com treinamento ciente de quantização (\textit{quantization-aware training}), essa técnica permite obter modelos mais compactos com perda limitada de desempenho, sendo uma das bases de muitos fluxos de implementação em FPGA.
 	
-	\item \textbf{Poda e exploração de sparsidade:} remove conexões cujos pesos são próximos de zero, reduzindo o número de operações aritméticas e acessos à memória. Para que o ganho seja efetivo em hardware, é necessário que a arquitetura seja projetada para explorar essa esparsidade de maneira estruturada, evitando overheads de controle que anulam o benefício.
+	\item \textbf{Poda e exploração de esparsidade:} remove conexões cujos pesos são próximos de zero, reduzindo o número de operações aritméticas e acessos à memória. Para que o ganho seja efetivo em hardware, é necessário que a arquitetura seja projetada para explorar essa esparsidade de maneira estruturada, evitando \textit{overheads} de controle que anulam o benefício.
 	
-	\item \textbf{Fusão de camadas e compressão de operadores:} integra operações que, tradicionalmente, seriam tratadas de forma separada — como convolução, ativação e pooling — em um único bloco funcional. Essa fusão diminui o tráfego de dados entre módulos, reduz a lógica de interconexão e pode simplificar o roteamento e o controle do fluxo de informações.
+	\item \textbf{Fusão de camadas e compressão de operadores:} integra operações que, tradicionalmente, seriam tratadas de forma separada — como convolução, ativação e \textit{pooling}, em um único bloco funcional. Essa fusão diminui o tráfego de dados entre módulos, reduz a lógica de interconexão e pode simplificar o roteamento e o controle do fluxo de informações.
 	
 	\item \textbf{Fatoração e decomposição de operações:} convoluções maiores (como filtros \(3\times3\) ou \(5\times5\)) podem ser decompostas em operações menores ou sequenciais, de forma a economizar recursos lógicos e facilitar o fechamento de temporização. Em alguns casos, decomposições separáveis (espacial ou em canais) permitem diminuir significativamente o custo computacional.
 	
-	\item \textbf{Pipeline e paralelismo fino:} divide-se o processamento em múltiplos estágios de pipeline, permitindo que diferentes amostras ou partes do cálculo sejam processadas simultaneamente em fases distintas. Esse paralelismo fino, típico de arquiteturas \textit{streaming}, contribui para manter throughput elevado com latência de cada estágio controlada.
+	\item \textbf{Pipeline e paralelismo fino:} divide-se o processamento em múltiplos estágios de pipeline, permitindo que diferentes amostras ou partes do cálculo sejam processadas simultaneamente em fases distintas. Esse paralelismo fino, típico de arquiteturas \textit{streaming}, contribui para manter \textit{throughput} elevado com latência de cada estágio controlada.
 	
-	\item \textbf{Uso eficiente de memória local:} maximiza-se o aproveitamento de BRAMs, URAMs e buffers internos para reduzir a dependência da DRAM externa. Estratégias de \textit{tiling}, reutilização de dados e armazenamento em janelas deslizantes são fundamentais para evitar que o gargalo de memória se torne o principal limitante do desempenho.
+	\item \textbf{Uso eficiente de memória local:} maximiza-se o aproveitamento de BRAMs, URAMs e \textit{buffers} internos para reduzir a dependência da DRAM externa. Estratégias de \textit{tiling}, reutilização de dados e armazenamento em janelas deslizantes são fundamentais para evitar que o gargalo de memória se torne o \mbox{principal limitante do desempenho.}
 	
 	\item \textbf{Compressão e codificação de pesos:} emprega técnicas como compressão \textit{run-length} e codificação de comprimento variável para reduzir o tamanho do modelo e o volume de dados transferidos. Em combinação com sparsidade, essa abordagem contribui para diminuir a largura de banda necessária entre memória e unidades de processamento.
 	
 	\item \textbf{Aritmética aproximada:} substitui operações exatas por variantes aproximadas (por exemplo, somadores e multiplicadores aproximados), com menor custo de implementação. Desde que o erro introduzido permaneça dentro de limites aceitáveis para a aplicação, é possível reduzir significativamente área, latência e consumo energético.
 	
-	\item \textbf{Arquiteturas \textit{dataflow} e \textit{streaming}:} modelam a rede neural como um fluxo contínuo de dados que atravessa uma sequência de operadores, ao invés de um conjunto de camadas executadas de forma estritamente sequencial e armazenadas em memória. Essa visão \textit{dataflow} permite eliminar gargalos de sincronização, explorar paralelismo em nível de fluxo e alinhar melhor o modelo ao estilo de computação dos FPGAs.
+	\item \textbf{Arquiteturas \textit{dataflow} e \textit{streaming}:} modelam a rede neural como um fluxo contínuo de dados que atravessa uma sequência de operadores, ao invés de um conjunto de camadas executadas de forma estritamente sequencial e armazenadas em memória. Essa visão \textit{dataflow} permite eliminar gargalos de sincronização, explorar paralelismo em nível de fluxo e alinhar melhor o modelo ao \mbox{estilo de computação dos FPGAs.}
 	
 	\item \textbf{Reconfiguração parcial dinâmica:} possibilita reprogramar seletivamente regiões do FPGA em tempo de execução, permitindo, por exemplo, alternar entre diferentes sub-redes ou modos de operação sem reconfigurar todo o dispositivo. Essa técnica ajuda a reutilizar recursos em cenários em que não é possível manter toda a funcionalidade residente simultaneamente.
 	
@@ -418,7 +425,7 @@ Para que redes neurais sejam mapeadas de forma eficiente em FPGAs, é necessári
 %\end{tabular}}
 %\end{table}
 
-Diversos estudos e \textit{surveys} analisam essas estratégias sob diferentes perspectivas, comparando frameworks e abordagens de implementação. A Tabela~\ref{tab:fpga_otimizacao_trabalhos} apresenta um resumo de publicações recentes que investigam técnicas de aceleração de redes neurais em FPGAs, destacando o foco principal e as contribuições de cada estudo.
+Diversos estudos e \textit{surveys} analisam essas estratégias sob diferentes perspectivas, comparando \textit{frameworks} e abordagens de implementação. A Tabela~\ref{tab:fpga_otimizacao_trabalhos} apresenta um resumo de publicações recentes que investigam técnicas de aceleração de redes neurais em FPGAs, destacando o foco principal e as contribuições de cada estudo.
 
 \begin{table}[H]
 \centering
@@ -460,15 +467,34 @@ Avalia ferramentas de mapeamento e frameworks (como FINN e HLS4ML), discutindo d
 %
 %A evolução das aplicações de Inteligência Artificial em FPGAs tem impulsionado uma ampla gama de pesquisas voltadas à maximização da eficiência computacional desses dispositivos. Diversos estudos recentes investigam estratégias de otimização que conciliam desempenho, consumo energético e utilização de recursos lógicos, com ênfase em redes neurais convolucionais e arquiteturas quantizadas. A subseção a seguir discute essas técnicas, tendências e desafios, oferecendo uma visão panorâmica do estado da arte no mapeamento de modelos de IA em hardware reconfigurável.
 
-Em síntese, observa-se que o avanço na implementação de algoritmos de aprendizado profundo em FPGAs depende fortemente da combinação de técnicas de quantização, poda e co-design hardware–software. O foco atual das pesquisas está na busca por arquiteturas que conciliem desempenho, eficiência energética e flexibilidade de reconfiguração, explorando abordagens baseadas em \textit{dataflow} e reconfiguração parcial dinâmica. Além disso, há uma tendência crescente de integração entre ferramentas de alto nível — como FINN, HLS4ML e Vitis AI — que automatizam parte do fluxo de desenvolvimento, tornando mais acessível a implementação de redes neurais complexas em hardware reconfigurável. Essas iniciativas apontam para um futuro em que o mapeamento de IA em FPGAs será cada vez mais automatizado, portátil e adaptável às demandas de aplicações embarcadas e industriais.
+Em síntese, observa-se que o avanço na implementação de algoritmos de aprendizado profundo em FPGAs depende fortemente da combinação de técnicas de quantização, poda e co-design hardware–software.
 
-Na sequência das técnicas de otimização discutidas anteriormente, esta subseção volta-se para o estudo de ferramentas e frameworks voltados à síntese e aceleração de redes neurais em FPGAs. Entre as diversas soluções disponíveis no ecossistema atual, destacam-se aquelas desenvolvidas por fabricantes e grupos de pesquisa que buscam abstrair a complexidade do fluxo de implementação em hardware, automatizando etapas de quantização, mapeamento e geração de IPs reconfiguráveis. Nesse contexto, o \textbf{FINN} desponta como um dos frameworks mais relevantes, sendo amplamente adotado na literatura por sua eficiência e integração com o ecossistema de ferramentas da AMD/Xilinx.
+O foco atual das pesquisas está na busca por arquiteturas que conciliem desempenho, eficiência energética e flexibilidade de reconfiguração, explorando abordagens baseadas em \textit{dataflow} e reconfiguração parcial dinâmica. Além disso, há uma tendência crescente de integração entre ferramentas de alto nível — como FINN, HLS4ML e Vitis AI — que automatizam parte do fluxo de desenvolvimento, tornando mais acessível a implementação de redes neurais complexas em hardware reconfigurável.
 
+Essas iniciativas apontam para um futuro em que o mapeamento de IA em FPGAs será cada vez mais automatizado, portátil e adaptável às demandas de aplicações embarcadas e industriais.
+
+Na sequência das técnicas de otimização discutidas anteriormente, esta subseção volta-se para o estudo de ferramentas e frameworks voltados à síntese e aceleração de redes neurais em FPGAs. Entre as diversas soluções disponíveis no ecossistema atual, destacam-se aquelas desenvolvidas por fabricantes e grupos de pesquisa que buscam abstrair a complexidade do fluxo de implementação em hardware, automatizando etapas de quantização, mapeamento e geração de IPs reconfiguráveis.
+
+Nesse contexto, o \textbf{FINN} desponta como um dos frameworks mais relevantes, sendo amplamente adotado na literatura por sua eficiência e integração com o ecossistema de ferramentas da AMD/Xilinx.
+
+No contexto desta pesquisa, entre as diversas técnicas de otimização disponíveis para implementação de redes neurais em FPGA, três se destacam como particularmente adequadas ao problema de detecção de cavitação a partir de sinais de Emissão Acústica (EA): quantização, poda estruturada e fusão de operadores em arquitetura streaming.
+
+A quantização reduz drasticamente o custo aritmético do modelo, permitindo executar convoluções 1D com pesos de baixa precisão diretamente em LUTs ou DSPs sem perda significativa de desempenho. 
+
+A poda estruturada complementa essa estratégia ao eliminar filtros ou canais pouco relevantes, reduzindo tanto o volume de operações quanto a memória necessária para armazenar pesos. 
+
+A fusão de operadores combinada com um fluxo dataflow, é especialmente vantajosa no caso de CNN-1D aplicadas a sinais temporais, pois permite implementar convolução, ativação e operações de redução em um único bloco pipeline, eliminando buffers intermediários, reduzindo latência e maximizando o throughput. Como os eventos de EA tratados pelo método HIT apresentam janelas curtas e estruturadas, esse arranjo streaming torna-se extremamente eficiente, alinhando o modelo ao estilo de computação nativo dos FPGAs e reduzindo o uso de BRAM e lógica de controle.
+
+Assim, essas três técnicas formam a base da otimização proposta para viabilizar a execução da CNN-1D no FPGA com baixa latência e consumo reduzido de recursos, mantendo a sensibilidade necessária para identificar padrões associados à cavitação.
 \subsection{Framework FINN}
 
-O FINN (\textit{Framework for fast, Scalable Binarized Neural Network Inference}) é uma ferramenta desenvolvida pelo time de pesquisa da Xilinx / AMD Research (Integrated Communications and AI Lab) para a geração automatizada de aceleradores de inferência em FPGAs a partir de redes neurais quantizadas (QNNs) \cite{Umuroglu2017FINN, FINN_Docs, finn}. Seu objetivo central é simplificar o processo de implantação de modelos de aprendizado profundo, otimizando o fluxo entre a etapa de quantização e a síntese de hardware.  
+O FINN (\textit{Framework for fast, Scalable Binarized Neural Network Inference}) é uma ferramenta desenvolvida pelo time de pesquisa da Xilinx / AMD Research (Integrated Communications and AI Lab) para a geração automatizada de aceleradores de inferência em FPGAs a partir de redes neurais quantizadas (QNNs) \cite{Umuroglu2017FINN, FINN_Docs, finn}.
 
-Diferentemente de frameworks genéricos voltados à aceleração de redes pré-treinadas, o FINN encoraja o uso de arquiteturas personalizadas e quantizadas, treinadas de modo a se alinhar à estrutura de hardware gerada. O framework utiliza uma abordagem \textit{dataflow-style}, em que cada camada da rede neural é convertida em um módulo de hardware independente que transmite dados diretamente ao próximo estágio, eliminando a necessidade de armazenamento intermediário intensivo e garantindo alta eficiência de latência e throughput.
+Seu objetivo central é simplificar o processo de implantação de modelos de aprendizado profundo, otimizando o fluxo entre a etapa de quantização e a síntese de hardware.  
+
+Diferentemente de frameworks genéricos voltados à aceleração de redes pré-treinadas, o FINN encoraja o uso de arquiteturas personalizadas e quantizadas, treinadas de modo a se alinhar à estrutura de hardware gerada.
+
+O framework utiliza uma abordagem \textit{dataflow-style}, em que cada camada da rede neural é convertida em um módulo de hardware independente que transmite dados diretamente ao próximo estágio, eliminando a necessidade de armazenamento intermediário intensivo e garantindo \mbox{alta eficiência de latência e throughput.}
 
 O ecossistema FINN também se integra a um conjunto de ferramentas complementares, que ampliam sua aplicabilidade e automação:
 \begin{itemize}
@@ -481,13 +507,15 @@ O ecossistema FINN também se integra a um conjunto de ferramentas complementare
 
 A arquitetura interna do FINN é estruturada de modo modular e altamente paralelizada. Cada camada da rede é convertida em um \textit{pipelined operator} — um bloco funcional independente que realiza operações específicas (como convolução, \textit{fully connected}, \textit{pooling} ou ativação). Essa abordagem possibilita a execução simultânea de múltiplas amostras em diferentes estágios do pipeline, maximizando o throughput.
 
-Além disso, o FINN explora técnicas avançadas de mapeamento de operações binárias e quantizadas. Em redes binarizadas, por exemplo, multiplicações são substituídas por operações lógicas simples, como XOR combinadas com contagem de bits (\textit{popcount}), resultando em grande economia de área e energia. O framework também permite a geração automática de IPs configuráveis compatíveis com interfaces AXI, possibilitando sua integração direta em sistemas mais amplos baseados em SoC ou plataformas como Zynq e Versal.
+Além disso, o FINN explora técnicas avançadas de mapeamento de operações binárias e quantizadas. Em redes binarizadas, por exemplo, multiplicações são substituídas por operações lógicas simples, como XOR combinadas com contagem de bits (\textit{popcount}), resultando em grande economia de área e energia. O framework também permite a geração automática de IPs configuráveis compatíveis com interfaces AXI, possibilitando sua integração direta em sistemas mais amplos baseados em \mbox{SoC ou plataformas como Zynq e Versal.}
 
 Um dos aspectos mais relevantes do FINN é sua capacidade de equilibrar os \textit{trade-offs} entre paralelismo, profundidade de pipeline e utilização de recursos, ajustando-se tanto a aplicações de alta performance quanto a implementações embarcadas com restrições severas de consumo e área lógica. Essa adaptabilidade o torna um componente essencial no desenvolvimento de sistemas de inferência acelerada, especialmente em aplicações de borda, monitoramento industrial e diagnóstico em tempo real.
 
 \subsection*{Desempenho e Limitações}
 
-No trabalho original de \citeonline{Umuroglu2017FINN}, o framework FINN foi validado em plataformas embarcadas baseadas no FPGA ZC706, demonstrando desempenho expressivo em tarefas de inferência de redes neurais quantizadas. Nos experimentos relatados, o sistema atingiu taxas de classificação de até \textbf{12,3 milhões de imagens por segundo} no dataset MNIST, com consumo inferior a 25~W e latência média de apenas \textbf{0,31~µs} por inferência. Em cenários mais complexos, como o dataset CIFAR-10, o desempenho obtido foi de aproximadamente \textbf{21~906 classificações por segundo}, com latência média próxima de \textbf{283~µs}. Esses resultados evidenciam o potencial do FINN para aplicações que exigem baixa latência e alta taxa de processamento, mantendo baixo consumo energético — uma característica particularmente vantajosa em sistemas embarcados e aplicações de borda.
+No trabalho original de \citeonline{Umuroglu2017FINN}, o framework FINN foi validado em plataformas embarcadas baseadas no FPGA ZC706, demonstrando desempenho expressivo em tarefas de inferência de redes neurais quantizadas. Nos experimentos relatados, o sistema atingiu taxas de classificação de até 12,3 milhões de imagens por segundo no dataset MNIST, com consumo inferior a 25~W e latência média de \mbox{apenas 0,31~µs por inferência.}
+
+Em cenários mais complexos, como o dataset CIFAR-10, o desempenho obtido foi de aproximadamente 21.906 classificações por segundo, com latência média próxima de 283~µs. Esses resultados evidenciam o potencial do FINN para aplicações que exigem baixa latência e alta taxa de processamento, mantendo baixo consumo energético — uma característica particularmente vantajosa em sistemas embarcados e aplicações de borda.
 
 Apesar de seu desempenho notável, o FINN apresenta algumas limitações inerentes à sua proposta. O foco em redes binarizadas ou altamente quantizadas, embora reduza significativamente a complexidade de hardware e o consumo de recursos, pode comprometer a acurácia em redes de grande porte ou em tarefas que exigem maior precisão numérica, como classificação de imagens complexas ou modelos com atenção (ex.: \textit{transformers}). Além disso, a escalabilidade para arquiteturas profundas impõe desafios relacionados ao balanceamento de pipeline e à interconexão entre operadores, que podem introduzir latências adicionais e aumentar a utilização de recursos lógicos.
 
@@ -500,7 +528,7 @@ O framework FINN foi concebido para oferecer um fluxo de desenvolvimento \textit
 \begin{itemize}
     \item \textbf{Treinamento do modelo quantizado:} a etapa inicial consiste no treinamento de uma rede neural quantizada (QNN) em frameworks compatíveis, como o Brevitas, que permite o ajuste dos pesos e ativações para operar com precisão reduzida — binária, ternária ou de poucos bits — preservando a acurácia do modelo.
     
-    \item \textbf{Conversão para formato compatível (QONNX):} após o treinamento, o modelo é exportado para o formato QONNX (\textit{Quantized ONNX}), que é a representação intermediária utilizada pelo FINN para interpretar a topologia e as operações da rede.
+    \item \textbf{Conversão para formato compatível (QONNX):} após o treinamento, o modelo é exportado para o formato QONNX (\textit{Quantized ONNX}), que é a representação intermediária utilizada pelo FINN para interpretar a \mbox{topologia e as operações da rede.}
     
     \item \textbf{Configuração de mapeamento e paralelismo:} nesta fase, são definidos os parâmetros de hardware relacionados ao desempenho — como o grau de paralelismo, duplicação de unidades de computação e profundidade de pipeline — que influenciam diretamente a latência e o throughput da rede.
     
@@ -508,7 +536,7 @@ O framework FINN foi concebido para oferecer um fluxo de desenvolvimento \textit
     
     \item \textbf{Integração e síntese FPGA:} os IPs gerados são integrados ao projeto principal no ambiente Vivado ou Vitis, com interconexão via barramento AXI e lógica de controle associada. A partir daí, o projeto é sintetizado e implementado, resultando no arquivo de configuração (bitstream).
     
-    \item \textbf{Testes, validação e iteração:} por fim, o hardware gerado é validado experimentalmente, avaliando restrições de tempo, utilização de recursos, throughput e acurácia. Essa etapa é iterativa, permitindo ajustes finos de paralelismo e arquitetura conforme as métricas de desempenho desejadas.
+    \item \textbf{Testes, validação e iteração:} por fim, o hardware gerado é validado experimentalmente, avaliando restrições de tempo, utilização de recursos, \textit{throughput} e acurácia. Essa etapa é iterativa, permitindo ajustes finos de paralelismo e arquitetura conforme as métricas de desempenho desejadas.
 \end{itemize}
 
 A Figura~\ref{fig:FINN_FluxoGeral} apresenta, de forma esquemática, o fluxo típico de uso do framework FINN, evidenciando suas principais etapas — desde o treinamento de redes quantizadas até a validação em hardware. O diagrama destaca o caráter \textit{end-to-end} do processo, no qual o modelo neural é progressivamente transformado em uma arquitetura sintetizável e otimizada para execução em FPGA.
@@ -516,11 +544,11 @@ A Figura~\ref{fig:FINN_FluxoGeral} apresenta, de forma esquemática, o fluxo tí
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.80\linewidth]{FluxoUsoFINN.png}
-    \caption{Fluxo do uso do FINN}
+    \caption{Fluxo do uso do FINN. \\ Fonte: O autor.}
     \label{fig:FINN_FluxoGeral}
 \end{figure}
 
-O processo se inicia com o \textbf{treinamento de um modelo quantizado}, normalmente conduzido no ambiente \textit{Brevitas}, onde pesos e ativações são ajustados para operar com baixa precisão (por exemplo, 1, 2, 4 ou 8 bits), mantendo a acurácia dentro de margens aceitáveis. Em seguida, o modelo é exportado no formato \textbf{QONNX} (\textit{Quantized Open Neural Network Exchange}), que atua como uma representação intermediária padronizada para a interoperabilidade entre frameworks de aprendizado e ferramentas de síntese de hardware.
+O processo se inicia com o \textbf{treinamento de um modelo quantizado}, normalmente conduzido no ambiente \textit{Brevitas}, onde pesos e ativações são ajustados para operar com baixa precisão (por exemplo, 1, 2, 4 ou 8 bits), mantendo a acurácia dentro de margens aceitáveis. Em seguida, o modelo é exportado no formato \textbf{QONNX} (\textit{Quantized Open Neural Network Exchange}), que atua como uma representação intermediária padronizada para a interoperabilidade entre frameworks de aprendizado e \mbox{ferramentas de síntese de hardware.}
 
 Na sequência, o usuário define os parâmetros de \textbf{mapeamento e paralelismo}, determinando a quantidade de unidades de computação, a profundidade de pipeline e o balanceamento entre latência e throughput. O \textbf{FINN Compiler} então converte o modelo quantizado em uma estrutura de hardware equivalente, gerando módulos em HLS ou RTL que representam cada camada da rede neural. Esses módulos são organizados em um fluxo contínuo de dados (\textit{dataflow architecture}), no qual as saídas de uma camada são transmitidas diretamente para a próxima, minimizando a necessidade de armazenamento intermediário.
 

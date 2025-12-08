@@ -39,71 +39,184 @@ O desenvolvimento desta pesquisa integra um conjunto de ferramentas de software 
 
 \section{Metodologia}
 
-A metodologia foi estruturada com base no modelo de \textit{Descoberta de Conhecimento em Bancos de Dados} (DCBD), proposto por Fayyad, Piatetsky-Shapiro e Smyth (1996). Esse modelo foi adaptado ao contexto de monitoramento por Emissão Acústica (EA), estruturando o pipeline em quatro etapas:
+A metodologia adotada neste trabalho foi organizada de forma a integrar, de
+maneira coerente, as etapas de preparação dos sinais, modelagem e avaliação em
+hardware reconfigurável. Para isso, toma-se como referência conceitual o
+processo de \textit{Knowledge Discovery in Databases} (KDD), \citeonline{fayyad1996data}. Embora o KDD tenha sido originalmente proposto para problemas de mineração de dados em larga escala, sua estrutura iterativa, que articula seleção, transformação, mineração e interpretação, mostra-se particularmente adequada para organizar fluxos complexos que envolvem
+tratamento de dados, aprendizado profundo e implementação embarcada. 
 
-\begin{itemize}
-	\item \textbf{Seleção:} coleta e organização dos sinais experimentais;
-	\item \textbf{Transformação:} filtragem, segmentação e normalização;
-	\item \textbf{Mineração:} aplicação de CNN-1D para detecção de cavitação;
-	\item \textbf{Interpretação:} análise dos resultados e extração de conhecimento.
-\end{itemize}
+No contexto deste projeto, o modelo KDD é adaptado às características dos
+sinais de Emissão Acústica (EA) e às restrições de execução em FPGA,
+permitindo uma perspectiva explicitamente \textit{data-centric}: cada etapa do
+pipeline é tratada não apenas como uma preparação para a próxima fase, mas como
+um refinamento progressivo da informação, desde os registros experimentais até
+a representação quantizada utilizada na inferência. Essa abordagem possibilita
+estabelecer uma conexão rastreável entre o fenômeno físico observado, a
+modelagem por CNN-1D e a análise de viabilidade do modelo sob as limitações de
+um ambiente de \textit{Edge AI}.
 
-Para fins de clareza metodológica, o trabalho foi dividido em duas frentes complementares:  
-\textbf{(i) métodos de desenvolvimento} e \textbf{(ii) métodos de avaliação}.
+\noindent
+No âmbito deste trabalho, o termo \textit{Edge AI} refere-se à execução local de
+modelos de inteligência artificial diretamente no dispositivo de borda — neste
+caso, uma FPGA, sem dependência de servidores externos. Esse paradigma permite
+reduzir latência, tráfego de dados e consumo energético, tornando a inferência
+mais adequada para aplicações de monitoramento contínuo em campo.
+
+Nesta abordagem, o fluxo não visa apenas a extração de padrões, mas a construção de um modelo computacionalmente eficiente, capaz de operar sob as restrições de recursos de uma FPGA. O pipeline metodológico foi, portanto, instanciado nas seguintes fases:
+
+\begin{enumerate}
+	 \item \textbf{Seleção:} Etapa dedicada à coleta e curadoria dos sinais experimentais de Emissão Acústica. Inclui a definição dos regimes de operação válidos, exclusão de artefatos ruidosos e identificação das janelas temporais representativas dos fenômenos cavitantes.
+	
+	\item \textbf{Pré-processamento e Transformação:} Envolve o tratamento de sinais (filtragem, segmentação) e a preparação dos tensores de entrada. Nesta fase, são tomadas decisões críticas para o hardware, como a definição da granularidade das janelas e técnicas de normalização compatíveis com a aritmética de ponto fixo ou flutuante do FPGA.
+	
+	\item \textbf{Mineração (Modelagem):} Refere-se à construção do núcleo inteligente do sistema. Consiste na implementação, treinamento e otimização da CNN-1D supervisionada. Inclui a busca por arquiteturas eficientes, ajuste de hiperparâmetros e estratégias de quantização (se houver) visando o balanço entre acurácia e ocupação de área no dispositivo lógico.
+	
+	\item \textbf{Interpretação e Validação:} Análise da capacidade de generalização do modelo frente a dados inéditos. Envolve não apenas métricas clássicas (acurácia, matriz de confusão), mas também a validação da viabilidade de implementação e latência de inferência no contexto industrial.
+\end{enumerate}
+
+A partir dessas quatro fases, o trabalho foi estruturado em duas frentes 
+metodológicas complementares: \textbf{métodos de desenvolvimento} e 
+\textbf{métodos de avaliação}, descritas a seguir.
+
+
+Para fins de clareza metodológica, o trabalho foi dividido em duas frentes complementares descrita a seguir:  
 
 \subsection{Métodos de Desenvolvimento}
 
-Os métodos de desenvolvimento abrangem o ciclo completo de preparação dos dados, modelagem, treinamento e simulação do modelo em FPGA:
+Os métodos de desenvolvimento adotados neste trabalho integram, de forma 
+sequencial e iterativa, todas as fases necessárias para construir, treinar e 
+preparar um modelo CNN-1D para futura execução em hardware reconfigurável. 
+Essa frente metodológica abrange desde a preparação inicial dos dados até a 
+síntese experimental em FPGA, conforme descrito a seguir.
 
 \begin{enumerate}
 	\item \textbf{Aquisição e Pré-processamento:}  
-	Construção da base de dados, remoção de trechos inválidos, normalização e segmentação temporal.
+	Esta etapa corresponde às fases de Seleção e Transformação do modelo DCBD.  
+	Inclui a construção da base de dados a partir dos experimentos realizados 
+	com o sistema MomeaProbe/MomeaCapture, remoção de trechos inválidos, 
+	correção de descontinuidades e normalização das amplitudes para reduzir 
+	efeitos de variação entre sensores.  
+	Adicionalmente, os sinais foram segmentados em janelas temporais fixas, 
+	adequadas ao treinamento da CNN-1D e compatíveis com a futura execução em 
+	pipeline no ambiente FPGA.
 	
 	\item \textbf{Modelagem e Treinamento da CNN-1D:}  
-	Definição da arquitetura convolucional, escolha de funções de ativação e treinamento com métricas supervisionadas.
+	Envolve a definição da arquitetura convolucional, incluindo número de 
+	filtros, tamanhos de kernel, funções de ativação, camadas densas e 
+	estratégias de regularização.  
+	Esta etapa corresponde à fase de Mineração do DCBD, em que o modelo aprende 
+	padrões temporais associados a condições normais e cavitantes.  
+	O treinamento supervisionado foi conduzido com métricas padronizadas, 
+	como acurácia, F1-score e matriz de confusão.
 	
 	\item \textbf{Quantização e Exportação (Brevitas/QONNX):}  
-	Aplicação de \textit{quantization-aware training} e conversão do modelo para formato compatível com o FINN.
+	Esta fase prepara o modelo para execução eficiente em FPGA.  
+	Utilizou-se \textit{quantization-aware training}, assegurando que a rede 
+	aprenda já sob as restrições do uso de ponto fixo (tipicamente 8 ou 4 bits).  
+	O modelo treinado é então convertido para QONNX, formato compatível com o 
+	compilador FINN, permitindo mapear operadores convolucionais para 
+	arquiteturas \textit{streaming} de hardware.
 	
 	\item \textbf{Síntese Experimental com o FINN:}  
-	Geração do pipeline \textit{dataflow}, simulação de latência, uso de recursos e validação funcional.
+	Com o modelo quantizado, procede-se à geração do pipeline 
+	\textit{dataflow}, que organiza as camadas em módulos executáveis no FPGA.  
+	São simulados latência, throughput, uso de LUTs, BRAMs, URAMs e DSPs, bem 
+	como o fechamento de temporização para diversas configurações de clock.  
+	Esta etapa atua como um ensaio prévio da implementação física, indicando 
+	a viabilidade embarcada da arquitetura proposta.
 \end{enumerate}
 
 \subsection{Métodos de Avaliação}
 
-A avaliação foi conduzida em dois níveis complementares:
+A avaliação da abordagem foi conduzida em dois níveis complementares, que 
+dialogam diretamente com as fases de Mineração e Interpretação do modelo DCBD.
 
 \begin{itemize}
 	\item \textbf{Avaliação Funcional da CNN-1D:}  
-	Acurácia, precisão, sensibilidade, especificidade e matriz de confusão.
+	Esta etapa examina o desempenho do modelo no domínio algorítmico.  
+	São calculadas métricas como acurácia, precisão, sensibilidade, 
+	especificidade, e analisada a matriz de confusão.  
+	Tal avaliação permite verificar se a rede é capaz de distinguir padrões 
+	associados à cavitação de forma consistente e se reduz a taxa de falsos 
+	positivos e falsos negativos.
 	
 	\item \textbf{Avaliação da Implementação FPGA (simulada):}  
-	Estimativa de uso de recursos (LUTs, BRAMs, DSPs), frequência máxima, latência e throughput, considerando o modelo quantizado.
+	Utilizando os relatórios do FINN e do Vivado, são estimados:  
+	\begin{itemize}
+		\item uso de recursos lógicos (LUTs, FFs),  
+		\item consumo de memória interna (BRAM, URAM),  
+		\item número de multiplicadores DSP utilizados,  
+		\item frequência máxima possível após síntese,  
+		\item latência total de inferência (em ciclos e segundos),  
+		\item \textit{throughput} por amostra ou por janela.  
+	\end{itemize}
+	Essa avaliação determina não apenas a viabilidade de implementação, mas 
+	também se o sistema pode operar com atraso aceitável (\textit{near real-time}) 
+	para integração futura a um monitoramento industrial contínuo.
 \end{itemize}
 
-Esses métodos permitem correlacionar diretamente o desempenho do algoritmo com sua viabilidade prática como sistema embarcado.
+A combinação dessas duas estratégias permite correlacionar o desempenho teórico 
+da CNN-1D com sua viabilidade prática enquanto componente de um sistema 
+embarcado baseado em FPGA.
 
 
 \subsection{Simulador}
 
-Como a implementação física não será realizada neste projeto, utiliza-se um simulador baseado no FINN e no Vivado. Esse ambiente:
+Como não há implementação física no escopo deste projeto, utilizou-se um 
+simulador baseado na integração entre o FINN e o Vivado. Esse ambiente permite 
+replicar, de forma próxima ao hardware real, o comportamento de um acelerador 
+convolucional quantizado.
+
+O simulador é capaz de:
 
 \begin{itemize}
-	\item reproduz o fluxo \textit{dataflow} do acelerador;
-	\item estima latência, paralelismo e uso de recursos;
-	\item simula a inferência em ponto fixo para avaliar o impacto da quantização.
+	\item reproduzir a arquitetura \textit{dataflow} gerada pelo FINN, 
+	incluindo paralelismo interno, movimentação de dados e estruturação do pipeline;
+	
+	\item estimar latência por camada e latência total, considerando o uso de 
+	ponto fixo e recursos internos do FPGA;
+	
+	\item prever o uso de LUTs, FFs, BRAMs, URAMs e DSPs, indicando possíveis 
+	gargalos de área ou limitações de clock;
+	
+	\item simular a inferência quantizada, permitindo analisar o impacto da 
+	quantização no desempenho do modelo (ex.: perda de acurácia, saturação, 
+	erros de truncamento);
+	
+	\item validar funcionalmente o modelo quantizado, assegurando que as 
+	operações aritméticas implementadas em hardware reproduzem o comportamento 
+	esperado do modelo treinado.
 \end{itemize}
 
-Esse recurso permite validar antecipadamente o comportamento do sistema embarcado antes da implementação física.
+A Figura~\ref{fig:fluxograma_geral} apresenta uma visão integrada do fluxo 
+metodológico, desde o treinamento offline até a simulação do pipeline 
+embarcardo, consolidando todas as etapas de pré-processamento, quantização, 
+compilação e análise de desempenho.
 
-Figura~\ref{fig:fluxograma_geral} ilustra o fluxo metodológico completo — desde o treinamento offline até a simulação do pipeline embarcado — integrando as etapas de pré-processamento, quantização, compilação e execução no FPGA.
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.95\linewidth]{figs/Fluxograma_Objetivo.pdf}
-	\caption{Fluxograma geral dos objetivos do projeto, contemplando as etapas de desenvolvimento e inferência da CNN-1D em FPGA.}
+	\caption{Fluxograma geral dos objetivos do projeto, contemplando as etapas de desenvolvimento e inferência da CNN-1D em FPGA. Fonte: O autor.}
 	\label{fig:fluxograma_geral}
 \end{figure}
 
-Durante o desenvolvimento, pretende-se definir métricas quantitativas — como latência de inferência, consumo energético e taxa de detecção — que servirão como valores-alvo para a viabilidade prática do sistema embarcado.
+A Figura \ref{fig:fluxograma_geral} sintetiza o fluxo completo da metodologia adotada neste trabalho, articulando — em um único pipeline — as etapas de treinamento offline e a simulação do pipeline embarcado em FPGA. O diagrama organiza visualmente como os dados brutos de Emissão Acústica são progressivamente transformados até chegar ao núcleo final de inferência, destacando em que ponto cada etapa da metodologia se insere e como elas se conectam.
+
+O fluxo superior representa o Treinamento Offline (host), onde se desenvolve e valida o modelo em ambiente computacional convencional. A partir dos dados rotulados (EA e vibração), aplica-se o pré-processamento, incluindo filtragem, normalização e segmentação em janelas temporais. Os tensores resultantes alimentam o treinamento da CNN-1D em PyTorch, etapa correspondente à fase de Mineração da metodologia baseada em KDD.
+
+Após o treinamento, o modelo passa pelas etapas de quantização e poda, empregando representações INT8, INT4 ou eventualmente BNN, reduzindo o custo computacional e preparando a rede para execução em hardware reconfigurável. Na sequência, o modelo quantizado é convertido para QONNX e compilado pelo FINN, que gera operadores convolucionais em estilo dataflow via HLS ou IPs dedicados. O fluxo culmina na geração do bitstream e integração com o ambiente SoC, completando a fase de desenvolvimento.
+
+A metade inferior do diagrama representa o Pipeline embarcado de Inferência em Tempo Real (FPGA). Nele, os sinais provenientes dos sensores de EA e do acelerômetro passam por pré-processamento local, incluindo filtragem passa-banda, ajustes de ganho e segmentação em janelas compatíveis com o acelerador. Esse pré-processamento reduz a variabilidade dos dados e diminui o esforço necessário nas etapas subsequentes.
+
+Os blocos de dados são transferidos para o módulo de inferência por meio de mecanismos de DMA ou FIFO, garantindo fluxo contínuo e latência determinística. A CNN-1D compilada pelo FINN é então executada no FPGA, produzindo a classificação entre condições normais, cavitação e outros padrões relevantes. Essa etapa representa a concretização prática da fase de Mineração adaptada ao contexto embarcado.
+
+Os resultados de inferência são entregues ao módulo de Ação e Registro, responsável por alarmes, registro de eventos e comunicação com sistemas externos via API ou MODBUS. Esse bloco completa a fase de Interpretação, traduzindo a saída do modelo para ações operacionais aplicáveis em monitoramento industrial.
+
+Finalmente, a legenda da Figura organiza os blocos por categoria — dados, processamento/software, hardware/FPGA e saída/ação — reforçando a separação conceitual entre o desenvolvimento offline e a execução embarcada, bem como a continuidade entre ambos.
+
+Dessa forma, o fluxo ilustrado na Figura \ref{fig:fluxograma_geral} não apenas resume a metodologia adotada, mas demonstra a coerência entre a preparação de dados, modelagem, quantização e avaliação em FPGA, evidenciando o alinhamento entre as diferentes fases do projeto e sua orientação a um sistema de inferência eficiente, de baixa latência e adequado para operações quase em tempo real.
+
+
+Durante o desenvolvimento, serão estabelecidas métricas quantitativas, como latência de inferência, consumo energético, utilização de recursos lógicos e taxa de detecção, que funcionarão como critérios objetivos para avaliar a viabilidade prática da implementação embarcada. Esses indicadores permitirão verificar se o sistema atende às restrições operacionais esperadas e se possui desempenho adequado para aplicação em monitoramento contínuo.
 

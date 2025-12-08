@@ -1,26 +1,26 @@
 \section{Aprendizado de Máquina}
 
-Esta seção dedica-se à apresentação dos fundamentos conceituais e matemáticos do Aprendizado de Máquina (Machine Learning), com ênfase nas abordagens supervisionadas e profundas aplicadas à análise de sinais. Inicialmente, discorrem-se os paradigmas de aprendizado, os principais algoritmos utilizados e suas respectivas áreas de aplicação. Em seguida, introduz-se o Aprendizado Profundo (Deep Learning) e as Redes Neurais Convolucionais Unidimensionais (CNN-1D), destacando seu papel na extração automática de padrões complexos em sinais acústicos, como os gerados por fenômenos de cavitação e falhas incipientes em equipamentos rotativos.
+Esta seção dedica-se à apresentação dos fundamentos conceituais e matemáticos do Aprendizado de Máquina, com ênfase nas abordagens supervisionadas e profundas aplicadas à análise de sinais. Inicialmente, discorrem-se os paradigmas de aprendizado, os principais algoritmos utilizados e suas respectivas áreas de aplicação. Em seguida, introduz-se o Aprendizado Profundo, \textit{Deep Learning, DL}, e as Redes Neurais Convolucionais Unidimensionais, destacando seu papel na extração automática de padrões complexos em sinais acústicos, como os gerados por fenômenos de cavitação e falhas incipientes em equipamentos rotativos.
 
 
-A Inteligência Artificial (IA) é um campo interdisciplinar da ciência da computação voltado ao desenvolvimento de sistemas capazes de executar tarefas tipicamente associadas à inteligência humana, como percepção, raciocínio, reconhecimento de padrões e tomada de decisão. Seu objetivo fundamental é reproduzir — e em certos casos, ampliar — aspectos do pensamento humano por meio de processos computacionais baseados em dados e em modelos matemáticos de inferência.
+A Inteligência Artificial é um campo interdisciplinar da ciência da computação voltado ao desenvolvimento de sistemas capazes de executar tarefas tipicamente associadas à inteligência humana, como percepção, raciocínio, reconhecimento de padrões e tomada de decisão. Seu objetivo fundamental é reproduzir — e em certos casos, ampliar — aspectos do pensamento humano por meio de processos computacionais baseados em dados e em modelos matemáticos de inferência.
 
-Dentro desse contexto, o \textit{Aprendizado de Máquina} (ML, do inglês \textit{Machine Learning}) constitui uma subárea essencial da IA dedicada ao estudo e criação de algoritmos capazes de aprender a partir de exemplos e experiências anteriores. Em vez de seguir um conjunto fixo de instruções, esses algoritmos ajustam automaticamente seus parâmetros internos conforme são expostos a novos dados, de modo a melhorar seu desempenho em uma tarefa específica sem a necessidade de reprogramação explícita. Essa capacidade adaptativa torna o ML particularmente útil em problemas complexos e de natureza não determinística, nos quais a modelagem analítica tradicional se mostra insuficiente.
+Dentro desse contexto, o Aprendizado de Máquina constitui uma subárea essencial da IA dedicada ao estudo e criação de algoritmos capazes de aprender a partir de exemplos e experiências anteriores. Em vez de seguir um conjunto fixo de instruções, esses algoritmos ajustam automaticamente seus parâmetros internos conforme são expostos a novos dados, de modo a melhorar seu desempenho em uma tarefa específica sem a necessidade de reprogramação explícita. Essa capacidade adaptativa torna o ML particularmente útil em problemas complexos e de natureza não determinística, nos quais a modelagem analítica tradicional se mostra insuficiente.
 
 O processo de aprendizado pode ocorrer de diferentes formas, dependendo da disponibilidade e do tipo de informação fornecida ao modelo. De modo geral, o ML é classificado em três categorias principais: aprendizado supervisionado, em que o modelo é treinado com exemplos rotulados; aprendizado não supervisionado, no qual se busca identificar padrões e agrupamentos ocultos em dados não rotulados; e aprendizado por reforço, baseado na interação contínua de um agente com um ambiente para maximizar recompensas acumuladas. Cada uma dessas abordagens apresenta características próprias e é adequada a contextos específicos de aplicação, como classificação, regressão, agrupamento e controle adaptativo.
 
-Um subconjunto mais avançado e especializado do ML é o \textit{Aprendizado Profundo} (DL, do inglês \textit{Deep Learning}), que emprega arquiteturas compostas por múltiplas camadas de processamento — as chamadas \textit{redes neurais profundas}. Essas estruturas são inspiradas no funcionamento do cérebro humano e são capazes de extrair representações hierárquicas e abstratas dos dados, capturando padrões complexos e não lineares. O DL tem se destacado em aplicações de alto impacto, como reconhecimento de voz e imagem, tradução automática, diagnóstico médico assistido e análise de sinais dinâmicos, devido à sua notável capacidade de generalização e robustez frente a grandes volumes de informação.
+Um subconjunto mais avançado e especializado do ML é o Aprendizado Profundo, que emprega arquiteturas compostas por múltiplas camadas de processamento, as chamadas redes neurais profundas. Essas estruturas são inspiradas no funcionamento do cérebro humano e são capazes de extrair representações hierárquicas e abstratas dos dados, capturando padrões complexos e não lineares. O DL tem se destacado em aplicações de alto impacto, como reconhecimento de voz e imagem, tradução automática, diagnóstico médico assistido e análise de sinais dinâmicos, devido à sua notável capacidade de generalização e robustez frente a grandes volumes de informação.
 
-Nos últimos anos, a combinação entre aprendizado profundo e dispositivos de alto desempenho, como GPUs e FPGAs, tem ampliado significativamente o escopo de aplicação dessas técnicas, tornando viável a análise em tempo real de dados de alta taxa de amostragem — como os provenientes de sensores acústicos e vibrométricos empregados no monitoramento de máquinas rotativas. Essa integração entre IA e instrumentação digital representa um dos pilares do paradigma da \textit{manutenção preditiva inteligente}, na qual modelos treinados são utilizados para detectar anomalias, prever falhas e otimizar a operação de sistemas industriais complexos.
+Nos últimos anos, a combinação entre aprendizado profundo e dispositivos de alto desempenho, como GPUs e FPGAs, tem ampliado significativamente o escopo de aplicação dessas técnicas, tornando viável a análise em tempo real de dados de alta taxa de amostragem — como os provenientes de sensores acústicos e vibrométricos empregados no monitoramento de máquinas rotativas. Essa integração entre IA e instrumentação digital representa um dos pilares do paradigma da manutenção preditiva inteligente, na qual modelos treinados são utilizados para detectar anomalias, prever falhas e otimizar a operação de sistemas industriais complexos.
 
 O campo do aprendizado de máquina abrange diferentes abordagens de treinamento, cada uma fundamentada na forma como o modelo interage com os dados e aprende a partir deles. De maneira geral, essas abordagens são organizadas em três grandes paradigmas: o aprendizado supervisionado, o aprendizado não supervisionado e o aprendizado por reforço. Cada paradigma apresenta características próprias, vantagens e limitações, sendo aplicável a diferentes tipos de problemas de modelagem, classificação e controle em sistemas complexos.
 
-Os três paradigmas são sistematizados na Figura~\ref{fig:AprendizadoDeMaquinaConceitos}, que apresenta uma visão comparativa das principais estratégias de aprendizado e suas aplicações típicas em contextos industriais. Cada paradigma difere quanto à forma de aprendizado, à disponibilidade de rótulos nos dados e ao tipo de feedback recebido durante o processo de treinamento.
+Os três paradigmas são sistematizados na Figura~\ref{fig:AprendizadoDeMaquinaConceitos}, que apresenta uma visão comparativa das principais estratégias de aprendizado e suas aplicações típicas em contextos industriais. Cada paradigma difere quanto à forma de aprendizado, à disponibilidade de rótulos nos dados e ao tipo de \textit{feedback} recebido durante o processo de treinamento.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.45\linewidth]{figs/AprendizadoDeMaquina/AprendizadoDeMaquinaConceitos.png}
-    \caption{Paradigmas do aprendizado de máquina e exemplos de aplicação industrial.\textcolor{red}{Vou substituir essa imagem por uma versão mais detalhada, auto-explicativa}}
+    \includegraphics[width=0.45\linewidth]{figs/AprendizadoDeMaquina/AprendizadoDeMaquinaConceitos.pdf}
+    \caption{Paradigmas do aprendizado de máquina e exemplos de aplicação industrial.\\Fonte: O autor.}
     \label{fig:AprendizadoDeMaquinaConceitos}
 \end{figure}
 
@@ -34,7 +34,7 @@ Os três paradigmas são sistematizados na Figura~\ref{fig:AprendizadoDeMaquinaC
 
 A Figura~\ref{fig:AprendizadoDeMaquinaConceitos} sintetiza graficamente essa classificação, destacando a complementaridade entre os três paradigmas e sua relevância para o desenvolvimento de sistemas inteligentes voltados à manutenção preditiva, à análise de falhas e ao monitoramento em tempo real.
 
-O aprendizado de máquina engloba uma ampla variedade de algoritmos, cada um com princípios matemáticos e áreas de aplicação específicas. A escolha do modelo mais adequado depende diretamente da natureza dos dados, do objetivo da análise e das restrições computacionais do sistema. De forma geral, entre os principais algoritmos utilizados em ML, são destacados na Tabela ~\ref{tab:algoritmos_ml}:
+O aprendizado de máquina engloba uma ampla variedade de algoritmos, cada um com princípios matemáticos e áreas de aplicação específicas. A escolha do modelo mais adequado depende diretamente da natureza dos dados, do objetivo da análise e das restrições computacionais do sistema. De forma geral, entre os principais algoritmos utilizados em ML, são:
 
  \begin{itemize}
      \item \textbf{Redes Neurais Artificiais (ANNs):} inspiradas no funcionamento biológico do cérebro, compostas por camadas de neurônios interconectados capazes de aprender relações complexas entre variáveis.
@@ -75,7 +75,7 @@ O aprendizado de máquina engloba uma ampla variedade de algoritmos, cada um com
 %\end{tabular}}
 %\end{table}
 
-Entre esses métodos, as \textbf{Redes Neurais Convolucionais (CNNs)} merecem destaque por sua capacidade de extrair representações hierárquicas de dados brutos, reduzindo a necessidade de pré-processamento manual. Embora originalmente concebidas para o reconhecimento de imagens, as CNNs têm-se mostrado extremamente eficazes na análise de sinais acústicos e séries temporais — como os provenientes de sensores de emissão acústica — devido à sua habilidade em capturar correlações locais e padrões de alta frequência.
+Entre esses métodos, as \textbf{Redes Neurais Convolucionais (CNNs)} merecem destaque por sua capacidade de extrair representações hierárquicas de dados brutos, reduzindo a necessidade de pré-processamento manual. Embora originalmente concebidas para o reconhecimento de imagens, as CNNs têm-se mostrado extremamente eficazes na análise de sinais acústicos e séries temporais, como os provenientes de sensores de emissão acústica, devido à sua habilidade em \mbox{capturar correlações locais e padrões de alta frequência.}
 
 A arquitetura típica de uma CNN é composta por diferentes tipos de camadas, cada uma com função específica no processo de aprendizado:
 
@@ -90,27 +90,94 @@ Esses elementos, combinados em múltiplos níveis, formam uma estrutura profunda
 
 \subsection{Redes Neurais Convolucionais Unidimensionais (CNN-1D)}
 
-As Redes Neurais Convolucionais Unidimensionais (CNN-1D) representam uma extensão natural das CNNs originalmente aplicadas a imagens, adaptadas para o processamento de sinais temporais. Diferentemente das CNNs bidimensionais, nas quais os filtros convolucionais percorrem duas dimensões espaciais (altura e largura da imagem), as CNN-1D operam exclusivamente sobre a dimensão temporal dos dados, tornando-as especialmente adequadas para o tratamento de séries temporais, vibrações e sinais de emissão acústica (EA).
+\textcolor{red}{Ainda estou trabalhando nesta seção}
+
+
+As Redes Neurais Convolucionais Unidimensionais (CNN-1D) representam uma extensão natural das CNNs originalmente aplicadas a imagens, adaptadas para o processamento de sinais temporais. Diferentemente das CNNs bidimensionais, nas quais os filtros convolucionais percorrem duas dimensões espaciais (altura e largura da imagem), as CNN-1D operam exclusivamente sobre a dimensão temporal dos dados, tornando-as especialmente adequadas para o tratamento de séries temporais, \mbox{vibrações e sinais de emissão acústica (EA)}.
 
 \subsection*{Fundamentos Matemáticos}
 
-A operação fundamental de uma CNN-1D é a \textit{convolução discreta}, na qual um filtro ou kernel $w = [w_1, w_2, ..., w_k]$ é aplicado sobre um vetor de entrada $x = [x_1, x_2, ..., x_n]$ para extrair características locais.  
-Matematicamente, a convolução de primeira camada é expressa por:
+A operação fundamental de uma CNN-1D é a \textit{convolução discreta}, na qual um filtro ou kernel $w = [w_1, w_2, ..., w_k]$ é aplicado sobre um vetor de entrada $x = [x_1, x_2, ..., x_n]$ para extrair características locais. Matematicamente, a convolução de \mbox{primeira camada é expressa por:}
 
 \[
 y_i = (x * w)_i = \sum_{j=1}^{k} x_{i+j-1} \cdot w_j + b
 \]
 
 onde:
-\begin{itemize}
+\begin{enumerate}
     \item $x$ é o sinal de entrada;
     \item $w$ é o vetor de pesos do filtro convolucional (kernel);
     \item $b$ é o termo de viés (\textit{bias});
     \item $y_i$ é a ativação resultante na posição $i$.
-\end{itemize}
+\end{enumerate}
 
 O deslocamento (ou \textit{stride}) do filtro define o intervalo entre posições sucessivas da convolução, influenciando diretamente a resolução temporal do mapa de características resultante.  
-Cada filtro aprende um padrão distinto — como picos abruptos, pulsos periódicos ou oscilações rápidas — correspondentes a comportamentos físicos específicos do sinal de EA.
+Cada filtro aprende um padrão distinto — como picos abruptos, pulsos periódicos ou oscilações rápidas — correspondentes a comportamentos \mbox{físicos específicos do sinal de EA.}
+
+\subsubsection*{Não-linearidade e Funções de Ativação}
+
+A saída da operação de convolução é linear. Para que a rede possa aprender fronteiras de decisão complexas e não-lineares, aplica-se uma função de ativação elemento a elemento sobre o mapa de características. A função mais comum em CNNs modernas é a \textit{Rectified Linear Unit} (ReLU). 
+Matematicamente, para uma entrada $z$, a ativação $a$ é dada por:
+
+$$
+a_i = \text{ReLU}(y_i) = \max(0, y_i)
+$$
+
+A utilização da ReLU mitiga o problema do desvanecimento do gradiente (\textit{vanishing gradient}) e induz esparsidade na representação, o que acelera a convergência do treinamento em comparação com funções sigmoides ou tangente hiperbólica \cite{Goodfellow2016}.
+
+\subsubsection*{Subamostragem (Pooling)}
+
+Para reduzir a dimensionalidade dos mapas de características e conferir invariância a pequenas translações temporais no sinal, utiliza-se a camada de subamostragem ou \textit{Pooling}. A técnica mais comum é o \textit{Max Pooling}, que seleciona o valor máximo dentro de uma janela deslizante de tamanho $p$.
+
+Seja $a$ o mapa de características ativado, a saída $s$ da camada de pooling na posição $j$ é:
+
+$$
+s_j = \max_{(j-1)p < i \leq jp} (a_i)
+$$
+
+Essa operação reduz a quantidade de parâmetros a serem computados nas camadas subsequentes e ajuda a filtrar ruídos, mantendo apenas as ativações mais proeminentes do sinal de Emissão Acústica, como picos de alta energia \cite{Kiranyaz2021}.
+
+\subsection*{Arquitetura e Camadas Totalmente Conectadas}
+
+Uma arquitetura típica de CNN-1D é composta por uma sequência de blocos de extração de características (Convolução + Ativação + Pooling), seguidos por camadas de classificação ou regressão.
+
+Após a última camada de pooling, os mapas de características resultantes são "achatados" (\textit{flattening}) em um único vetor unidimensional. Este vetor serve de entrada para as Camadas Totalmente Conectadas (\textit{Fully Connected Layers} - FC), semelhantes às de um Perceptron Multicamadas (MLP).
+
+A saída final da rede depende da tarefa:
+\begin{itemize}
+	\item \textbf{Classificação:} Utiliza-se geralmente a função \textit{Softmax} para gerar uma distribuição de probabilidade sobre as classes (ex: defeito vs. normal).
+	\item \textbf{Regressão:} Utiliza-se uma ativação linear para prever um valor contínuo (ex: tempo de vida útil restante).
+\end{itemize}
+
+\subsection*{Fluxo de Processamento (Forward Propagation)}
+
+O funcionamento algorítmico de uma passagem direta (\textit{forward pass}) em uma CNN-1D para processamento de um sinal temporal pode ser descrito pelo Algoritmo \ref{alg:cnn1d}.
+
+%\begin{algorithm}
+%	\caption{Propagação em CNN-1D para Classificação de Sinais}
+%	\label{alg:cnn1d}
+%	\begin{algorithmic}[1]
+%		
+%		\Require Sinal de entrada $X \in \mathbb{R}^{T \times 1}$ (série temporal)
+%		\Ensure Classe prevista $C$
+%		
+%		\STATE \textbf{Etapa 1: Extração de Características}
+%		
+%		\FOR{cada camada convolucional $l = 1$ até $L$}
+%		\STATE Convolução: $Y^{(l)} \gets X^{(l-1)} * W^{(l)} + b^{(l)}$
+%		\STATE Ativação: $A^{(l)} \gets \mathrm{ReLU}(Y^{(l)})$
+%		\STATE Subamostragem: $X^{(l)} \gets \mathrm{MaxPooling}(A^{(l)})$
+%		\ENDFOR
+%		
+%		\STATE \textbf{Etapa 2: Classificação}
+%		\STATE Achatamento: $V \gets \mathrm{Flatten}(X^{(L)})$
+%		\STATE Camada densa: $Z \gets W_{fc} \cdot V + b_{fc}$
+%		\STATE Probabilidades: $P \gets \mathrm{Softmax}(Z)$
+%		
+%		\Return $C \gets \operatorname{argmax}(P)$
+%		
+%	\end{algorithmic}
+%\end{algorithm}
 
 % \subsection*{Camadas de Pooling e Redução de Dimensionalidade}
 
@@ -169,7 +236,9 @@ Cada filtro aprende um padrão distinto — como picos abruptos, pulsos periódi
 % \]
 % onde \(y_i\) corresponde ao rótulo verdadeiro (codificação one-hot) da classe \(i\), e \(\hat y_i\) é a probabilidade prevista para a classe \(i\). A minimização dessa função é realizada por algoritmos baseados em gradiente — como \textit{Adam} ou \textit{Stochastic Gradient Descent} (SGD) — empregando o método de retropropagação (\textit{backpropagation}) para propagar o erro através das camadas da rede. Tal abordagem, conforme detalhado por \citeonline{krichen2023survey}, permite que a rede aprenda automaticamente representações discriminativas a partir dos dados brutos, reduzindo ou eliminando a necessidade de extração manual de características.
 
-\subsection*{Aplicação em Emissão Acústica (EA)}
+\subsection{Aplicação em Emissão Acústica (EA)}
+
+\textcolor{red}{Ainda estou trabalhando nesta seção}
 
 No contexto da detecção de cavitação por emissão acústica, a CNN-1D apresenta vantagens relevantes:
 \begin{itemize}
@@ -183,9 +252,9 @@ Assim, a CNN-1D constitui uma ferramenta poderosa para análise de sinais não e
 
 De modo geral, o aprendizado de máquina consolida-se como um pilar central na construção de sistemas inteligentes capazes de reconhecer padrões complexos e realizar inferências autônomas. A aplicação dessas técnicas à análise de sinais de emissão acústica e vibração possibilita não apenas a identificação automática de falhas, mas também a previsão de seu surgimento em estágios incipientes. Na próxima subseção, são analisados trabalhos recentes que integram aprendizado profundo e processamento de sinais industriais, destacando as arquiteturas, métricas e estratégias de modelagem que influenciam diretamente o desempenho em aplicações de diagnóstico de cavitação.
 
-\subsection{Modelos e Aplicações em Diagnóstico de Falhas}
-
-\textcolor{red}{Ainda estou selecionado/lendo/resumindo os artigos}
+%\subsection{Modelos e Aplicações em Diagnóstico de Falhas}
+%
+%\textcolor{red}{Ainda estou selecionado/lendo/resumindo os artigos}
 
 % \textcolor{red}{Em processo de busca de trabalhos relacionados e leitura para depois escrever esta seção}
 
