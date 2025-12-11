@@ -2,7 +2,7 @@ A presente seção tem como propósito estabelecer os fundamentos conceituais, t
 
 Inicialmente, apresenta-se a \textbf{Técnica de Emissão Acústica (EA)} como ferramenta de ensaio não destrutivo, amplamente utilizada para o monitoramento de processos de degradação estrutural e detecção de falhas em sistemas hidráulicos e rotativos. São discutidos o funcionamento, os parâmetros característicos dos sinais e os avanços na aplicação da EA à identificação de cavitação em bombas centrífugas.
 
-Em seguida, aborda-se o \textbf{Aprendizado de Máquina (\textit{Machine Learning, ML})}, com ênfase nas arquiteturas de \textbf{Redes Neurais Convolucionais Unidimensionais (\textit{One-Dimensional Convolutional Neural Network, CNN1D})}, que têm se destacado no processamento de sinais acústicos e vibracionais. São apresentados os principais paradigmas de aprendizado, os algoritmos mais utilizados na literatura e as bases matemáticas que fundamentam as CNNs aplicadas à análise espectro-temporal de sinais de Emissão Acústica.
+Em seguida, aborda-se o \textbf{Aprendizado de Máquina (\textit{Machine Learning, ML})}, com ênfase nas arquiteturas de \textbf{Redes Neurais Convolucionais Unidimensionais (\textit{One-Dimensional Convolutional Neural Network, CNN-1D})}, que têm se destacado no processamento de sinais acústicos e vibracionais. São apresentados os principais paradigmas de aprendizado, os algoritmos mais utilizados na literatura e as bases matemáticas que fundamentam as CNNs aplicadas à análise espectro-temporal de sinais de Emissão Acústica.
 
 Por fim, introduz-se o conceito de \textbf{Field-Programmable Gate Arrays (FPGAs)}, destacando suas características de paralelismo, baixa latência e reconfigurabilidade, que as tornam plataformas ideais para o processamento em tempo real de dados provenientes de sensores inteligentes. Discute-se ainda o potencial de integração entre aprendizado de máquina e hardware reconfigurável, abrindo caminho para \mbox{sistemas embarcados de diagnóstico autônomo.}
 
@@ -72,9 +72,8 @@ Do ponto de vista operacional, o \textbf{limiar} (\textit{threshold}) é definid
     em que $x[n]$ é o sinal de EA amostrado e $e[n]$ denota o invólucro (por exemplo, obtido por retificação + filtragem passa-baixas, ou por transformada de Hilbert). Essa métrica captura \textit{quanta de atividade} ao longo do hit, sendo bastante utilizada por fornecedores de instrumentação de EA e por materiais de referência \mbox{educacionais como o \citeonline{nde-ed-ae-equipment}.}
 \end{itemize}
 
+\noindent\textbf{{Observação sobre nomenclatura de energia.}}
 
-
-\paragraph*\textbf{{Observação sobre nomenclatura de energia.}}
 É importante salientar que \textbf{não há consenso terminológico} na literatura quanto à ``energia'' do evento de EA. Enquanto o \citeonline{nde-ed-ae-equipment} emprega \textit{MARSE} (área do invólucro retificado), revisões de estado da arte, como \citeonline{liu2023review}, frequentemente utilizam \textbf{energia baseada em potência instantânea}, aproximada pela soma dos quadrados da amplitude (proporcional a energia acústica sob hipóteses de linearidade do caminho e calibração adequada, \mbox{como apresentada em \ref{eq:energia}:}
 
 \begin{equation}
@@ -93,7 +92,7 @@ Esses parâmetros, além de fornecerem informações físicas sobre a natureza d
 
 No domínio do tempo, são extraídos descritores diretos, como amplitude, duração, tempo de subida, energia (MARSE ou energia quadrática), número de contagens e razão entre parâmetros (por exemplo, a razão entre energia e duração, indicativa da intensidade relativa do evento). Já no domínio da frequência, técnicas de análise espectral, como a Transformada Rápida de Fourier (FFT) ou a Transformada de Short-Time Fourier (STFT), permitem a identificação de componentes dominantes e a distinção entre regimes acústicos característicos — como cavitação incipiente, cavitação plena e ruído mecânico.
 
-Durante o pré-processamento, esses parâmetros são normalizados com base em janelas móveis e limiares de ruído, garantindo que variações instrumentais ou ambientais não influenciem indevidamente o processo de aprendizagem. As janelas de tempo são segmentadas e rotuladas conforme as classes de operação (\textit{normal}, \textit{cavitação} ou \textit{falha estrutural}), e o conjunto de sinais normalizados é então utilizado como \mbox{entrada para o treinamento da CNN1D.}
+Durante o pré-processamento, esses parâmetros são normalizados com base em janelas móveis e limiares de ruído, garantindo que variações instrumentais ou ambientais não influenciem indevidamente o processo de aprendizagem. As janelas de tempo são segmentadas e rotuladas conforme as classes de operação (\textit{normal}, \textit{cavitação} ou \textit{falha estrutural}), e o conjunto de sinais normalizados é então utilizado como \mbox{entrada para o treinamento da CNN-1D.}
 
 Nesse contexto, a rede convolucional atua como uma extensão automática do processo de extração de \textit{features}, aprendendo representações hierárquicas diretamente das formas de onda ou dos espectrogramas derivados. Essa combinação entre parâmetros clássicos da Emissão Acústica e aprendizado profundo forma uma abordagem híbrida que alia a interpretabilidade dos métodos tradicionais à robustez e adaptabilidade dos modelos modernos de Inteligência Artificial, conforme ilustrado no fluxograma geral dos objetivos~da pesquisa (Figura~\ref{fig:fluxograma_geral}).
 
@@ -111,7 +110,7 @@ Os autores revisam diferentes metodologias de detecção baseadas em sinais, com
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\linewidth]{figs/Artigos/Liu/Figura1.pdf}
+    \includegraphics[width=1\linewidth]{figs/Artigos/Liu/Figura1.pdf}
     \caption{Fluxograma básico de detecção de cavitação com base em diferentes sinais. Adaptado de \citeonline{liu2023review}.}
     \label{fig:LiuFig1}
 \end{figure}
@@ -124,17 +123,18 @@ O diagrama da Figura~\ref{fig:LiuFig1} organiza a detecção por \textbf{famíli
     \item \textbf{Sinal de ruído (microfones/hidrofones):} capta componentes aéreas ou no fluido; informativo para estágios mais intensos de cavitação e para varreduras rápidas, embora mais suscetível a interferências ambientais.
     \item \textbf{Pulsação de pressão (transdutores de pressão):} evidencia flutuações periódicas/quasi-periódicas do campo de pressão; útil para mapear regimes e instabilidades do escoamento.
 \end{itemize}
-A linha intermediária do diagrama explicita que \textbf{cada sensor observa um aspecto da cavitação}: os sinais carregam assinaturas distintas (impactos, bandas espectrais, intermitência, modulações). A partir daí, o fluxo converge para \textbf{processamento de sinais} (métricas no tempo: RMS, pico, curtose, crest factor; no espectro: centroides, bandas energéticas; no tempo–frequência: STFT, wavelets), seguido de \textbf{extração de atributos} e \textbf{reconhecimento de estado} por algoritmos de IA (por exemplo, \textit{SVM}, \textit{Random Forest}, \textit{k-NN}, e redes profundas como CNN1D/2D ou \textit{LSTM}). Em síntese, a figura mostra que, embora os canais sensoriais sejam diversos, o \textit{pipeline lógico} é comum e modular.
+A linha intermediária do diagrama explicita que \textbf{cada sensor observa um aspecto da cavitação}: os sinais carregam assinaturas distintas (impactos, bandas espectrais, intermitência, modulações). A partir daí, o fluxo converge para \textbf{processamento de sinais} (métricas no tempo: RMS, pico, curtose, crest factor; no espectro: centroides, bandas energéticas; no tempo–frequência: STFT, wavelets), seguido de \textbf{extração de atributos} e \textbf{reconhecimento de estado} por algoritmos de IA (por exemplo, \textit{SVM}, \textit{Random Forest}, \textit{k-NN}, e redes profundas como CNN-1D/2D ou \textit{LSTM}). Em síntese, a figura mostra que, embora os canais sensoriais sejam diversos, o \textit{pipeline lógico} é comum e modular.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.95\linewidth]{figs/Artigos/Liu/Figura2.pdf}
+    \includegraphics[width=1\linewidth]{figs/Artigos/Liu/Figura2.pdf}
     \caption{Diagrama principal do conteúdo da pesquisa do artigo. Adaptado de \citeonline{liu2023review}. }
     \label{fig:LiuFig2}
 \end{figure}
 
 Com o objetivo de mapear os desafios do monitoramento de condição, o esquema ilustrado na Figura~\ref{fig:LiuFig2} sintetiza o \textbf{ciclo de pesquisa} em cinco camadas essenciais. Tal segmentação abrange desde a caracterização do problema de desempenho e integridade em bombas até a implementação de soluções inteligentes unificadas, compreendendo os seguintes tópicos:
 
+\linespread{1.27}\selectfont
 \begin{enumerate}
     \item \textbf{Introdução:} contextualiza a cavitação como problema de desempenho e integridade; define objetivos (detecção incipiente, redução de custos, aumento de confiabilidade).
     \item \textbf{Princípio de detecção:} relaciona a \textit{origem física} da cavitação com o \textit{que cada sensor enxerga}. Por exemplo, o colapso de bolhas gera altas frequências (AE), enquanto flutuações de pressão se refletem mais nos transdutores de pressão e na vibração de baixa/média frequência.
@@ -158,7 +158,8 @@ Com o objetivo de mapear os desafios do monitoramento de condição, o esquema i
 
 Em síntese, as Figuras \ref{fig:LiuFig1} e \ref{fig:LiuFig2} evidenciam que a detecção de cavitação tem evoluído de abordagens puramente empíricas para arquiteturas \textbf{modulares e orientadas a dados}, nas quais a escolha do sensor, a estratégia de processamento e o modelo de classificação integram-se em um \textit{pipeline} unificado e flexível. Essa estrutura permite adaptar metodologias de diagnóstico a distintos contextos industriais, conciliando precisão, \mbox{tempo de resposta e viabilidade de implementação.}
 
-Sob essa perspectiva, os estudos analisados reforçam a motivação central desta pesquisa: investigar a cadeia de processamento que envolve o \textbf{pré-processamento}, a \textbf{extração e representação de atributos} e a \textbf{classificação por meio de uma CNN1D}, com o objetivo de alcançar uma detecção de cavitação rápida, robusta e energeticamente eficiente. Ao mesmo tempo, mantém-se a perspectiva de integração futura dessas técnicas em \textit{hardware} reconfigurável, consolidando um caminho viável para soluções embarcadas de monitoramento inteligente.
+Sob essa perspectiva, os estudos analisados reforçam a motivação central desta pesquisa: investigar a cadeia de processamento que envolve o \textbf{pré-processamento}, a \textbf{extração e representação de atributos} e a \textbf{classificação por meio de uma CNN-1D}, com o objetivo de alcançar uma detecção de cavitação rápida, robusta e energeticamente eficiente. Ao mesmo tempo, mantém-se a perspectiva de integração futura dessas técnicas em \textit{hardware} reconfigurável, consolidando um caminho viável para soluções embarcadas de monitoramento inteligente.
+
 
 Entre os diversos métodos analisados por \citeonline{liu2023review}, o monitoramento por vibração se destaca como o mais consolidado e amplamente aplicado em sistemas hidráulicos industriais. Alterações expressivas na resposta espectral, especialmente o surgimento de picos em faixas de 2 kHz a 8 kHz, constituem indicadores diretos da presença de cavitação — fenômeno ilustrado nas Figuras \ref{fig:LiuFig4A} e \ref{fig:LiuFig4B}. A primeira demonstra a diferença temporal entre regimes de operação com e sem cavitação, evidenciando o aumento abrupto da amplitude e da irregularidade do sinal. Já a segunda mostra, no domínio da frequência, o deslocamento da energia espectral e a intensificação de componentes harmônicas conforme a rotação da bomba aumenta, comportamento que reflete a instabilidade hidrodinâmica \mbox{provocada pelo colapso das bolhas.}
 
@@ -167,6 +168,7 @@ Apesar de sua maturidade tecnológica, o método de vibração apresenta sensibi
 Os parâmetros derivados do sinal, como \textbf{amplitude}, \textbf{duração}, \textbf{energia} e \textbf{contagens acima do limiar} (ou “counts”), mostrados na Figura \ref{fig:LiuFig6}, constituem indicadores diretos da intensidade e da frequência de ocorrência dos eventos acústicos. Esses parâmetros — amplamente empregados em sistemas de monitoramento baseados em hits — permitem não apenas detectar a cavitação incipiente, mas também avaliar a severidade do processo de erosão associada. No entanto, sua adoção em ambientes industriais ainda é desafiada por fatores como o custo dos sensores piezoelétricos de alta sensibilidade, a necessidade de acoplamento preciso e a suscetibilidade à interferência estrutural.
 
 Assim, enquanto os sensores de vibração oferecem uma visão global e robusta do comportamento dinâmico do conjunto rotativo, a emissão acústica fornece uma janela privilegiada para o diagnóstico precoce, sendo particularmente promissora para integração futura com plataformas embarcadas de detecção inteligente — foco desta pesquisa.
+\linespread{1.25}\selectfont
 
 \begin{figure}[H]
     \centering
@@ -184,7 +186,9 @@ A Figura \ref{fig:LiuFig4A} apresenta os sinais de aceleração medidos em uma b
     \label{fig:LiuFig4B}
 \end{figure}
 
+\linespread{1.27}\selectfont
 Na Figura \ref{fig:LiuFig4B}, os sinais de vibração são analisados no domínio da frequência para diferentes velocidades de rotação (2000, 3000, 4000 e 5000 rpm). Os gráficos demonstram que, conforme a rotação aumenta, há um deslocamento e uma intensificação das componentes espectrais na faixa de 2 kHz a 8 kHz — região marcada como \textit{cavitation region}. Esses picos adicionais resultam da energia liberada pelos colapsos das bolhas de vapor, que introduzem novas componentes de alta frequência no espectro. A Figura \ref{fig:LiuFig4B} também mostra que a amplitude dessas componentes cresce com o aumento da rotação, evidenciando uma correlação direta entre a intensidade da cavitação e o conteúdo de alta frequência do sinal. Essa observação reforça a utilidade da análise espectral na \mbox{identificação e quantificação do fenômeno.}
+\linespread{1.25}\selectfont
 
 \begin{figure}[H]
     \centering
@@ -240,13 +244,15 @@ A metodologia foi organizada em duas fases distintas. Na primeira, foram realiza
     \label{fig:amini2022developmentFig2}
 \end{figure}
 
+\linespread{1.27}\selectfont
 As figuras explicam por si o salto metodológico:  
 Figura \ref{fig:amini2022developmentFig1}: ilustra a instalação experimental de bancada no túnel de cavitação, onde o hidrofólio NACA 0015 foi submetido a perfis de escoamento com pressão de sucção reduzida para induzir cavitação. O desenho da seção transversal do hidrofólio permite visualizar as dimensões e geometria usadas nos testes. Essa figura demonstra claramente a etapa de laboratório, onde as condições são controladas, permitindo análise precisa dos sinais acústicos captados.
 
 Figura \ref{fig:amini2022developmentFig2}: apresenta a aplicação em campo real, com uma turbina Francis de dois rotores na usina de Ernen. Essa imagem reforça a transição da metodologia do laboratório para o ambiente operacional industrial, destacando a compatibilidade da solução desenvolvida com sistemas de grande escala. A capacidade de validação em usina real confere maior credibilidade à técnica proposta.  
 
-Em resumo, o estudo reforça a viabilidade do uso de sinais acústicos não invasivos em combinação com algoritmos de aprendizado para o monitoramento da cavitação em turbinas hidráulicas. A abordagem — centrada em microfones, processamento de sinais e classificação supervisionada — fornece uma estrutura promissora para aplicações industriais, o que dialoga diretamente com o foco desta dissertação: a implementação simulada de uma rede neural de convolução (CNN1D) em hardware reconfigurável (FPGA) para detecção de falhas em sistemas hidráulicos.
+Em resumo, o estudo reforça a viabilidade do uso de sinais acústicos não invasivos em combinação com algoritmos de aprendizado para o monitoramento da cavitação em turbinas hidráulicas. A abordagem — centrada em microfones, processamento de sinais e classificação supervisionada — fornece uma estrutura promissora para aplicações industriais, o que dialoga diretamente com o foco desta dissertação: a implementação simulada de uma rede neural de convolução (CNN-1D) em hardware reconfigurável (FPGA) para detecção de falhas em sistemas hidráulicos.
 
+\linespread{1.27}\selectfont
 O processamento dos sinais foi realizado por meio da transformada rápida de Fourier (FFT) e da extração de características no domínio da frequência, com o objetivo de identificar padrões representativos da cavitação. Para a etapa de classificação supervisionada, foram testados dois algoritmos de aprendizado de máquina: o \textit{k-Nearest Neighbors} (k-NN), aplicado aos ensaios laboratoriais, e o \textit{Gaussian Mixture Model} (GMM), utilizado para os dados coletados na usina. 
 
 Os resultados mostraram que, em condições estáticas de laboratório, a distinção entre regimes cavitantes e não cavitantes foi clara, atingindo 100\% de acurácia. Já nos ensaios dinâmicos, a precisão manteve-se elevada, superior a 95\%, mesmo diante da maior complexidade imposta pela rotulagem de dados e pela ausência de critérios visuais diretos para validação, como ilustram as Figuras~\ref{fig:amini2022developmentFig3} e~\ref{fig:amini2022developmentFig4}. Na aplicação em escala real, apesar da presença de ruído de fundo significativo, o algoritmo manteve desempenho consistente, separando com clareza as diferentes classes de operação e identificando distintos níveis de severidade da cavitação, conforme apresentado na Figura~\ref{fig:amini2022developmentFig6}.
@@ -258,7 +264,9 @@ Os resultados mostraram que, em condições estáticas de laboratório, a distin
     \label{fig:amini2022developmentFig3}
 \end{figure}
 
+\linespread{1.27}\selectfont
 A Figura~\ref{fig:amini2022developmentFig3} apresenta o sinal acústico registrado durante um teste dinâmico. A parte superior mostra a variação da pressão sonora no tempo, enquanto o espectrograma inferior exibe a distribuição de energia no domínio da frequência. É possível observar o aumento de componentes de alta frequência à medida que a cavitação se intensifica, evidenciando a sensibilidade do método acústico.
+\linespread{1.25}\selectfont
 
 \begin{figure}[H]
     \centering
@@ -289,11 +297,13 @@ Uma análise estatística complementar, realizada a partir do histórico operaci
     \label{fig:amini2022developmentFig7}
 \end{figure}
 
+\linespread{1.28}\selectfont
 A Figura~\ref{fig:amini2022developmentFig7} evidencia a frequência relativa de operação das duas turbinas, expressa em função da potência normalizada $P / P_{BEP}$, sendo $P_{BEP}$ a potência correspondente ao ponto de melhor eficiência \textit{Best Efficiency Point}. Observa-se que ambas as unidades operaram de forma recorrente acima de $1{,}2\,P_{BEP}$, faixa associada a maior risco de cavitação. Essa distribuição reforça a importância de sistemas de monitoramento contínuo, visto que períodos prolongados nesse regime podem causar erosão nas pás, vibrações excessivas e perdas de desempenho hidráulico. Além disso, a análise mostra a utilidade do sistema proposto não apenas para o acompanhamento em tempo real, mas também como ferramenta de avaliação histórica das condições operacionais e identificação de padrões de desgaste.
 
+\linespread{1.28}\selectfont
 Em conclusão, \citeonline{amini2022development} demonstram a viabilidade de um método não intrusivo para detecção de cavitação em turbinas hidráulicas, baseado em sinais acústicos e aprendizado de máquina. O sistema foi validado tanto em condições laboratoriais quanto em escala industrial, apresentando alta precisão na identificação de diferentes regimes de escoamento. Os autores ainda destacam o potencial de aprimoramento futuro por meio da incorporação de algoritmos mais avançados, capazes de distinguir entre diferentes tipos de cavitação e estimar índices de severidade. Tais avanços poderiam ser generalizados para outras configurações de turbinas mediante o uso de técnicas de aprendizado por transferência, ampliando o escopo de aplicação em sistemas hidrelétricos.
 
-
+\linespread{1.28}\selectfont
 A seguir, apresenta-se uma comparação sistemática dos principais tipos de sensores empregados na detecção de cavitação em bombas centrífugas, destacando suas faixas de frequência típicas, vantagens, limitações e aplicações mais adequadas. A Tabela \ref{tab:sensores_cavitacao} sintetiza essas características e proporciona ao leitor uma visão panorâmica dos trade-offs entre custo, sensibilidade e operacionalidade de cada sensor. Com isso, pretende-se facilitar a escolha adequada do sistema de medição conforme o estágio de cavitação, a criticidade do equipamento e o contexto de monitoramento industrial.
 
 \begin{table}[H]
@@ -333,9 +343,9 @@ Análise de instabilidades de escoamento, flutuações de pressão e correlaçã
 \end{tabular}}
 \end{table}
 
-
-A Tabela \ref{tab:dominio_algoritmos} apresenta uma síntese dos principais “domínios de análise” e “algoritmos de classificação” empregados na detecção de cavitação em bombas centrífugas, conforme relatado por estudos recentes como \citeonline{liu2023review} e \citeonline{Zhang2015}. Esta comparação sistemática permite visualizar como diferentes tipos de sinais (vibração, emissão acústica, ruído, pulsação de pressão ou fusão de sensores) são processados em distintos domínios (tempo, frequência, tempo-frequência ou nível de atributos) e como tais sinais alimentam modelos de aprendizado de máquina ou redes neurais profundas (SVM, Random Forest, CNN, LSTM, entre outros). O conjunto de colunas “Técnicas de Extração de Atributos” e “Algoritmos / Modelos de Classificação” destaca os principais métodos em uso, enquanto a coluna “Referências Representativas” orienta o leitor para os estudos-chave que documentam cada abordagem. Em suma, esta tabela serve como ferramenta de orientação para a seleção de metodologias adequadas ao seu estudo — no qual a ênfase recai sobre o uso de dados de emissão acústica e a implementação simulada de uma CNN1D — além de evidenciar a evolução do campo em direção a pipelines cada vez mais sofisticados e integrados.
-
+\linespread{1.28}\selectfont
+A Tabela \ref{tab:dominio_algoritmos} apresenta uma síntese dos principais “domínios de análise” e “algoritmos de classificação” empregados na detecção de cavitação em bombas centrífugas, conforme relatado por estudos recentes como \citeonline{liu2023review} e \citeonline{Zhang2015}. Esta comparação sistemática permite visualizar como diferentes tipos de sinais (vibração, emissão acústica, ruído, pulsação de pressão ou fusão de sensores) são processados em distintos domínios (tempo, frequência, tempo-frequência ou nível de atributos) e como tais sinais alimentam modelos de aprendizado de máquina ou redes neurais profundas (SVM, Random Forest, CNN, LSTM, entre outros). O conjunto de colunas “Técnicas de Extração de Atributos” e “Algoritmos / Modelos de Classificação” destaca os principais métodos em uso, enquanto a coluna “Referências Representativas” orienta o leitor para os estudos-chave que documentam cada abordagem. Em suma, esta tabela serve como ferramenta de orientação para a seleção de metodologias adequadas ao seu estudo — no qual a ênfase recai sobre o uso de dados de emissão acústica e a implementação simulada de uma CNN-1D — além de evidenciar a evolução do campo em direção a pipelines cada vez mais sofisticados e integrados.
+\linespread{1.25}\selectfont
 \begin{table}[H]
 \footnotesize
 \centering
@@ -350,19 +360,19 @@ A Tabela \ref{tab:dominio_algoritmos} apresenta uma síntese dos principais “d
 \textbf{Vibração} &
 Tempo / Frequência &
 RMS, curtose, fator de crista, frequência dominante, cepstrum, entropia espectral &
-SVM, Random Forest, LSTM, CNN1D &
+SVM, Random Forest, LSTM, CNN-1D &
 \citeonline{liu2023review}, \citeonline{Wang2019} \\ \hline
 
 \textbf{Emissão Acústica} &
 Tempo / Frequência &
 Amplitude, duração, invólucro retificado (MARSE), contagens, STFT, Wavelet Packet, espectrograma &
-CNN1D, CNN2D (STFT), SAE, DBN &
+CNN-1D, CNN-2D (STFT), SAE, DBN &
 \citeonline{liu2023review}, \citeonline{Zhang2015} \\ \hline
 
 \textbf{Ruído} &
 Tempo / Frequência &
 Análise espectral, densidade de potência, centroides de frequência, coeficientes MFCC &
-SVM, k-NN, CNN2D, Transformer (Spectrogram) &
+SVM, k-NN, CNN-2D, Transformer (Spectrogram) &
 \citeonline{liu2023review}, \citeonline{Nurvitadhi2017} \\ \hline
 
 \textbf{Pulsos de Pressão} &

@@ -47,7 +47,7 @@ Entretanto, a implementação desses modelos em sistemas embarcados impõe desaf
 
 \section{Objetivos da Pesquisa}
 
-O objetivo desta pesquisa é desenvolver e implementar um sistema embarcado baseado em redes neurais artificiais (RNA), especificamente uma \textbf{Rede Neural Convolucional Unidimensional (\textit{One-Dimensional Convolutional Neural Network, CNN1D})}, sobre um dispositivo do tipo FPGA, para a análise de sinais de emissão acústica, com vistas à detecção rápida e eficiente de falhas em motobombas.
+O objetivo desta pesquisa é desenvolver e implementar um sistema embarcado baseado em redes neurais artificiais (RNA), especificamente uma \textbf{Rede Neural Convolucional Unidimensional (\textit{One-Dimensional Convolutional Neural Network, CNN-1D})}, sobre um dispositivo do tipo FPGA, para a análise de sinais de emissão acústica, com vistas à detecção rápida e eficiente de falhas em motobombas.
 
 Esse sistema visa superar as limitações dos métodos tradicionais de monitoramento, proporcionando uma solução de diagnóstico em tempo real, capaz de identificar padrões característicos de cavitação e outros fenômenos que possam comprometer a integridade estrutural dos equipamentos. A implementação em FPGA permite um processamento altamente otimizado, com baixa latência e eficiência energética superior, em comparação com abordagens baseadas exclusivamente em CPU ou GPU.
 
@@ -63,10 +63,10 @@ Com base nesse objetivo geral, delineiam-se a seguir os objetivos específicos q
 
 \begin{enumerate}[label=\textbf{\arabic*.}]
     \item \textbf{Selecionar e tratar dados de emissão acústica provenientes da literatura}:
-Compilar bases de dados públicas e resultados experimentais reportados em estudos anteriores, contendo sinais de emissão acústica de motobombas em operação normal e sob condições de falha. Realizar o pré-processamento desses dados, aplicando técnicas de filtragem, normalização e segmentação temporal, de modo a garantir sua adequação para o treinamento da CNN1D.
+Compilar bases de dados públicas e resultados experimentais reportados em estudos anteriores, contendo sinais de emissão acústica de motobombas em operação normal e sob condições de falha. Realizar o pré-processamento desses dados, aplicando técnicas de filtragem, normalização e segmentação temporal, de modo a garantir sua adequação para o treinamento da CNN-1D.
 
     \item \textbf{Treinar o modelo de rede neural}:
-Desenvolver e ajustar uma CNN1D capaz de classificar padrões de emissão acústica associados à cavitação e a outras anomalias mecânicas, utilizando dados simulados e/ou provenientes da literatura. Avaliar o modelo por meio de métricas como acurácia, precisão, sensibilidade e F-score, buscando uma configuração otimizada para aplicação embarcada.
+Desenvolver e ajustar uma CNN-1D capaz de classificar padrões de emissão acústica associados à cavitação e a outras anomalias mecânicas, utilizando dados simulados e/ou provenientes da literatura. Avaliar o modelo por meio de métricas como acurácia, precisão, sensibilidade e F-score, buscando uma configuração otimizada para aplicação embarcada.
 
     \item \textbf{Simular a implementação em FPGA}:
 Modelar e simular a execução do modelo em FPGA, com o auxílio de ferramentas de síntese e frameworks de otimização como o FINN ou equivalentes, avaliando o uso teórico de recursos (LUTs, DSPs, BRAMs) e estimando a latência e o consumo energético do sistema sob diferentes parâmetros~de quantização.
@@ -83,11 +83,11 @@ Estabelecer indicadores de desempenho teórico, como latência simulada inferior
 À luz dos objetivos delineados, as contribuições esperadas deste trabalho situam-se no âmbito de um estudo de viabilidade técnica, com foco em modelagem, simulação e análise de desempenho de arquiteturas de aprendizado de máquina embarcadas em FPGA. De forma sintética, podem ser descritas como:
 
 \begin{enumerate}[label=\textbf{\arabic*.}]
-	\item \textbf{Proposição e análise de uma metodologia computacional} para a detecção e classificação da cavitação em bombas centrífugas, baseada em redes neurais convolucionais unidimensionais, CNN1D, aplicadas a sinais de emissão acústica provenientes de bases de dados públicas e de experimentos do Projeto MOMEA.
+	\item \textbf{Proposição e análise de uma metodologia computacional} para a detecção e classificação da cavitação em bombas centrífugas, baseada em redes neurais convolucionais unidimensionais, CNN-1D, aplicadas a sinais de emissão acústica provenientes de bases de dados públicas e de experimentos do Projeto MOMEA.
 	
-	\item \textbf{Desenvolvimento, treinamento e avaliação em ambiente de simulação} de um modelo de CNN1D otimizado e quantizado, preparado para mapeamento em dispositivos do tipo FPGA com o uso da biblioteca FINN, de modo a avaliar a viabilidade teórica do emprego de hardware reconfigurável em aplicações de Inteligência Artificial \mbox{voltadas ao monitoramento de motobombas.}
+	\item \textbf{Desenvolvimento, treinamento e avaliação em ambiente de simulação} de um modelo de CNN-1D otimizado e quantizado, preparado para mapeamento em dispositivos do tipo FPGA com o uso da biblioteca FINN, de modo a avaliar a viabilidade teórica do emprego de hardware reconfigurável em aplicações de Inteligência Artificial \mbox{voltadas ao monitoramento de motobombas.}
 	
-	\item \textbf{Sistematização de um fluxo de projeto de ponta a ponta}, integrando as etapas de seleção e preparação dos sinais, definição da arquitetura de rede, treinamento da CNN1D e estimativa de implementação em FPGA, de forma a fornecer uma referência metodológica para trabalhos futuros que venham a contemplar a \mbox{prototipagem física do sistema.}
+	\item \textbf{Sistematização de um fluxo de projeto de ponta a ponta}, integrando as etapas de seleção e preparação dos sinais, definição da arquitetura de rede, treinamento da CNN-1D e estimativa de implementação em FPGA, de forma a fornecer uma referência metodológica para trabalhos futuros que venham a contemplar a \mbox{prototipagem física do sistema.}
 \end{enumerate}
 
 Ressalta-se que, no escopo desta qualificação/dissertação, todas as análises relacionadas à implementação em FPGA serão conduzidas em ambiente de simulação, caracterizando o estudo como uma etapa preliminar de viabilidade técnica, a partir da qual poderão ser planejadas futuras extensões com implementação física do hardware.

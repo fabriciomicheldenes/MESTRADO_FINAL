@@ -342,7 +342,7 @@ Diante desse conjunto de vantagens e limitações, o uso de FPGAs em aplicaçõe
 
 Por um lado, a possibilidade de explorar paralelismo em nível de hardware, customizar a precisão numérica e integrar, em um único dispositivo, funções de aquisição, processamento e decisão torna os FPGAs particularmente atraentes para sistemas de monitoramento em tempo real baseados em aprendizado de máquina. Por outro, a necessidade de lidar com recursos restritos, fluxos de projeto mais complexos e desafios de quantização demanda uma fase prévia de estudo e modelagem cuidadosa antes de se partir para a implementação física. 
 
-Nesse contexto, o presente trabalho concentra-se em um \textit{estudo de viabilidade} por meio de simulação de uma arquitetura baseada em CNN1D embarcada em FPGA, utilizando o framework FINN como ferramenta de apoio ao mapeamento em hardware.
+Nesse contexto, o presente trabalho concentra-se em um \textit{estudo de viabilidade} por meio de simulação de uma arquitetura baseada em CNN-1D embarcada em FPGA, utilizando o framework FINN como ferramenta de apoio ao mapeamento em hardware.
 
 O objetivo é compreender, de forma sistemática, como os trade-offs entre acurácia, latência e uso de recursos podem ser equilibrados em um cenário de detecção de cavitação por emissão acústica, fornecendo subsídios técnicos para futuras etapas de prototipagem e implementação real.
 
@@ -485,11 +485,11 @@ No contexto desta pesquisa, entre as diversas técnicas de otimização disponí
 	
 	\item \textbf{A poda estruturada} complementa essa estratégia ao eliminar filtros ou canais pouco relevantes, reduzindo tanto o volume de operações quanto a memória necessária para armazenar pesos. 
 	
-	\item \textbf{ A fusão de operadores} combinada com um fluxo de dados, é especialmente vantajosa no caso de CNN1D aplicadas a sinais temporais, pois permite implementar convolução, ativação e operações de redução em um único bloco pipeline, eliminando \textit{buffers} intermediários, reduzindo latência e maximizando o \textit{throughput}. Como os eventos de EA tratados pelo método HIT apresentam janelas curtas e estruturadas, esse arranjo \textit{streaming} torna-se extremamente eficiente, alinhando o modelo ao estilo de computação nativo dos FPGAs e reduzindo o uso de BRAM e lógica de controle.
+	\item \textbf{ A fusão de operadores} combinada com um fluxo de dados, é especialmente vantajosa no caso de CNN-1D aplicadas a sinais temporais, pois permite implementar convolução, ativação e operações de redução em um único bloco pipeline, eliminando \textit{buffers} intermediários, reduzindo latência e maximizando o \textit{throughput}. Como os eventos de EA tratados pelo método HIT apresentam janelas curtas e estruturadas, esse arranjo \textit{streaming} torna-se extremamente eficiente, alinhando o modelo ao estilo de computação nativo dos FPGAs e reduzindo o uso de BRAM e lógica de controle.
 \end{itemize}
 
 
-Assim, essas três técnicas formam a base da otimização proposta para viabilizar a execução da CNN1D no FPGA com baixa latência e consumo reduzido de recursos, mantendo a sensibilidade necessária para identificar padrões associados à cavitação.
+Assim, essas três técnicas formam a base da otimização proposta para viabilizar a execução da CNN-1D no FPGA com baixa latência e consumo reduzido de recursos, mantendo a sensibilidade necessária para identificar padrões associados à cavitação.
 
 \subsection{Framework FINN}
 
