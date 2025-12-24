@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="235.03571mm"
+   height="56.664116mm"
+   viewBox="0 0 235.03571 56.664116"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   sodipodi:docname="FluxoOperacaoMOMEAMLP.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.8480228"
+     inkscape:cx="442.20509"
+     inkscape:cy="72.521635"
+     inkscape:window-width="2438"
+     inkscape:window-height="2041"
+     inkscape:window-x="1380"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <marker
+       style="overflow:visible"
+       id="DartArrow"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Dart arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         d="M 0,0 5,-5 -12.5,0 5,5 Z"
+         transform="scale(-0.5)"
+         id="path13" />
+    </marker>
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect12"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect11"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect10"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect9"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect8"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect7"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect12-5"
+       is_visible="true"
+       lpeversion="1" />
+    <marker
+       style="overflow:visible"
+       id="DartArrow-6-7"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Dart arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         d="M 0,0 5,-5 -12.5,0 5,5 Z"
+         transform="scale(-0.5)"
+         id="path13-8-1" />
+    </marker>
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect12-5-4"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect12-5-6"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect12-5-6-4"
+       is_visible="true"
+       lpeversion="1" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect12-5-6-4-8"
+       is_visible="true"
+       lpeversion="1" />
+    <marker
+       style="overflow:visible"
+       id="DartArrow-7"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Dart arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         d="M 0,0 5,-5 -12.5,0 5,5 Z"
+         transform="scale(-0.5)"
+         id="path13-1" />
+    </marker>
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect12-0"
+       is_visible="true"
+       lpeversion="1" />
+  </defs>
+  <g
+     inkscape:label="Camada 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-22.789642,-40.106375)">
+    <rect
+       style="fill:#afdde9;stroke:#003380;stroke-width:0.953434;stroke-linecap:round;stroke-dasharray:none"
+       id="rect1"
+       width="114.93972"
+       height="50.625942"
+       x="23.266359"
+       y="45.642868"
+       rx="6.4232163"
+       ry="3.5381062" />
+    <rect
+       style="fill:#ffccaa;stroke:#aa4400;stroke-width:0.953434;stroke-linecap:round;stroke-dasharray:none"
+       id="rect1-0"
+       width="114.93972"
+       height="50.625942"
+       x="142.40891"
+       y="45.667831"
+       rx="6.4232163"
+       ry="3.5381062" />
+    <text
+       xml:space="preserve"
+       style="font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';text-align:center;text-anchor:middle;fill:#afdde9;stroke:#003380;stroke-width:1;stroke-linecap:round;stroke-dasharray:none"
+       x="79.419914"
+       y="43.188354"
+       id="text1"><tspan
+         sodipodi:role="line"
+         id="tspan1"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;stroke:none;stroke-width:1"
+         x="79.419914"
+         y="43.188354">Software</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';text-align:center;text-anchor:middle;fill:#afdde9;stroke:#003380;stroke-width:1;stroke-linecap:round;stroke-dasharray:none"
+       x="195.60077"
+       y="43.162807"
+       id="text1-4"><tspan
+         sodipodi:role="line"
+         id="tspan1-4"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;stroke:none;stroke-width:1"
+         x="195.60077"
+         y="43.162807">Aplicação</tspan></text>
+    <rect
+       style="fill:#ffffff;stroke:#000000;stroke-width:0.499106;stroke-linecap:round;stroke-dasharray:none"
+       id="rect2-9"
+       width="27.150703"
+       height="10.141554"
+       x="228.65726"
+       y="54.414196"
+       rx="2.8665607"
+       ry="2.1725185" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#ffffff;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-dasharray:none"
+       x="242.52568"
+       y="58.464958"
+       id="text2-4"><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;stroke:none;stroke-width:1"
+         x="242.52568"
+         y="58.464958"
+         id="tspan4">Visualização</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;stroke:none;stroke-width:1"
+         x="242.52568"
+         y="63.756622"
+         id="tspan2">Análise</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#0000ff;stroke:none;stroke-width:1;stroke-linecap:round;stroke-dasharray:none"
+       x="47.151489"
+       y="68.835564"
+       id="text2-99"><tspan
+         sodipodi:role="line"
+         id="tspan2-75"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#0000ff;stroke:none;stroke-width:1"
+         x="47.151489"
+         y="68.835564">Captura</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#0000ff;stroke:none;stroke-width:1"
+         x="47.739567"
+         y="74.127228"
+         id="tspan16">Gravação </tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#0000ff;stroke:none;stroke-width:1;stroke-linecap:round;stroke-dasharray:none"
+       x="96.442612"
+       y="64.79422"
+       id="text2-99-8"><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#0000ff;stroke:none;stroke-width:1"
+         x="96.442612"
+         y="64.79422"
+         id="tspan16-0">Inferência</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#0000ff;stroke:none;stroke-width:1"
+         x="96.442612"
+         y="70.085884"
+         id="tspan25">Classificação/predição</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#0000ff;stroke:none;stroke-width:1"
+         x="97.030685"
+         y="75.377541"
+         id="tspan17">Gravação do BD </tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#552200;stroke:none;stroke-width:1;stroke-linecap:round;stroke-dasharray:none"
+       x="162.82518"
+       y="50.522446"
+       id="text2-99-8-8"><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#552200;stroke:none;stroke-width:1"
+         x="162.82518"
+         y="50.522446"
+         id="tspan17-5" /><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#552200;stroke:none;stroke-width:1"
+         x="162.82518"
+         y="55.814106"
+         id="tspan19" /><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#552200;stroke:none;stroke-width:1"
+         x="162.82518"
+         y="61.10577"
+         id="tspan20">Gravação BD</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#552200;stroke:none;stroke-width:1;stroke-linecap:round;stroke-dasharray:none"
+       x="214.21886"
+       y="57.22673"
+       id="text2-99-8-8-2"><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#552200;stroke:none;stroke-width:1"
+         x="214.21886"
+         y="57.22673"
+         id="tspan20-1">Resultados</tspan></text>
+    <g
+       id="g5"
+       transform="translate(0.47356687,-9.7081209)">
+      <rect
+         style="fill:#ffffff;stroke:#000000;stroke-width:0.4687;stroke-linecap:round;stroke-dasharray:none"
+         id="rect2-2"
+         width="23.871847"
+         height="10.17196"
+         x="24.376406"
+         y="90.675819"
+         rx="2.5203803"
+         ry="2.1790321" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#ffffff;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-dasharray:none"
+         x="36.298893"
+         y="97.276955"
+         id="text2-9"><tspan
+           sodipodi:role="line"
+           id="tspan2-8"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;stroke:none;stroke-width:1"
+           x="36.298893"
+           y="97.276955">Sensores</tspan></text>
+    </g>
+    <rect
+       style="fill:#ffffff;stroke:#000000;stroke-width:0.51073;stroke-linecap:round;stroke-dasharray:none"
+       id="rect2-4"
+       width="28.462784"
+       height="10.12993"
+       x="80.36412"
+       y="49.156918"
+       rx="3.0050895"
+       ry="2.1700284" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#ffffff;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-dasharray:none"
+       x="94.471771"
+       y="55.516418"
+       id="text2-3"><tspan
+         sodipodi:role="line"
+         id="tspan2-7"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;stroke:none;stroke-width:1"
+         x="94.471771"
+         y="55.516418">FPGA + MLP</tspan></text>
+    <g
+       id="g3"
+       transform="translate(7.9493166,-16.067768)">
+      <rect
+         style="fill:#ffffff;stroke:#000000;stroke-width:0.527658;stroke-linecap:round;stroke-dasharray:none"
+         id="rect2-7"
+         width="24.99683"
+         height="12.311749"
+         x="47.568905"
+         y="63.663994"
+         rx="2.6391556"
+         ry="2.6374168"
+         inkscape:transform-center-x="0.70841917" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#ffffff;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-dasharray:none"
+         x="60.560314"
+         y="68.29438"
+         id="text2-2"
+         inkscape:transform-center-x="0.70238192"
+         inkscape:transform-center-y="-0.41474962"><tspan
+           sodipodi:role="line"
+           id="tspan2-9"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;stroke:none;stroke-width:1"
+           x="60.560314"
+           y="68.29438">Sistema de </tspan><tspan
+           sodipodi:role="line"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;stroke:none;stroke-width:1"
+           x="60.560314"
+           y="73.586044"
+           id="tspan3">Aquisição</tspan></text>
+    </g>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-dasharray:none;marker-end:url(#DartArrow)"
+       d="m 36.019365,80.731796 c -0.04242,-2.705585 -0.07661,-5.411298 -0.102582,-8.117091 -0.03775,-3.933504 -0.02627,-8.019594 1.648417,-11.57899 1.057316,-2.247231 2.760275,-4.1862 4.852248,-5.524711 2.091974,-1.338512 4.566117,-2.072188 7.049589,-2.090466"
+       id="path12"
+       inkscape:path-effect="#path-effect12"
+       inkscape:original-d="m 36.019365,80.731796 c -1.094936,-5.249987 3.759295,-7.754635 -0.102582,-8.117091 -7.032736,-0.660057 1.70298,-18.046219 1.648417,-11.57899 -0.02593,3.07368 6.829449,-6.025414 11.901837,-7.615177"
+       sodipodi:nodetypes="cssc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-dasharray:none;marker-end:url(#DartArrow-7)"
+       d="m 14.840085,85.364763 c -0.39061,-2.685505 -0.4252,-5.422573 -0.102582,-8.117091 0.464089,-3.876084 1.663125,-7.67525 1.648417,-11.57899 -0.0059,-1.569082 -0.208857,-3.135637 -0.146488,-4.70349 0.06237,-1.567852 0.419965,-3.184679 1.397806,-4.411821 0.89996,-1.129404 2.251775,-1.828613 3.648795,-2.194424 1.397019,-0.365812 2.853194,-0.427178 4.296254,-0.482478 6.868367,-0.263203 13.74034,-0.432279 20.613339,-0.507166"
+       id="path12-5"
+       inkscape:path-effect="#path-effect12-0"
+       inkscape:original-d="m 14.840085,85.364763 c -1.094936,-5.249987 3.759295,-7.754635 -0.102582,-8.117091 -7.0327359,-0.660057 -2.715869,-12.024929 1.648417,-11.57899 1.528934,0.156225 -6.275518,-8.726106 1.251318,-9.115311 1.214547,-0.0628 0.765697,-2.750241 7.945049,-2.676902 17.84847,0.182328 15.455375,-0.573133 20.613339,-0.507166"
+       sodipodi:nodetypes="cssssc"
+       transform="translate(176.43078,6.5027035)" />
+    <g
+       id="g15-5"
+       transform="translate(60.845748,-16.874332)">
+      <g
+         id="g17-4">
+        <rect
+           style="fill:#ffffff;stroke:#000000;stroke-width:0.781312;stroke-linecap:round;stroke-dasharray:none"
+           id="rect13-3"
+           width="48.383163"
+           height="13.946214"
+           x="106.65175"
+           y="95.404213"
+           rx="5.1082754"
+           ry="2.9875507" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#ffffff;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-dasharray:none"
+           x="130.81645"
+           y="100.85287"
+           id="text15-3"><tspan
+             sodipodi:role="line"
+             id="tspan14-2"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;stroke:none;stroke-width:1"
+             x="130.81645"
+             y="100.85287">Banco de Dados SQLite</tspan><tspan
+             sodipodi:role="line"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;stroke:none;stroke-width:1"
+             x="130.81645"
+             y="106.14453"
+             id="tspan15-9">Aplicação definitivo</tspan></text>
+      </g>
+    </g>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-dasharray:none;marker-end:url(#DartArrow-6-7)"
+       d="m 14.116897,135.97746 -0.071,-74.366976 c -0.113221,-1.586448 0.265397,-3.204563 1.070745,-4.576078 0.805348,-1.371514 2.033954,-2.49052 3.474537,-3.164581 2.372007,-1.109883 5.109443,-0.98031 7.726809,-0.892827 1.874974,0.06267 3.751058,0.09213 5.627075,0.08837"
+       id="path12-2-5"
+       inkscape:path-effect="#path-effect12-5-4"
+       inkscape:original-d="m 14.116897,135.97746 c 0,0 -4.6715736,-69.29747 -0.071,-74.366976 -0.0082,-6.895009 5.970495,-6.425312 4.545282,-7.740659 -9.2474476,-8.534584 4.432864,0.386518 7.726809,-0.892827 2.865264,-1.112851 0.554687,1.678131 5.627075,0.08837"
+       sodipodi:nodetypes="ccssc"
+       transform="rotate(90,102.61034,143.03506)" />
+  </g>
+</svg>

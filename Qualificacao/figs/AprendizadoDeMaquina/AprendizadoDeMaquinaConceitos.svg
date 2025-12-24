@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="154.3763mm"
-   height="59.96487mm"
-   viewBox="0 0 154.3763 59.96487"
+   width="156.73677mm"
+   height="64.594528mm"
+   viewBox="0 0 156.73677 64.594528"
    version="1.1"
    id="svg1"
    xml:space="preserve"
@@ -24,8 +24,8 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      inkscape:zoom="1.5643378"
-     inkscape:cx="295.97188"
-     inkscape:cy="160.7709"
+     inkscape:cx="304.92135"
+     inkscape:cy="169.72038"
      inkscape:window-width="2438"
      inkscape:window-height="2041"
      inkscape:window-x="1380"
@@ -89,7 +89,7 @@
      inkscape:label="Camada 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-26.446566,-22.927246)"><rect
+     transform="translate(-24.086091,-20.566769)"><rect
        style="fill:#d1ebff;fill-opacity:1;stroke:#333333;stroke-width:0.649026;stroke-linecap:round;stroke-dasharray:none"
        id="rect1-8-8"
        width="34.027943"
@@ -187,7 +187,7 @@
          sodipodi:role="line"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;stroke:none;stroke-width:1.04414"
          x="50.849667"
-         y="34.076824"
+         y="34.07682"
          id="tspan2">supervisionado</tspan></text><text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.04414;stroke-linecap:round;stroke-dasharray:none"
@@ -225,7 +225,7 @@
          sodipodi:role="line"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;stroke:none;stroke-width:1.04414"
          x="103.30913"
-         y="34.076824"
+         y="34.07682"
          id="tspan2-0">supervisionado</tspan></text><text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.04414;stroke-linecap:round;stroke-dasharray:none"
@@ -240,7 +240,7 @@
          sodipodi:role="line"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:1.04414"
          x="102.89243"
-         y="46.064869"
+         y="46.064865"
          id="tspan5">nos dados</tspan></text><rect
        style="fill:#ffab71;fill-opacity:1;stroke:#333333;stroke-width:0.895416;stroke-linecap:round;stroke-dasharray:none"
        id="rect1-8-6"
@@ -263,7 +263,7 @@
          sodipodi:role="line"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;stroke:none;stroke-width:1.04414"
          x="154.32979"
-         y="34.040852"
+         y="34.040848"
          id="tspan7">reforço</tspan></text><text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.04414;stroke-linecap:round;stroke-dasharray:none"
@@ -278,9 +278,26 @@
          sodipodi:role="line"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.23333px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;stroke-width:1.04414"
          x="153.97548"
-         y="46.064869"
+         y="46.064865"
          id="tspan8">de tentativa e erro</tspan></text><text
        xml:space="preserve"
        transform="matrix(0.09208764,0,0,0.09208764,82.318277,201.77928)"
        id="text5"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:48px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;white-space:pre;shape-inside:url(#rect5);display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:11.3386;stroke-linecap:round;stroke-dasharray:none" /></g></svg>
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:48px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;white-space:pre;shape-inside:url(#rect5);display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:11.3386;stroke-linecap:round;stroke-dasharray:none" /><rect
+       style="fill:none;stroke:#000000;stroke-width:1.02228;stroke-linecap:round;stroke-dasharray:none"
+       id="rect2"
+       width="52.747646"
+       height="63.57225"
+       x="24.597231"
+       y="21.077909"
+       rx="5.046412" /><text
+       xml:space="preserve"
+       style="font-weight:bold;font-size:4.25535px;font-family:Arial;-inkscape-font-specification:'Arial, Bold';text-align:center;text-anchor:middle;fill:none;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-dasharray:none"
+       x="50.971054"
+       y="90.919273"
+       id="text6"><tspan
+         sodipodi:role="line"
+         id="tspan6"
+         style="fill:#000000;stroke:none;stroke-width:1"
+         x="50.971054"
+         y="90.919273">Em destaque o método utilizado neste tra</tspan></text></g></svg>

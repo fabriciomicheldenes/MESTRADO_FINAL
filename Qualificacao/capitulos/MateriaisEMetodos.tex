@@ -17,43 +17,34 @@ A formação da base de dados é fundamental para o desenvolvimento e validaçã
 	Conjunto de dados experimentais obtido com o sistema MomeaProbe/MomeaCapture, utilizado para registrar sinais reais de Emissão Acústica (EA) e vibração em motobombas instrumentadas, permitindo a análise detalhada do comportamento dinâmico sob diferentes regimes de carga e escoamento.	
 \end{itemize}
 
-A combinação dessas três bases — pública, controlada e experimental — permite avaliar a robustez do modelo em cenários realistas e com diferentes níveis de ruído, abrangendo desde sinais sinteticamente limpos até registros altamente complexos obtidos em operação industrial. Essa diversidade contribui para um processo de validação mais abrangente, capaz de revelar limitações, fortalecer a generalização e orientar ajustes finos da arquitetura CNN-1D.
+A combinação dessas três bases — pública, controlada e experimental — permite avaliar a robustez do modelo em cenários realistas e com diferentes níveis de ruído, abrangendo desde sinais sinteticamente limpos até registros altamente complexos obtidos em operação industrial. Essa diversidade contribui para um processo de validação mais abrangente, capaz de revelar limitações, fortalecer a generalização e orientar ajustes finos da arquitetura rede MLP.
 
 \subsection{Softwares e Ferramentas}
 
 O desenvolvimento desta pesquisa integra um conjunto de ferramentas de software e hardware voltadas à síntese, simulação e avaliação de modelos em FPGA:
-
-\begin{itemize}
-	\item \textbf{FINN Framework (AMD/Xilinx):}  
-	Utilizado para converter modelos quantizados (QONNX/Brevitas) em arquiteturas \textit{dataflow} otimizadas para FPGA, com geração automática de IPs em HLS/RTL.
-	
-	\item \textbf{PyTorch e Brevitas:}  
-	Empregados no treinamento e quantização das CNNs 1D.
-	
-	\item \textbf{Vivado Design Suite:}  
-	Ambiente para síntese lógica, análise de temporização e geração do \textit{bitstream}.
-	
-	\item \textbf{Ferramentas do Projeto MOMEA:}  
-	Incluem a aplicação MomeaCapture (C++/Qt), rotinas de FFT e algoritmos de compressão e armazenamento via SQLite.
-\end{itemize}
+\textcolor{red}{estou lendo os artigos/teses para recriar a lista de ferramentas no contexto do MLP}
+%\begin{itemize}
+%	\textcolor{}{text}
+%	\item \textbf{FINN Framework (AMD/Xilinx):}  
+%	Utilizado para converter modelos quantizados (QONNX/Brevitas) em arquiteturas \textit{dataflow} otimizadas para FPGA, com geração automática de IPs em HLS/RTL.
+%	
+%	\item \textbf{PyTorch e Brevitas:}  
+%	Empregados no treinamento e quantização das MLP 1D.
+%	
+%	\item \textbf{Vivado Design Suite:}  
+%	Ambiente para síntese lógica, análise de temporização e geração do \textit{bitstream}.
+%	
+%	\item \textbf{Ferramentas do Projeto MOMEA:}  
+%	Incluem a aplicação MomeaCapture (C++/Qt), rotinas de FFT e algoritmos de compressão e armazenamento via SQLite.
+%\end{itemize}
 
 \section{Metodologia}
 
-A metodologia adotada neste trabalho foi organizada de forma a integrar, de
-maneira coerente, as etapas de preparação dos sinais, modelagem e avaliação em
-hardware reconfigurável. Para isso, toma-se como referência conceitual o
-processo de \textit{Knowledge Discovery in Databases} (KDD), \citeonline{fayyad1996data}. Embora o KDD tenha sido originalmente proposto para problemas de mineração de dados em larga escala, sua estrutura iterativa, que articula seleção, transformação, mineração e interpretação, mostra-se particularmente adequada para organizar fluxos complexos que envolvem
-tratamento de dados, aprendizado profundo e implementação embarcada. 
+A metodologia adotada neste trabalho foi estruturada de modo a integrar, de forma coerente, as etapas de preparação dos sinais, modelagem do classificador e avaliação da viabilidade de implementação em hardware reconfigurável. O desenvolvimento do estudo baseia-se em um pipeline de aprendizado supervisionado orientado a dados rotulados, amplamente adotado em aplicações de processamento de sinais e inteligência artificial embarcada, no qual as fases de aquisição, extração de características, treinamento, validação e inferência são tratadas de maneira sistemática e interdependente.
 
-No contexto deste projeto, o modelo KDD é adaptado às características dos
-sinais de Emissão Acústica (EA) e às restrições de execução em FPGA,
-permitindo uma perspectiva explicitamente \textit{data-centric}: cada etapa do
-pipeline é tratada não apenas como uma preparação para a próxima fase, mas como
-um refinamento progressivo da informação, desde os registros experimentais até
-a representação quantizada utilizada na inferência. Essa abordagem possibilita
-estabelecer uma conexão rastreável entre o fenômeno físico observado, a
-modelagem por CNN-1D e a análise de viabilidade do modelo sob as limitações de
-um ambiente de \textit{Edge AI}.
+No contexto deste projeto, tal pipeline é adaptado às particularidades dos sinais de Emissão Acústica (EA) e às restrições impostas pela execução em FPGA, incorporando princípios de engenharia de características, modelagem de redes neurais multicamadas (MLP) e co-projeto entre algoritmo e hardware. Cada etapa do fluxo é concebida não apenas como um pré-processamento isolado, mas como um refinamento progressivo da informação, desde os registros experimentais brutos até a representação numérica compacta e quantizada empregada durante a inferência embarcada.
+
+Essa abordagem permite estabelecer uma relação rastreável entre o fenômeno físico monitorado, a representação matemática dos sinais, a modelagem supervisionada por meio de uma MLP e a análise de viabilidade do modelo frente às limitações de recursos e desempenho típicas de um ambiente de Edge AI, no qual aspectos como latência, consumo de recursos lógicos e precisão numérica assumem papel central.
 
 \noindent
 No âmbito deste trabalho, o termo \textit{Edge AI} refere-se à execução local de
@@ -69,7 +60,7 @@ Nesta abordagem, o fluxo não visa apenas a extração de padrões, mas a constr
 	
 	\item \textbf{Pré-processamento e Transformação:} Envolve o tratamento de sinais (filtragem, segmentação) e a preparação dos tensores de entrada. Nesta fase, são tomadas decisões críticas para o hardware, como a definição da granularidade das janelas e técnicas de normalização compatíveis com a aritmética de \mbox{ponto fixo ou flutuante do FPGA.}
 	
-	\item \textbf{Mineração (Modelagem):} Refere-se à construção do núcleo inteligente do sistema. Consiste na implementação, treinamento e otimização da CNN-1D supervisionada. Inclui a busca por arquiteturas eficientes, ajuste de hiperparâmetros e estratégias de quantização (se houver) visando o balanço entre acurácia e ocupação \mbox{de área no dispositivo lógico.}
+	\item \textbf{Modelagem:} Refere-se à construção do núcleo inteligente do sistema. Consiste na implementação, treinamento e otimização da rede MLP supervisionada. Inclui a busca por arquiteturas eficientes, ajuste de hiperparâmetros e estratégias de quantização (se houver) visando o balanço entre acurácia e ocupação \mbox{de área no dispositivo lógico.}
 	
 	\item \textbf{Interpretação e Validação:} Análise da capacidade de generalização do modelo frente a dados inéditos. Envolve não apenas métricas clássicas (acurácia, matriz de confusão), mas também a validação da viabilidade de implementação e latência de inferência no contexto industrial.
 \end{enumerate}
@@ -80,45 +71,45 @@ Com base nessas quatro fases, o trabalho foi estruturado em duas frentes metodol
 
 Os métodos de desenvolvimento adotados neste trabalho integram, de forma 
 sequencial e iterativa, todas as fases necessárias para construir, treinar e 
-preparar um modelo CNN-1D para futura execução em hardware reconfigurável. 
+preparar um modelo rede MLP para futura execução em hardware reconfigurável. 
 Essa frente metodológica abrange desde a preparação inicial dos dados até a 
 síntese experimental em FPGA, conforme descrito a seguir.
 
 \begin{enumerate}
 	\item \textbf{Aquisição e Pré-processamento:}  
-	Esta etapa corresponde às fases de Seleção e Transformação do modelo DCBD.  
+	Esta etapa corresponde às fases de Seleção e Transformação do modelo.  
 	Inclui a construção da base de dados a partir dos experimentos realizados 
 	com o sistema MomeaProbe/MomeaCapture, remoção de trechos inválidos, 
 	correção de descontinuidades e normalização das amplitudes para reduzir 
 	efeitos de variação entre sensores.  
 	Adicionalmente, os sinais foram segmentados em janelas temporais fixas, 
-	adequadas ao treinamento da CNN-1D e compatíveis com a futura execução em 
+	adequadas ao treinamento da rede MLP e compatíveis com a futura execução em 
 	pipeline no ambiente FPGA.
 	
-	\item \textbf{Modelagem e Treinamento da CNN-1D:}  
+	\item \textbf{Modelagem e Treinamento da rede MLP:}  
 	Envolve a definição da arquitetura convolucional, incluindo número de 
 	filtros, tamanhos de kernel, funções de ativação, camadas densas e 
 	estratégias de regularização.  
-	Esta etapa corresponde à fase de Mineração do DCBD, em que o modelo aprende 
+	Esta etapa corresponde à fase de Modelagem, em que o modelo aprende 
 	padrões temporais associados a condições normais e cavitantes.  
 	O treinamento supervisionado foi conduzido com métricas padronizadas, 
 	como acurácia, F1-score e matriz de confusão.
 	
-	\item \textbf{Quantização e Exportação (Brevitas/QONNX):}  
-	Esta fase prepara o modelo para execução eficiente em FPGA.  
-	Utilizou-se \textit{quantization-aware training}, assegurando que a rede 
-	aprenda já sob as restrições do uso de ponto fixo (tipicamente 8 ou 4 bits).  
-	O modelo treinado é então convertido para QONNX, formato compatível com o 
-	compilador FINN, permitindo mapear operadores convolucionais para 
-	arquiteturas \textit{streaming} de hardware.
-	
-	\item \textbf{Síntese Experimental com o FINN:}  
-	Com o modelo quantizado, procede-se à geração do pipeline 
-	\textit{dataflow}, que organiza as camadas em módulos executáveis no FPGA.  
-	São simulados latência, \textit{throughput}, uso de LUTs, BRAMs, URAMs e DSPs, bem 
-	como o fechamento de temporização para diversas configurações de clock.  
-	Esta etapa atua como um ensaio prévio da implementação física, indicando 
-	a viabilidade embarcada da arquitetura proposta.
+%	\item \textbf{Quantização e Exportação (Brevitas/QONNX):}  
+%	Esta fase prepara o modelo para execução eficiente em FPGA.  
+%	Utilizou-se \textit{quantization-aware training}, assegurando que a rede 
+%	aprenda já sob as restrições do uso de ponto fixo (tipicamente 8 ou 4 bits).  
+%	O modelo treinado é então convertido para QONNX, formato compatível com o 
+%	compilador FINN, permitindo mapear operadores convolucionais para 
+%	arquiteturas \textit{streaming} de hardware.
+%	
+%	\item \textbf{Síntese Experimental com o FINN:}  
+%	Com o modelo quantizado, procede-se à geração do pipeline 
+%	\textit{dataflow}, que organiza as camadas em módulos executáveis no FPGA.  
+%	São simulados latência, \textit{throughput}, uso de LUTs, BRAMs, URAMs e DSPs, bem 
+%	como o fechamento de temporização para diversas configurações de clock.  
+%	Esta etapa atua como um ensaio prévio da implementação física, indicando 
+%	a viabilidade embarcada da arquitetura proposta.
 \end{enumerate}
 
 \subsection{Métodos de Avaliação}
@@ -127,7 +118,7 @@ A avaliação da abordagem foi conduzida em dois níveis complementares, que
 dialogam diretamente com as fases de Mineração e Interpretação do modelo DCBD.
 
 \begin{itemize}
-	\item \textbf{Avaliação Funcional da CNN-1D:}  
+	\item \textbf{Avaliação Funcional da rede MLP:}  
 	Esta etapa examina o desempenho do modelo no domínio algorítmico.  
 	São calculadas métricas como acurácia, precisão, sensibilidade, 
 	especificidade, e analisada a matriz de confusão.  
@@ -136,7 +127,7 @@ dialogam diretamente com as fases de Mineração e Interpretação do modelo DCB
 	positivos e falsos negativos.
 	
 	\item \textbf{Avaliação da Implementação FPGA (simulada):}  
-	Utilizando os relatórios do FINN e do Vivado, são estimados:  
+	Utilizando os relatórios do Vivado, são estimados:  
 	\begin{itemize}
 		\item Uso de recursos lógicos (LUTs, FFs),  
 		\item Consumo de memória interna (BRAM, URAM),  
@@ -151,20 +142,19 @@ dialogam diretamente com as fases de Mineração e Interpretação do modelo DCB
 \end{itemize}
 
 A combinação dessas duas estratégias permite correlacionar o desempenho teórico 
-da CNN-1D com sua viabilidade prática enquanto componente de um sistema 
+da rede MLP com sua viabilidade prática enquanto componente de um sistema 
 embarcado baseado em FPGA.
 
 
 \subsection{Simulador}
 
 Como não há implementação física no escopo deste projeto, utilizou-se um 
-simulador baseado na integração entre o FINN e o Vivado. Esse ambiente permite 
+simulador baseado no Vivado. Esse ambiente permite 
 replicar, de forma próxima ao hardware real, o comportamento de um acelerador 
 convolucional quantizado. O simulador é capaz de:
 
 \begin{itemize}
-	\item Reproduzir a arquitetura \textit{dataflow} gerada pelo FINN, 
-	incluindo paralelismo interno, movimentação de dados e estruturação do pipeline;
+	\item Reproduzir a arquitetura \textit{dataflow} gerada, incluindo paralelismo interno, movimentação de dados e estruturação do pipeline;
 	
 	\item Estimar latência por camada e latência total, considerando o uso de 
 	ponto fixo e recursos internos do FPGA;
@@ -189,20 +179,20 @@ compilação e análise de desempenho.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.95\linewidth]{figs/Fluxograma_Objetivo.pdf}
-	\caption{Fluxograma geral dos objetivos do projeto, contemplando as etapas de desenvolvimento e inferência da CNN-1D em FPGA. Fonte: O autor.}
+	\includegraphics[width=1\linewidth]{figs/Fluxograma_Objetivo_MLP.pdf}
+	\caption{Fluxograma geral dos objetivos do projeto, contemplando as etapas de desenvolvimento e inferência da rede MLP em FPGA. Fonte: O autor.}
 	\label{fig:fluxograma_geral}
 \end{figure}
 
 A Figura \ref{fig:fluxograma_geral} sintetiza o fluxo completo da metodologia adotada neste trabalho, articulando, em um único pipeline, as etapas de treinamento offline e a simulação do pipeline embarcado em FPGA. O diagrama organiza visualmente como os dados brutos de Emissão Acústica são progressivamente transformados até chegar ao núcleo final de inferência, destacando em que ponto cada etapa da metodologia se insere \mbox{e como elas se conectam.}
 
-O fluxo superior representa o Treinamento Offline (host), onde se desenvolve e valida o modelo em ambiente computacional convencional. A partir dos dados rotulados (EA e vibração), aplica-se o pré-processamento, incluindo filtragem, normalização e segmentação em janelas temporais. Os tensores resultantes alimentam o treinamento da CNN-1D em PyTorch, etapa correspondente à fase de Mineração da metodologia baseada em KDD.
+O fluxo superior representa o Treinamento Offline (host), onde se desenvolve e valida o modelo em ambiente computacional convencional. A partir dos dados rotulados (EA e vibração), aplica-se o pré-processamento, incluindo filtragem, normalização e segmentação em janelas temporais. Os tensores resultantes alimentam o treinamento da rede MLP.
 
-Após o treinamento, o modelo passa pelas etapas de quantização e poda, empregando representações INT8, INT4 ou eventualmente BNN, reduzindo o custo computacional e preparando a rede para execução em hardware reconfigurável. Na sequência, o modelo quantizado é convertido para QONNX e compilado pelo FINN, que gera operadores convolucionais em estilo dataflow via HLS ou IPs dedicados. O fluxo culmina na geração do \textit{bitstream} e integração com o ambiente SoC, completando a fase de desenvolvimento.
+Após o treinamento, o modelo passa pelas etapas de quantização e poda, empregando representações INT8, INT4 ou eventualmente BNN, reduzindo o custo computacional e preparando a rede para execução em hardware reconfigurável. O fluxo culmina na geração do \textit{bitstream} e integração com o ambiente SoC, completando a fase de desenvolvimento.
 
 A metade inferior do diagrama representa o Pipeline embarcado de Inferência em Tempo Real (FPGA). Nele, os sinais provenientes dos sensores de EA e do acelerômetro passam por pré-processamento local, incluindo filtragem passa-banda, ajustes de ganho e segmentação em janelas compatíveis com o acelerador. Esse pré-processamento reduz a variabilidade dos dados e diminui o esforço necessário nas etapas subsequentes.
 
-Os blocos de dados são transferidos para o módulo de inferência por meio de mecanismos de DMA ou FIFO, garantindo fluxo contínuo e latência determinística. A CNN-1D compilada pelo FINN é então executada no FPGA, produzindo a classificação entre condições normais, cavitação e outros padrões relevantes. Essa etapa representa a concretização prática da fase de Mineração adaptada ao contexto embarcado.
+Os blocos de dados são transferidos para o módulo de inferência por meio de mecanismos de DMA ou FIFO, garantindo fluxo contínuo e latência determinística. A rede MLP compilada é então executada no FPGA, produzindo a classificação entre condições normais, cavitação e outros padrões relevantes. Essa etapa representa a concretização prática da fase de Mineração adaptada ao contexto embarcado.
 
 Os resultados de inferência são entregues ao módulo de Ação e Registro, responsável por alarmes, registro de eventos e comunicação com sistemas externos via API ou MODBUS. Esse bloco completa a fase de Interpretação, traduzindo a saída do modelo para ações operacionais aplicáveis em monitoramento industrial.
 

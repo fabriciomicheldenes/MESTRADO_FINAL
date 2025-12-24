@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="176.05232mm"
-   height="57.303284mm"
-   viewBox="0 0 176.05232 57.303284"
+   width="175.20195mm"
+   height="51.522312mm"
+   viewBox="0 0 175.20195 51.522312"
    version="1.1"
    id="svg1"
    xml:space="preserve"
@@ -23,12 +23,12 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
-     inkscape:zoom="0.78216891"
-     inkscape:cx="419.34676"
-     inkscape:cy="-1.9177443"
+     inkscape:zoom="0.78216892"
+     inkscape:cx="425.73924"
+     inkscape:cy="58.171578"
      inkscape:window-width="2438"
      inkscape:window-height="2041"
-     inkscape:window-x="1389"
+     inkscape:window-x="1380"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
      inkscape:current-layer="layer1" /><defs
@@ -147,7 +147,7 @@
      inkscape:label="Camada 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-13.469745,-36.549667)"><g
+     transform="translate(-14.320125,-36.549667)"><g
        id="g7"
        transform="matrix(0.3769493,0,0,0.3769493,53.567165,9.3228536)"
        style="fill:#cccccc;stroke:#000000"><rect
@@ -243,7 +243,16 @@
          ry="5" /><path
          style="fill:#cccccc;stroke:#000000;stroke-width:5;stroke-linecap:round;stroke-dasharray:none;marker-end:url(#Triangle-7-8-4)"
          d="m 116.5332,99.228384 h 14.03816"
-         id="path3-9-6-7" /></g><g
+         id="path3-9-6-7" /></g><rect
+       style="fill:#cccccc;fill-opacity:1;stroke:#000000;stroke-width:0.601219;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+       id="rect1-8-5-7-7-1"
+       width="41.262192"
+       height="19.753294"
+       x="-97.978264"
+       y="68.018074"
+       rx="2.1347942"
+       ry="1.8813373"
+       transform="scale(-1,1)" /><g
        id="g7-1-7-4"
        transform="matrix(-0.3769493,0,0,0.3769493,150.18327,39.889338)"
        style="fill:#cccccc;stroke:#000000"><rect
@@ -257,16 +266,7 @@
          ry="5" /><path
          style="fill:#cccccc;stroke:#000000;stroke-width:5;stroke-linecap:round;stroke-dasharray:none;marker-end:url(#Triangle-7-8-4-6)"
          d="m 116.5332,99.228384 h 14.03816"
-         id="path3-9-6-7-5" /></g><rect
-       style="fill:#5fbcd3;stroke:#003380;stroke-width:0.601219;stroke-linecap:round;stroke-dasharray:none"
-       id="rect1-8-5-7-7-1"
-       width="41.262192"
-       height="19.753294"
-       x="-97.978264"
-       y="68.018074"
-       rx="2.1347942"
-       ry="1.8813373"
-       transform="scale(-1,1)" /><g
+         id="path3-9-6-7-5" /></g><g
        id="g9"
        transform="matrix(0.3769493,0,0,0.3769493,47.436059,72.978155)"
        style="fill:#cccccc;stroke:#000000"><rect
@@ -369,16 +369,6 @@
        transform="matrix(0.26458333,0,0,0.26458333,-15.590407,322.6078)"
        id="text12"
        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:42.6667px;font-family:Arial;-inkscape-font-specification:'Arial, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;white-space:pre;shape-inside:url(#rect12);display:inline;fill:#999999;stroke:#cccccc;stroke-width:18.8976;stroke-linecap:round;stroke-dasharray:none" /><text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.98937px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#999999;stroke:#cccccc;stroke-width:1.88474;stroke-linecap:round"
-       x="101.31673"
-       y="93.01339"
-       id="text4"><tspan
-         sodipodi:role="line"
-         id="tspan4"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.98937px;font-family:Arial;-inkscape-font-specification:'Arial, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;stroke:none;stroke-width:1.88475"
-         x="101.31673"
-         y="93.01339">Destacado e azul encontra-se a etapa cuja implementação não faz parte deste projeto de pesquisa.</tspan></text><text
        xml:space="preserve"
        transform="scale(0.26458333)"
        id="text2"
