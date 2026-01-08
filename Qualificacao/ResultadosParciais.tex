@@ -198,7 +198,7 @@ No lado direito da figura, a \textit{Aplicação} consome os dados do \textit{bu
 	
 	\item \textit{Persistência Final:} Gravação dos dados estruturados no ``Banco de dados SQLite Aplicação'', que serve como repositório definitivo para consultas e análises históricas. \end{itemize}
 	
-	\item \textbf{Inferência com Modelos AM-DL:} O bloco de ``Modelos de ML/DL'' (\textit{Machine Learning} e \textit{Deep Learning}) consome os dados já tratados do banco final. É nesta etapa que ocorrem a classificação de padrões (ex: detecção de cavitação) e a predição de anomalias.
+	\item \textbf{Inferência com Modelos AM-DL:} O bloco de ``Modelos de ML/DL'' (\textit{Machine Learning} e \textit{Deep Learning}) consome os dados já tratados do banco final. É nesta etapa que ocorrem a classificação de padrões (ex: detecção de cavitação) \mbox{e a predição de anomalias.}
 	
 	\item \textbf{\textit{Feedback} de Resultados:} Conforme indicado pelas setas de retorno na figura, os resultados das inferências (diagnósticos, probabilidades de falha) são gravados de volta no banco de dados da aplicação. Isso cria um registro histórico auditável, permitindo correlacionar os sinais brutos com os diagnósticos gerados pelo modelo ao longo do tempo.
 \end{itemize}

@@ -122,9 +122,7 @@ A Figura~\ref{fig:AprendizadoDeMaquinaConceitos} sintetiza graficamente essa cla
 %
 %Esses elementos, combinados em múltiplos níveis, formam uma estrutura profunda e adaptável, capaz de aprender automaticamente as representações mais relevantes dos dados — característica essencial para aplicações em manutenção preditiva, diagnóstico de falhas e monitoramento inteligente de sistemas industriais.
 
-\section{Redes Neurais MLP)}
 
-\textcolor{red}{Estou Escrevendo}
 
 %A literatura recente tem demonstrado um crescimento expressivo no interesse por métodos de aprendizado profundo, com diversas arquiteturas, como Redes Neurais Profundas (\textit{Deep Neural Network, DNNs}), Redes de Crença Profunda (\textit{Deep Belief Networks, DBNs}), Redes Neurais Recorrentes (\textit{Recurrent Neural Networks, RNN}), Redes Neurais Multicamada (\textit{Convolutional Neural Networks, MLP}) e Transformers, aplicadas a domínios variados, incluindo visão computacional, reconhecimento de fala, processamento de linguagem natural, bioinformática, análise de imagens médicas, ciências climáticas, inspeção de materiais e outras áreas emergentes. Conforme discutido por \citeonline{cacciari2024hands}, embora múltiplas arquiteturas tenham sido propostas para lidar com problemas unidimensionais, as MLP de uma dimensão, continuam sendo amplamente utilizadas e ainda aparecem com maior frequência na literatura indexada entre 2018 e 2023 do que alternativas mais recentes.
 %
@@ -217,3 +215,106 @@ A Figura~\ref{fig:AprendizadoDeMaquinaConceitos} sintetiza graficamente essa cla
 %\end{table}
 %
 %A escolha pela rede MLP neste trabalho é fundamentada nas propriedades de ``Compacidade'' e ``Eficiência Adaptativa'' definidas por \citeonline{kiranyaz20211d}.Primeiramente, a convolução 1D preserva a topologia temporal original do sinal de Emissão Acústica, permitindo que a rede explore correlações de fase e eventos transientes que poderiam ser suavizados ou perdidos em uma conversão para espectrograma.Em segundo lugar, a redução drástica no número de Operações de Multiplicação e Acumulação, MACs, torna a rede MLP inerentemente adequada para implementação em FPGA. Enquanto uma CNN-2D exigiria \textit{buffers} de linha complexos e intenso acesso à memória externa para armazenar mapas bidimensionais intermediários, a rede MLP permite um fluxo de dados simplificado e menor latência de inferência, requisitos mandatórios para o sistema de monitoramento em tempo real proposto.
+
+
+\section{Redes Neurais MLP)}
+
+As Redes Neurais Multicamadas (Multilayer Perceptron, MLP) constituem um dos modelos mais difundidos de redes neurais artificiais empregadas em tarefas de classificação e regressão em aprendizado supervisionado.
+
+Uma MLP é uma forma de rede feedforward totalmente conectada, organizada em camadas hierárquicas de neurônios artificiais, como exemplifica a Figura \ref{fig:mlp}, nas quais cada unidade de processamento recebe entradas, processa informação e transmite um sinal adiante até a camada de saída.
+  
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\linewidth]{figs/MLP/MLP}
+	\caption{Exemplo de Perceptron Multicamadas. Fonte: O autor.}
+	\label{fig:mlp}
+\end{figure}
+
+O fluxo de informação em uma Rede Neural Multicamadas (MLP) ocorre de forma
+\textit{unidirecional}, da camada de entrada em direção à camada de saída, sem a
+presença de ciclos de realimentação, caracterizando-a como uma rede do tipo
+\textit{feedforward}. Estruturalmente, a MLP é composta por uma camada de entrada,
+uma ou mais camadas ocultas (\textit{hidden layers}) e uma camada de saída, conforme
+descrito por \citeonline{haykin2009neural}.
+
+A camada de entrada possui um número de neurônios equivalente à quantidade de
+variáveis explicativas utilizadas no modelo. Esses neurônios são usualmente
+indexados por \( l \), com \( l = \{1, \ldots, p\} \), onde \( p \) representa o número
+total de atributos da amostra de treinamento. Essa camada não apresenta parâmetros
+ajustáveis, uma vez que sua função é simplesmente repassar os valores de entrada
+para a camada subsequente, operando como uma função identidade.
+
+As camadas ocultas são responsáveis pela extração de representações intermediárias
+dos dados, permitindo à rede modelar relações não lineares. A quantidade de
+neurônios em cada camada oculta está diretamente relacionada à capacidade de
+representação do modelo, sendo frequentemente associada à construção de múltiplos
+hiperplanos no espaço de características. Os neurônios dessas camadas são
+indexados por \( j = \{1, \ldots, h\} \), onde \( h \) indica o número de neurônios na
+respectiva camada. É possível empregar mais de uma camada oculta, o que amplia a
+capacidade expressiva da rede, ainda que ao custo de maior complexidade
+computacional.
+
+A camada de saída, em problemas de classificação, é configurada de acordo com o
+número de classes do problema. Frequentemente, utiliza-se uma codificação
+semelhante a variáveis indicadoras (\textit{dummies}), na qual cada neurônio
+representa uma classe ou uma combinação de classes. No contexto da detecção de
+falhas em motobombas por meio de sinais de Emissão Acústica, por exemplo, as
+classes podem representar diferentes condições operacionais do equipamento,
+tais como \textit{operação normal}, \textit{cavitação incipiente},
+\textit{cavitação severa} e \textit{falha em rolamento}. Nessa configuração, a
+camada de saída pode ser composta por múltiplos neurônios, cada um associado à
+ativação de uma dessas condições, produzindo saídas compatíveis com decisões de
+classificação multiclasse.
+
+Do ponto de vista funcional, o comportamento de um neurônio \( k \), pertencente a
+uma camada oculta ou à camada de saída, é descrito pela combinação linear
+ponderada de suas entradas, seguida da aplicação de uma função de ativação. Se
+\( x_j \) representa o sinal proveniente do neurônio \( j \) da camada anterior,
+\( w_{kj} \) o peso sináptico associado a essa conexão e \( b_k \) o termo de viés
+(\textit{bias}), o potencial interno do neurônio é dado por
+\begin{equation}
+	v_k = \sum_{j=1}^{m} w_{kj} x_j + b_k,
+\end{equation}
+sendo a saída do neurônio obtida pela aplicação da função de ativação
+\( \varphi(\cdot) \),
+\begin{equation}
+	y_k = \varphi(v_k).
+\end{equation}
+
+A capacidade da MLP de resolver problemas não linearmente separáveis está
+diretamente associada ao uso de funções de ativação não lineares, como a função
+sigmoidal, a tangente hiperbólica e a ReLU (\textit{Rectified Linear Unit}). Nesse
+contexto, destaca-se o Teorema da Aproximação Universal, que estabelece que uma
+MLP com apenas uma camada oculta e um número suficiente de neurônios é capaz de
+aproximar qualquer função contínua com precisão arbitrária, desde que a função de
+ativação seja não linear e limitada \citeonline{cybenko1989approximation,hornik1991approximation}. Esse resultado
+fundamenta teoricamente o amplo uso das MLPs em tarefas de aproximação funcional,
+classificação e regressão.
+
+
+Essa arquitetura permite ao MLP aprender relações não lineares complexas entre as variáveis de entrada e saída, função essa que redes simples (como perceptrons de camada única) não conseguem realizar. A capacidade de modelar tais relações deriva do uso de funções de ativação não lineares nas camadas ocultas, que introduzem não linearidade no processamento de sinais, \cite{jaiswal2024multilayer}. 
+
+
+O processo de construção e treinamento de uma MLP baseia-se em um aprendizado supervisionado, no qual o modelo ajusta seus parâmetros (pesos de conexão) a partir de exemplos rotulados, de modo a minimizar a discrepância entre as saídas previstas e as saídas desejadas. Essa configuração a torna apropriada para problemas onde existe um conjunto de dados com rótulos conhecidos, como acontece nas tarefas de detecção e classificação de padrões, . 
+
+%Na literatura, as MLPs são descritas como redes feedforward amplamente empregadas em uma diversidade de aplicações, dada sua versatilidade e capacidade de generalização. Elas têm sido utilizadas em domínios tão diversos quanto previsão de séries temporais, reconhecimento de padrões, classificação de sinais e problemas de predição em engenharia e ciências aplicadas. 
+
+Além disso, estudos comparativos ressaltam que apesar de modelos mais complexos (como redes com camadas convolucionais) poderem superar MLPs em tarefas que envolvem estruturas espaciais ou sequenciais explícitas, as MLPs continuam sendo uma abordagem robusta e eficaz em problemas clássicos de classificação quando corretamente treinadas e combinadas com técnicas de pré-processamento e extração de características, \cite{abd2023multi}.
+
+No contexto de sistemas embarcados e de inferência em hardware reconfigurável (como FPGAs), a simplicidade estrutural das MLPs — em comparação com arquiteturas mais profundas ou especializadas — favorece seu mapeamento em lógica programável, reduzindo custos de implementação e facilitando o controle de trade-offs entre precisão, consumo de recursos e latência de inferência.
+
+
+\subsection{MLP em FPGA para diagnóstico de falhas}
+\label{subsection:MLP}
+A literatura recente apresenta diversas implementações bem-sucedidas de MLPs em hardware reconfigurável para diagnóstico de máquinas, demonstrando a viabilidade desta abordagem para monitoramento em tempo real.
+
+Um exemplo notável é o trabalho de \citeonline{garcia2025detection}, que desenvolveu um sistema baseado em FPGA para a detecção de curtos-circuitos incipientes entre espiras no estator de motores de indução. Utilizando uma MLP alimentada por descritores estatísticos da corrente elétrica, os autores conseguiram classificar falhas com uma precisão de 93,18\%. O estudo destaca que a implementação em hardware permitiu o processamento online e não invasivo, algo crítico para evitar paradas não planejadas na indústria.
+
+\citeonline{gaona2025fpga} desenvolvem um sistema de monitoramento e classificação de distúrbios de qualidade de energia (como eventos de variação de tensão e interrupções conforme normas) usando uma MLP implementada em FPGA. O artigo descreve que foram treinadas diferentes topologias e que uma configuração final (ex.: 3-6-6) foi selecionada e sintetizada em Artix-7, com ênfase em processamento em tempo real, eficiência e avaliação do consumo de recursos.
+
+\citeonline{shreejith2016} discutem um arranjo em plataforma Xilinx Zynq no qual uma rede ANN (compatível com MLP no paradigma feedforward) é colocada em uma região parcialmente reconfigurável, permitindo alternar entre um modo ''normal`` (detecção) e um modo ''fault-tolerant`` (rede mais complexa para substituir sensor defeituoso). O ponto central é o co-design para garantir latência previsível abaixo de 1 $\mu$s e integração com aquisição paralela de sensores.
+
+
+Complementarmente, \citeonline{toumi2022fpga} abordaram a diagnose de falhas em rolamentos — componentes críticos em máquinas rotativas — propondo uma arquitetura de hardware baseada na plataforma FPGA Zynq-7000. A metodologia integrou a técnica de análise de envelope para a extração de características do sinal de vibração, as quais serviram de entrada para uma MLP. Validado com o dataset padrão da Case Western Reserve University (CWRU), o sistema embarcado atingiu uma acurácia média de 95\% na identificação do tipo de falha e 89\% na estimativa da severidade, demonstrando alta coerência entre as simulações em software e a implementação física.
+
+%Já focado especificamente em motobombas centrífugas, o estudo de Al-Tameemi et al. (2020) explorou o uso de MLPs para detectar falhas comuns como cavitação e bloqueio do impelidor. O sistema utilizou sinais de vibração no domínio do tempo e alcançou altas taxas de acerto ao treinar a rede com dados experimentais de uma bancada de testes. A comparação com implementações puramente em software (microcontroladores convencionais) reforçou que a arquitetura paralela da FPGA oferece uma vantagem significativa em termos de tempo de resposta, permitindo que o sistema de proteção atue antes que a falha se torne catastrófica."

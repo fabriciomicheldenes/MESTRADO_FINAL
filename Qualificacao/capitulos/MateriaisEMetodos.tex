@@ -19,24 +19,87 @@ A formação da base de dados é fundamental para o desenvolvimento e validaçã
 
 A combinação dessas três bases — pública, controlada e experimental — permite avaliar a robustez do modelo em cenários realistas e com diferentes níveis de ruído, abrangendo desde sinais sinteticamente limpos até registros altamente complexos obtidos em operação industrial. Essa diversidade contribui para um processo de validação mais abrangente, capaz de revelar limitações, fortalecer a generalização e orientar ajustes finos da arquitetura rede MLP.
 
-\subsection{Softwares e Ferramentas}
 
-O desenvolvimento desta pesquisa integra um conjunto de ferramentas de software e hardware voltadas à síntese, simulação e avaliação de modelos em FPGA:
-\textcolor{red}{estou lendo os artigos/teses para recriar a lista de ferramentas no contexto do MLP}
-%\begin{itemize}
-%	\textcolor{}{text}
-%	\item \textbf{FINN Framework (AMD/Xilinx):}  
-%	Utilizado para converter modelos quantizados (QONNX/Brevitas) em arquiteturas \textit{dataflow} otimizadas para FPGA, com geração automática de IPs em HLS/RTL.
-%	
-%	\item \textbf{PyTorch e Brevitas:}  
-%	Empregados no treinamento e quantização das MLP 1D.
-%	
-%	\item \textbf{Vivado Design Suite:}  
-%	Ambiente para síntese lógica, análise de temporização e geração do \textit{bitstream}.
-%	
-%	\item \textbf{Ferramentas do Projeto MOMEA:}  
-%	Incluem a aplicação MomeaCapture (C++/Qt), rotinas de FFT e algoritmos de compressão e armazenamento via SQLite.
-%\end{itemize}
+\subsection{Ferramentas e Ambiente de Desenvolvimento}
+
+O desenvolvimento, simulação e avaliação do modelo de Rede Neural Multicamadas
+(MLP) em FPGA foram planejados com base no ecossistema de ferramentas da Xilinx,
+amplamente utilizado tanto em ambientes acadêmicos quanto industriais. A
+plataforma de hardware considerada neste trabalho é a placa Arty A7-35T,
+baseada no FPGA Xilinx Artix-7 XC7A35T, que oferece recursos adequados para
+prototipagem de sistemas embarcados e aplicações de inferência em tempo real.
+
+\subsubsection*{Xilinx Vivado Design Suite}
+
+O Xilinx Vivado Design Suite constitui o ambiente central do fluxo de projeto.
+Essa ferramenta é responsável por gerenciar todas as etapas do desenvolvimento,
+desde a definição dos pinos do FPGA até a geração do arquivo final de configuração
+(\textit{bitstream}) que será carregado no dispositivo XC7A35T.
+
+No contexto deste trabalho, o Vivado é empregado nas fases de \textit{síntese} e
+\textit{implementação}, nas quais a descrição do hardware — seja ela proveniente
+de código em nível RTL ou de blocos IP gerados por ferramentas de síntese em alto
+nível — é transformada em uma rede física de portas lógicas, interconexões e
+registradores dentro do FPGA. Essas etapas permitem avaliar métricas como
+utilização de recursos lógicos (LUTs, FFs, BRAMs e DSPs), frequência máxima de
+operação e consumo estimado de potência.
+
+O ambiente Vivado também disponibiliza a ferramenta \textit{IP Integrator}, que
+possibilita a construção gráfica de sistemas embarcados por meio da interconexão
+de blocos funcionais. Nesse cenário, o bloco correspondente à MLP pode ser
+integrado a outros componentes do sistema, como controladores de memória,
+interfaces de comunicação e módulos de controle, facilitando a composição de uma
+arquitetura completa e modular.
+
+Adicionalmente, o Vivado incorpora um simulador lógico próprio, o
+\textit{Vivado Simulator}, utilizado para a verificação funcional do projeto.
+Essa ferramenta permite validar o comportamento da MLP em nível lógico antes da
+implantação no hardware, contribuindo para a identificação e correção de erros
+ainda nas etapas iniciais do desenvolvimento.
+
+\subsubsection*{Vitis HLS}
+
+A ferramenta Vitis HLS desempenha papel fundamental na implementação eficiente
+da MLP em FPGA. Por meio da Síntese em Alto Nível (\textit{High-Level Synthesis}),
+a arquitetura da rede pode ser descrita em linguagens de alto nível, como C ou
+C++, evitando a necessidade de codificar manualmente, em HDL, operações
+aritméticas complexas como multiplicações de matrizes e acumulações.
+
+O Vitis HLS permite explorar diversas estratégias de otimização por meio do uso
+de diretivas (\textit{pragmas}), as quais orientam o compilador a implementar
+operações em paralelo (\textit{loop unrolling}) ou de forma encadeada
+(\textit{pipelining}). Essas técnicas são particularmente relevantes para
+aplicações de diagnóstico de falhas, pois possibilitam reduzir a latência de
+inferência e aumentar a taxa de processamento, mantendo controle \mbox{sobre o uso de
+recursos do FPGA.}
+
+Após a validação funcional do código em alto nível, o Vitis HLS gera um bloco de
+propriedade intelectual (\textit{IP block}), que pode ser importado diretamente
+para o ambiente Vivado e integrado ao sistema por meio do \textit{IP Integrator}.
+Esse fluxo facilita a prototipagem rápida e a exploração de diferentes
+configurações arquiteturais da MLP.
+
+\subsubsection*{hls4ml}
+
+Como ferramenta acadêmica de apoio, o \textit{hls4ml} é utilizado para facilitar
+a transposição de modelos de aprendizado profundo treinados em ambiente de
+software para arquiteturas em FPGA. Trata-se de uma biblioteca \textit{open
+	source} que traduz automaticamente modelos desenvolvidos em frameworks de alto
+nível, como Keras, TensorFlow ou PyTorch, em código C++ otimizado para o fluxo do
+Vitis HLS.
+
+No contexto deste trabalho, o hls4ml pode ser empregado como uma ferramenta
+auxiliar para acelerar a geração inicial da arquitetura da MLP, permitindo a
+avaliação de diferentes topologias e configurações de quantização. O código
+gerado pode então ser refinado e integrado ao fluxo padrão de síntese e
+implementação no Vivado, mantendo compatibilidade com o FPGA Arty A7-35T.
+
+A utilização conjunta dessas ferramentas estabelece um fluxo de desenvolvimento
+coerente e flexível, no qual a modelagem em alto nível, a síntese em hardware, a
+simulação funcional e a avaliação de desempenho são integradas de forma
+sistemática, permitindo analisar a viabilidade da implementação da MLP em FPGA
+sob as restrições típicas de aplicações de \textit{Edge AI}.
+
 
 \section{Metodologia}
 

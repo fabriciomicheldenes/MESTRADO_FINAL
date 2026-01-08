@@ -32,7 +32,21 @@ Em seguida, o sinal passa por um \textbf{amplificador principal}, também dotado
 
 Após o condicionamento analógico, o sinal é direcionado a um \textbf{circuito de medição} que realiza a conversão analógico-digital, ADC, amostrando o sinal em altas taxas (geralmente entre 1~MHz e 40~MHz, dependendo da aplicação e do fenômeno estudado). Esses dados digitalizados são então armazenados temporariamente em um \textbf{\textit{buffer} de dados}, que atua como intermediário entre o \textit{front-end} analógico \mbox{e o sistema de processamento}.
 
-\textcolor{red}{O \textbf{microcomputador} ou unidade de controle central é responsável por gerenciar a aquisição e o armazenamento em disco, além de permitir o processamento dos sinais por meio de algoritmos dedicados à detecção de eventos, cálculo de parâmetros de emissão acústica (como amplitude, duração, energia e contagem de hits) e classificação de padrões. Em sistemas modernos, essa unidade também pode realizar a comunicação com interfaces externas, como APIs industriais, redes MODBUS ou sistemas supervisórios SCADA.}
+A unidade de processamento e controle é responsável por gerenciar a aquisição dos
+sinais e o armazenamento dos dados, bem como por viabilizar o processamento
+necessário para a análise dos sinais de Emissão Acústica. Esse processamento pode
+incluir a detecção de eventos, o cálculo de parâmetros característicos (como
+amplitude, duração, energia e contagem de \textit{hits}) e a classificação de
+padrões associados a diferentes condições \mbox{operacionais do equipamento.}
+
+Dependendo da arquitetura adotada, tais operações podem ser executadas de forma
+\textit{offline}, em sistemas de processamento de propósito geral com maior
+latência, ou de forma \textit{online}, em plataformas embarcadas com requisitos
+mais rigorosos de tempo real, como dispositivos baseados em hardware
+reconfigurável. Adicionalmente, essa unidade pode realizar a comunicação com
+sistemas externos, incluindo interfaces industriais, redes de campo ou sistemas
+supervisórios, possibilitando a integração do sistema de monitoramento a
+ambientes industriais mais amplos.
 
 Por fim, o sistema é integrado a módulos de \textbf{visualização e controle}, permitindo que os resultados sejam exibidos em tempo real em um display ou monitor, e que o operador interaja por meio de um teclado ou interface gráfica. Essa visualização pode incluir formas de onda, histogramas de energia, espectros de frequência e alarmes automáticos quando limiares pré-definidos são excedidos.
 
@@ -93,7 +107,7 @@ No domínio do tempo, são extraídos descritores diretos, como amplitude, dura�
 
 Durante o pré-processamento, esses parâmetros são normalizados com base em janelas móveis e limiares de ruído, garantindo que variações instrumentais ou ambientais não influenciem indevidamente o processo de aprendizagem. As janelas de tempo são segmentadas e rotuladas conforme as classes de operação (\textit{normal}, \textit{cavitação} ou \textit{falha estrutural}), e o conjunto de sinais normalizados é então utilizado como \mbox{entrada para o treinamento da rede MLP.}
 
-Nesse contexto, a rede MLP atua como uma extensão automática do processo de extração de \textit{features}, aprendendo representações hierárquicas diretamente das formas de onda ou dos espectrogramas derivados. Essa combinação entre parâmetros clássicos da Emissão Acústica e aprendizado profundo forma uma abordagem híbrida que alia a interpretabilidade dos métodos tradicionais à robustez e adaptabilidade dos modelos modernos de Inteligência Artificial, conforme ilustrado no fluxograma geral dos objetivos~da pesquisa (Figura~\ref{fig:fluxograma_geral}).
+Nesse contexto, a rede MLP atua como uma extensão automática do processo de extração de \textit{features}, aprendendo representações hierárquicas diretamente das formas de onda ou dos espectrogramas derivados. Essa combinação entre parâmetros clássicos da Emissão Acústica e aprendizado profundo forma uma abordagem híbrida que alia a interpretabilidade dos métodos tradicionais à robustez e adaptabilidade dos modelos modernos de Inteligência Artificial, conforme ilustrado no fluxograma geral dos \mbox{objetivos~da pesquisa (Figura~\ref{fig:fluxograma_geral}).}
 
 Ademais, a onda primitiva originada em um evento de EA é tipicamente de curta duração (microssegundos) e pode apresentar forte direcionalidade e variabilidade na amplitude, dependendo da natureza física da falha, como deformação cristalina ou fraturas progressivas. Sua propagação é influenciada por fatores como atenuações geométricas, estruturais e pela dispersão devido à microestrutura do material, \mbox{como os contornos de grão e inclusões.}
 
@@ -123,11 +137,9 @@ O diagrama da Figura~\ref{fig:LiuFig1} organiza a detecção por \textbf{famíli
     \item \textbf{Pulsação de pressão (transdutores de pressão):} evidencia flutuações periódicas/quasi-periódicas do campo de pressão; útil para mapear regimes e instabilidades do escoamento.
 \end{itemize}
 
-
 A linha intermediária do diagrama explicita que \textbf{cada sensor observa um aspecto da cavitação}: os sinais carregam assinaturas distintas (impactos, bandas espectrais, intermitência, modulações). A partir daí, o fluxo converge para \textbf{processamento de sinais} (métricas no tempo: RMS, pico, curtose, crest factor; no espectro: centroides, bandas energéticas; no tempo–frequência: STFT, wavelets), seguido de \textbf{extração de atributos} e \textbf{reconhecimento de estado} por algoritmos de IA (por exemplo, \textit{SVM}, \textit{Random Forest}, \textit{k-NN}, e redes profundas como rede MLP/2D ou \textit{LSTM}). Em síntese, a figura mostra que, embora os canais sensoriais sejam diversos, o \textit{pipeline lógico} é comum e modular.
 
-
-\textcolor{red}{citar Santos 2014 indicando que usaremos sensores piezelétrico para o projeto.}
+No escopo deste projeto, a escolha recai sobre sensores do tipo piezoelétrico, conforme os requisitos de monitoramento apontados por \citeonline{santos2025modelagem}. A justificativa reside na alta sensibilidade desses dispositivos para capturar fenômenos transientes em bandas de frequência elevadas, permitindo a identificação da cavitação em estágio incipiente e de falhas estruturais nos mancais por meio do registro de sinais de vibração e emissão acústica, bom como nos requisitos e limitações do projeto MOMEA.
 
 Com o objetivo de mapear os desafios do monitoramento de condição, o esquema ilustrado na Figura~\ref{fig:LiuFig2} sintetiza o \textbf{ciclo de pesquisa} em cinco camadas essenciais. Tal segmentação abrange desde a caracterização do problema de desempenho e integridade em bombas até a implementação de soluções inteligentes unificadas, compreendendo os seguintes tópicos:
 
@@ -340,49 +352,124 @@ Sob essa perspectiva, os estudos analisados reforçam a motivação central dest
 %\end{table}
 
 \linespread{1.28}\selectfont
-A Tabela \ref{tab:dominio_algoritmos} apresenta uma síntese dos principais “domínios de análise” e “algoritmos de classificação” empregados na detecção de cavitação em bombas centrífugas, conforme relatado por estudos recentes como \citeonline{liu2023review} e \citeonline{Zhang2015}. Esta comparação sistemática permite visualizar como diferentes tipos de sinais (vibração, emissão acústica, ruído, pulsação de pressão ou fusão de sensores) são processados em distintos domínios (tempo, frequência, tempo-frequência ou nível de atributos) e como tais sinais alimentam modelos de aprendizado de máquina ou redes neurais profundas (MLP, SVM, Random Forest, CNN, LSTM, entre outros). O conjunto de colunas “Técnicas de Extração de Atributos” e “Algoritmos / Modelos de Classificação” destaca os principais métodos em uso, enquanto a coluna “Referências Representativas” orienta o leitor para os estudos-chave que documentam cada abordagem. Em suma, esta tabela serve como ferramenta de orientação para a seleção de metodologias adequadas ao seu estudo — no qual a ênfase recai sobre o uso de dados de emissão acústica e a implementação simulada de uma rede MLP — além de evidenciar a evolução do campo em direção a pipelines cada vez mais sofisticados e integrados.
+A Tabela \ref{tab:sintese_literatura_unificada} apresenta uma síntese dos principais “domínios de análise” e “algoritmos de classificação” empregados na detecção de cavitação em bombas centrífugas, conforme relatado por estudos recentes como \citeonline{liu2023review} e \citeonline{Zhang2015}. Esta comparação sistemática permite visualizar como diferentes tipos de sinais (vibração, emissão acústica, ruído, pulsação de pressão ou fusão de sensores) são processados em distintos domínios (tempo, frequência, tempo-frequência ou nível de atributos) e como tais sinais alimentam modelos de aprendizado de máquina ou redes neurais profundas (MLP, SVM, Random Forest, CNN, LSTM, entre outros). O conjunto de colunas “Técnicas de Extração de Atributos” e “Algoritmos / Modelos de Classificação” destaca os principais métodos em uso, enquanto a coluna “Referências Representativas” orienta o leitor para os estudos-chave que documentam cada abordagem. Em suma, esta tabela serve como ferramenta de orientação para a seleção de metodologias adequadas ao seu estudo — no qual a ênfase recai sobre o uso de dados de emissão acústica e a implementação simulada de uma rede MLP — além de evidenciar a evolução do campo em direção a pipelines cada vez mais sofisticados e integrados.
 \linespread{1.25}\selectfont
+%\begin{table}[H]
+%\footnotesize
+%\centering
+%\caption{Domínios de análise e algoritmos utilizados na detecção de cavitação com diferentes tipos de sinais. Fonte: O autor.}
+%\label{tab:dominio_algoritmos}
+%\renewcommand{\arraystretch}{1.3}
+%\resizebox{\textwidth}{!}{%
+%\begin{tabular}{p{3cm} p{2.9cm} p{4.5cm} p{4.2cm} p{2.8cm}}
+%\hline
+%\textbf{Tipo de Sinal} & \textbf{Domínio de Análise} & \textbf{Técnicas de Extração de Atributos} & \textbf{Algoritmos / Modelos de Classificação} & \textbf{Referências Representativas} \\ \hline
+%
+%\textbf{Vibração} &
+%Tempo / Frequência &
+%RMS, curtose, fator de crista, frequência dominante, cepstrum, entropia espectral &
+%SVM, Random Forest, LSTM, rede CNN &
+%\citeonline{liu2023review}, \citeonline{Wang2019} \\ \hline
+%
+%\textbf{Emissão Acústica} &
+%Tempo / Frequência &
+%Amplitude, duração, invólucro retificado (MARSE), contagens, STFT, Wavelet Packet, espectrograma &
+%rede MLP, CNN-2D (STFT), SAE, DBN &
+%\citeonline{liu2023review}, \citeonline{Zhang2015} \\ \hline
+%
+%\textbf{Ruído} &
+%Tempo / Frequência &
+%Análise espectral, densidade de potência, centroides de frequência, coeficientes MFCC &
+%SVM, k-NN, CNN-2D, Transformer (Spectrogram) &
+%\citeonline{liu2023review}, \citeonline{Nurvitadhi2017} \\ \hline
+%
+%\textbf{Pulsos de Pressão} &
+%Tempo / Frequência &
+%Média móvel, variância, análise de picos e modulações, componentes harmônicas &
+%Decision Tree, SVM, LSTM, HMM &
+%\citeonline{liu2023review} \\ \hline
+%
+%\textbf{Multissensor} &
+%Tempo / Frequência / Feature-Level &
+%Concatenação de atributos normalizados, PCA, autoencoders, STFT sincronizada &
+%CNN híbrida, redes multimodais, aprendizado por transferência &
+%\citeonline{liu2023review}, \citeonline{Wang2019} \\ \hline
+%\end{tabular}}
+%\end{table}
+%
+%\begin{table}[H]
+%	\footnotesize
+%	\centering
+%	\caption{Aplicações de Redes Neurais Multicamadas (MLP) implementadas em FPGA para diagnóstico de falhas em equipamentos. Fonte: O autor.}
+%	\label{tab:mlp_fpga_falhas}
+%	\renewcommand{\arraystretch}{1.3}
+%	\resizebox{\textwidth}{!}{%
+%		\begin{tabular}{p{3.2cm} p{3.0cm} p{4.8cm} p{4.5cm} p{3.0cm}}
+%			\hline
+%			\textbf{Sistema / Equipamento} &
+%			\textbf{Tipo de Sinal} &
+%			\textbf{Extração de Atributos / Entradas da MLP} &
+%			\textbf{Implementação e Principais Resultados} &
+%			\textbf{Referência} \\ \hline
+%			
+%			Motores de indução (falha entre espiras) &
+%			Corrente elétrica &
+%			Descritores estatísticos no domínio do tempo &
+%			MLP implementada em FPGA para classificação online de falhas incipientes. Acurácia de 93,18\%, com processamento não invasivo e adequado para operação industrial contínua &
+%			\citeonline{garcia2025detection} \\ \hline
+%			
+%			Qualidade de energia elétrica &
+%			Tensão elétrica &
+%			Parâmetros temporais e espectrais extraídos do sinal &
+%			MLP sintetizada em FPGA Artix-7 para classificação de distúrbios conforme normas. Ênfase em processamento em tempo real e análise do consumo de recursos lógicos &
+%			\citeonline{gaona2025fpga} \\ \hline
+%			
+%			Sistemas automotivos embarcados (diagnóstico tolerante a falhas) &
+%			Sinais de sensores diversos &
+%			Características temporais de múltiplos sensores &
+%			Rede ANN do tipo MLP implementada em plataforma Xilinx Zynq com reconfiguração parcial. Latência inferior a 1~$\mu$s e alternância entre modos normal e tolerante a falhas &
+%			\citeonline{shreejith2016} \\ \hline
+%			
+%			Rolamentos em máquinas rotativas &
+%			Vibração &
+%			Análise de envelope e descritores estatísticos no domínio da frequência &
+%			Arquitetura MLP embarcada em FPGA Zynq-7000. Acurácia média de 95\% para identificação do tipo de falha e 89\% para estimativa de severidade, validada com dataset CWRU &
+%			\citeonline{toumi2022fpga} \\ \hline
+%	\end{tabular}}
+%\end{table}
+
 \begin{table}[H]
-\footnotesize
-\centering
-\caption{Domínios de análise e algoritmos utilizados na detecção de cavitação com diferentes tipos de sinais. Fonte: O autor. \textcolor{red}{encontrar artigos MLP}}
-\label{tab:dominio_algoritmos}
-\renewcommand{\arraystretch}{1.3}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{p{3cm} p{2.9cm} p{4.5cm} p{4.2cm} p{2.8cm}}
-\hline
-\textbf{Tipo de Sinal} & \textbf{Domínio de Análise} & \textbf{Técnicas de Extração de Atributos} & \textbf{Algoritmos / Modelos de Classificação} & \textbf{Referências Representativas} \\ \hline
-
-\textbf{Vibração} &
-Tempo / Frequência &
-RMS, curtose, fator de crista, frequência dominante, cepstrum, entropia espectral &
-SVM, Random Forest, LSTM, rede CNN &
-\citeonline{liu2023review}, \citeonline{Wang2019} \\ \hline
-
-\textbf{Emissão Acústica} &
-Tempo / Frequência &
-Amplitude, duração, invólucro retificado (MARSE), contagens, STFT, Wavelet Packet, espectrograma &
-rede MLP, CNN-2D (STFT), SAE, DBN &
-\citeonline{liu2023review}, \citeonline{Zhang2015} \\ \hline
-
-\textbf{Ruído} &
-Tempo / Frequência &
-Análise espectral, densidade de potência, centroides de frequência, coeficientes MFCC &
-SVM, k-NN, CNN-2D, Transformer (Spectrogram) &
-\citeonline{liu2023review}, \citeonline{Nurvitadhi2017} \\ \hline
-
-\textbf{Pulsos de Pressão} &
-Tempo / Frequência &
-Média móvel, variância, análise de picos e modulações, componentes harmônicas &
-Decision Tree, SVM, LSTM, HMM &
-\citeonline{liu2023review} \\ \hline
-
-\textbf{Multissensor} &
-Tempo / Frequência / Feature-Level &
-Concatenação de atributos normalizados, PCA, autoencoders, STFT sincronizada &
-CNN híbrida, redes multimodais, aprendizado por transferência &
-\citeonline{liu2023review}, \citeonline{Wang2019} \\ \hline
-\end{tabular}}
+	\footnotesize
+	\centering
+	\caption{Síntese da literatura: Domínios de análise, técnicas de extração e modelos de diagnóstico (com destaque para implementações em FPGA).}
+	\label{tab:sintese_literatura_unificada}
+	\renewcommand{\arraystretch}{1.3}
+	\resizebox{\textwidth}{!}{%
+		\begin{tabular}{p{3cm} p{2.5cm} p{4cm} p{4cm} p{3.5cm}}
+			\hline
+			\textbf{Alvo do Diagnóstico} & \textbf{Tipo de Sinal} & \textbf{Extração de Atributos} & \textbf{Algoritmo / Implementação} & \textbf{Referências} \\ \hline
+			 
+			\multicolumn{5}{l}{\textit{Estratégias Gerais para Detecção de Cavitação e Falhas}} \\ \hline
+			
+			Cavitação (Bombas) & Vibração & RMS, curtose, fator de crista, cepstrum, entropia espectral & SVM, Random Forest, LSTM, CNN & \citeonline{liu2023review, Wang2019} \\ \hline
+			
+			Cavitação (Bombas) & Emissão Acústica & Amplitude, invólucro (MARSE), STFT, Wavelet Packet & MLP, CNN-2D (STFT), SAE, DBN & \citeonline{liu2023review, Zhang2015} \\ \hline
+			
+			Cavitação (Bombas) & Ruído / Pressão & Coeficientes MFCC, análise espectral, média móvel & SVM, k-NN, CNN-2D, Transformer, Decision Tree & \citeonline{liu2023review, Nurvitadhi2017} \\ \hline
+			
+			Diagnóstico Multimodal & Multissensor & Concatenação de atributos, PCA, autoencoders & CNN híbrida, redes multimodais & \citeonline{liu2023review, Wang2019} \\ \hline
+			
+			\multicolumn{5}{l}{\textit{Aplicações com Implementação Específica em FPGA}} \\ \hline
+			
+			Motores de Indução & Corrente Elétrica & Descritores estatísticos no domínio do tempo & \textbf{MLP em FPGA}: Classificação online (Acurácia: 93,18\%) & \citeonline{garcia2025detection} \\ \hline
+			
+			Qualidade de Energia & Tensão Elétrica & Parâmetros temporais e espectrais & \textbf{MLP em Artix-7}: Processamento em tempo real de distúrbios & \citeonline{gaona2025fpga} \\ \hline
+			
+			Sistemas Automotivos & Sensores Diversos & Características temporais multissensoriais & \textbf{MLP em Zynq}: Reconfiguração parcial (Latência < 1~$\mu$s) & \citeonline{shreejith2016} \\ \hline
+			
+			Rolamentos & Vibração & Análise de envelope e descritores estatísticos & \textbf{MLP em Zynq-7000}: Acurácia de 95\% (Dataset CWRU) & \citeonline{toumi2022fpga} \\ \hline
+			
+	\end{tabular}}
 \end{table}
 
 % \textcolor{red}{Em processo de busca de trabalhos relacionados e leitura para depois escrever esta seção}

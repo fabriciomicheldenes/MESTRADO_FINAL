@@ -218,7 +218,7 @@ O processo de desenvolvimento e otimização de projetos em FPGA pode ser sintet
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{figs/FPGA/FluxoOtimização.pdf}
-    \caption{Fluxo de desenvolvimento e otimização de projetos em FPGA}
+    \caption{Fluxo de desenvolvimento e otimização de projetos em FPGA. O autor.}
     \label{fig:FluxoDesenvolvimentoFPGA}
 \end{figure}
 
@@ -430,44 +430,127 @@ Em linhas gerais, essas estratégias buscam reduzir latência, consumo de energi
 %\end{tabular}}
 %\end{table}
 
-Diversos estudos e \textit{surveys} analisam essas estratégias sob diferentes perspectivas, comparando \textit{frameworks} e abordagens de implementação. A Tabela~\ref{tab:fpga_otimizacao_trabalhos} apresenta um resumo de publicações recentes que investigam técnicas de aceleração de redes neurais em FPGAs, destacando o foco principal e as contribuições de cada estudo.
+Diversos estudos e \textit{surveys} analisam essas estratégias sob diferentes perspectivas, comparando \textit{frameworks} e abordagens de implementação. A Tabela~\ref{tab:otimizacao_mlp_fpga} apresenta um resumo de publicações recentes que investigam técnicas de aceleração de redes neurais em FPGAs, destacando o foco principal e as contribuições de cada estudo.
+
+%\begin{table}[H]
+%	\footnotesize
+%	\centering
+%	\caption{Trabalhos focados em técnicas de otimização de MLPs para implementação em hardware reconfigurável (FPGA).}
+%	\label{tab:otimizacao_mlp_fpga}
+%	\renewcommand{\arraystretch}{1.3}
+%	\resizebox{\textwidth}{!}{%
+%		\begin{tabular}{p{3.5cm} p{3.5cm} p{5cm} p{3cm}}
+%			\hline
+%			\textbf{Técnica de Otimização} & \textbf{Objetivo da Otimização} & \textbf{Abordagem e Resultados} & \textbf{Referência} \\ \hline
+%			
+%			\textbf{Quantização e Ponto Fixo} & Redução de uso de memória e DSPs & Substituição de aritmética de ponto flutuante (32-bit) por ponto fixo customizado (ex: 8-bit ou 16-bit) com perda mínima de acurácia (<1\%). & \citeonline{toumi2022fpga} \\ \hline
+%			
+%			\textbf{Paralelismo de Neurônios} & Aumento do \textit{Throughput} & Implementação de múltiplas unidades de multiplicação e acumulação (MAC) operando em paralelo para processar uma camada inteira em poucos ciclos de clock. & \citeonline{Gadea2017} \\ \hline
+%			
+%			\textbf{Aproximação de Funções de Ativação} & Redução de custo computacional & Uso de tabelas de busca (LUTs) ou aproximação por séries de Taylor/CORDIC para calcular Sigmoide e Tangente Hiperbólica sem usar recursos exponenciais. & \citeonline{Bezerra2021} \\ \hline
+%			
+%			\textbf{Arquitetura em Pipeline} & Redução de Latência & Segmentação das camadas da MLP em estágios de pipeline, permitindo que a rede processe novos dados de entrada antes mesmo de finalizar a classificação anterior. & \citeonline{shreejith2016} \\ \hline
+%			
+%			\textbf{Poda de Conexões (\textit{Pruning})} & Economia de Área (Lógica) & Remoção de pesos sinápticos próximos a zero após o treinamento, reduzindo o número de multiplicadores necessários na síntese do hardware. & \citeonline{Han2016} \\ \hline
+%	\end{tabular}}
+%\end{table}
 
 \begin{table}[H]
-\centering
-\footnotesize
-\caption{Trabalhos recentes sobre otimização e aceleração de IA em FPGAs. Fonte: O autor. \textcolor{red}{Vou colocar referências sobre MLP}}
-\label{tab:fpga_otimizacao_trabalhos}
-\renewcommand{\arraystretch}{1.3}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{p{4cm} p{5cm} p{7cm}}
-\hline
-\textbf{Referência} & \textbf{Foco principal} & \textbf{Contribuição / Destaque} \\ \hline
+	\footnotesize
+	\centering
+	\caption{Artigos relevantes sobre otimização e implementação de MLP ou arquiteturas similares em FPGA. Fonte: O autor.}
+	\label{tab:mlp_fpga_optimization}
+	\renewcommand{\arraystretch}{1.3}
+	\resizebox{\textwidth}{!}{%
+		\begin{tabular}{p{3cm} p{2.8cm} p{5.0cm} p{5.0cm} p{2.8cm}}
+			\hline
+			\textbf{Título / Trabalho} &
+			\textbf{Ano} &
+			\textbf{Foco de Otimização} &
+			\textbf{Abordagem / Resultado} &
+			\textbf{Referência} \\ \hline
+			
+			MLP Resource Estimation for FPGA (hls4ml) &
+			2025 &
+			Estimativa rápida de recursos para MLP &
+			Proposta de estimador de recursos (LUT, FF, DSP) para MLPs geradas via fluxo hls4ml, acelerando a exploração de projeto antes da síntese final em FPGA. &
+			\citeonline{kokkinis2025fast} \\ \hline
+			
+			FPGA implementation of a bearing fault classification system based on an envelope analysis and artificial neural network & 2022 & Redução de uso de memória e DSPs & Substituição de aritmética de ponto flutuante (32-bit) por ponto fixo customizado (ex: 8-bit ou 16-bit) com perda mínima de acurácia (<1\%). & \citeonline{toumi2022fpga} \\ \hline
+			
+			Experimental implementation of a neural network optical channel equalizer in restricted hardware using pruning and quantization &
+			2021 &
+			Pruning e quantização para reduzir complexidade de MLP &
+			Aplica poda (pruning) e quantização a um equalizador baseado em MLP, reduzindo a memória em até 87,12\% e a complexidade computacional em até 78,34\% sem degradação de desempenho. &
+			\citeonline{ron2022experimental} \\ \hline
+			
+			Power and Accuracy of Multi-Layer Perceptrons (MLPs) under Reduced-voltage FPGA BRAMs Operation &
+			2020 &
+			Eficiência energética via undervolting &
+			Estudo de operação com tensão reduzida em BRAM para economizar energia em implementações MLP em FPGA, com monitoramento de impacto na precisão da rede. &
+			\citeonline{salami2020power} \\ \hline
+			
+			Neural Networks on FPGA com função de ativação otimizada &
+			2020 &
+			Função de ativação amigável ao hardware (D-ReLU) e quantização &
+			Implementação de MLP com funções de ativação projetadas para reduzir uso de área em FPGA, mantendo precisão com redução de bitwidth de dados e pesos. &
+			\citeonline{si2020neural} \\ \hline
+			
+			AutoML para MLP + FPGA co-design &
+			2020 &
+			Co-design e otimização automática de arquitetura &
+			Fluxo de design que gera automaticamente redes MLP otimizadas e hardware FPGA correspondente, alcançando maior eficiência/throughput que implementações convencionais. &
+			\citeonline{colangelo2020automl} \\ \hline
+			
+			FPGA-implementation of high-speed MLP neural network &
+			2011 &
+			Paralelismo e pipeline para MLP &
+			Proposta de arquitetura pipeline paralela para MLP que reduz o caminho crítico e aumenta a frequência de operação, demonstrando desempenho superior a arquiteturas convencionais. &
+			\citeonline{bahoura2011fpga} \\ \hline
+			
 
-\citeonline{yan2024survey} &
-Survey de aceleração de algoritmos de aprendizado de máquina em hardware &
-Analisa tendências recentes de implementação de ML em FPGAs, destacando que 81\% dos estudos abordam inferência e apenas 13\% tratam de treinamento em hardware. \\ \hline
-
-\citeonline{wang2024review} &
-Implementação de MLP em FPGA &
-Discute desafios de mapeamento, uso de memória e estratégias de computação paralela para aumentar o throughput. \\ \hline
-
-\citeonline{mouri2025optimizing} &
-Otimização de VGG16/VGG19 em FPGA &
-Apresenta técnicas de transferência de aprendizado e quantização para execução eficiente de MLP em FPGA usando o dataset CIFAR-10. \\ \hline
-
-\citeonline{silvano2025survey} &
-Aceleradores de \textit{deep learning} em hardware &
-Revisa tendências de co-design e integração de hardware para IA embarcada, incluindo FPGAs e ASICs. \\ \hline
-
-\citeonline{Li2023SurveyFPGA} &
-Survey sobre aceleradores FPGA para redes neurais profundas &
-Classifica métodos de compressão, quantização e análise de trade-offs entre área, consumo e latência. \\ \hline
-
-\citeonline{eleuldj2020survey} &
-Comparação de frameworks de DL em FPGA &
-Avalia ferramentas de mapeamento e frameworks (como FINN e HLS4ML), discutindo desempenho, flexibilidade e consumo. \\ \hline
-\end{tabular}}
+			
+	\end{tabular}}
 \end{table}
+
+
+%
+%\begin{table}[H]
+%\centering
+%\footnotesize
+%\caption{Trabalhos recentes sobre otimização e aceleração de IA em FPGAs. Fonte: O autor. \textcolor{red}{Vou colocar referências sobre MLP}}
+%\label{tab:fpga_otimizacao_trabalhos}
+%\renewcommand{\arraystretch}{1.3}
+%\resizebox{\textwidth}{!}{%
+%\begin{tabular}{p{4cm} p{5cm} p{7cm}}
+%\hline
+%\textbf{Referência} & \textbf{Foco principal} & \textbf{Contribuição / Destaque} \\ \hline
+%
+%\citeonline{yan2024survey} &
+%Survey de aceleração de algoritmos de aprendizado de máquina em hardware &
+%Analisa tendências recentes de implementação de ML em FPGAs, destacando que 81\% dos estudos abordam inferência e apenas 13\% tratam de treinamento em hardware. \\ \hline
+%
+%\citeonline{wang2024review} &
+%Implementação de MLP em FPGA &
+%Discute desafios de mapeamento, uso de memória e estratégias de computação paralela para aumentar o throughput. \\ \hline
+%
+%\citeonline{mouri2025optimizing} &
+%Otimização de VGG16/VGG19 em FPGA &
+%Apresenta técnicas de transferência de aprendizado e quantização para execução eficiente de MLP em FPGA usando o dataset CIFAR-10. \\ \hline
+%
+%\citeonline{silvano2025survey} &
+%Aceleradores de \textit{deep learning} em hardware &
+%Revisa tendências de co-design e integração de hardware para IA embarcada, incluindo FPGAs e ASICs. \\ \hline
+%
+%\citeonline{Li2023SurveyFPGA} &
+%Survey sobre aceleradores FPGA para redes neurais profundas &
+%Classifica métodos de compressão, quantização e análise de trade-offs entre área, consumo e latência. \\ \hline
+%
+%\citeonline{eleuldj2020survey} &
+%Comparação de frameworks de DL em FPGA &
+%Avalia ferramentas de mapeamento e frameworks (como FINN e HLS4ML), discutindo desempenho, flexibilidade e consumo. \\ \hline
+%\end{tabular}}
+%\end{table}
 
 %Em síntese, os FPGAs se consolidam como uma alternativa estratégica entre a flexibilidade dos processadores convencionais (CPU/GPU) e o alto desempenho dos ASICs dedicados. Sua capacidade de reconfiguração e paralelismo massivo permite adequar o hardware às demandas específicas de cada aplicação, especialmente em sistemas embarcados e de inferência em tempo real. No entanto, essa flexibilidade vem acompanhada de desafios significativos, como maior complexidade de projeto, limitação de recursos internos e dependência de ferramentas especializadas de síntese e otimização. Assim, a escolha por uma arquitetura baseada em FPGA deve equilibrar os ganhos em desempenho e eficiência energética com o custo de desenvolvimento e a maturidade técnica necessária para sua implementação.  
 %
@@ -475,15 +558,13 @@ Avalia ferramentas de mapeamento e frameworks (como FINN e HLS4ML), discutindo d
 
 Em síntese, observa-se que o avanço na implementação de algoritmos de aprendizado profundo em FPGAs depende fortemente da combinação de técnicas de quantização, poda e co-design hardware–software.
 
-O foco atual das pesquisas está na busca por arquiteturas que conciliem desempenho, eficiência energética e flexibilidade de reconfiguração, explorando abordagens baseadas em \textit{dataflow} e reconfiguração parcial dinâmica. Além disso, há uma tendência crescente de integração entre ferramentas de alto nível, como FINN, HLS4ML e Vitis AI, que automatizam parte do fluxo de desenvolvimento, tornando mais acessível a implementação de redes neurais complexas em hardware reconfigurável.
+O foco atual das pesquisas está na busca por arquiteturas que conciliem desempenho, eficiência energética e flexibilidade de reconfiguração, explorando abordagens baseadas em \textit{dataflow} e reconfiguração parcial dinâmica. Além disso, há uma tendência crescente de integração entre ferramentas de alto nível, como Vivado, HLS4ML e Vitis AI, que automatizam parte do fluxo de desenvolvimento, tornando mais acessível a implementação de redes neurais complexas em hardware reconfigurável.
 
 Essas iniciativas apontam para um futuro em que o mapeamento de IA em FPGAs será cada vez mais automatizado, portátil e adaptável às demandas de aplicações embarcadas e industriais.
 
 Na sequência das técnicas de otimização discutidas anteriormente, esta subseção volta-se para o estudo de ferramentas e \textit{frameworks} voltados à síntese e aceleração de redes neurais em FPGAs. Entre as diversas soluções disponíveis no ecossistema atual, destacam-se aquelas desenvolvidas por fabricantes e grupos de pesquisa que buscam abstrair a complexidade do fluxo de implementação em hardware, automatizando etapas de quantização, mapeamento e geração de IPs reconfiguráveis.
 
 \section{Implementaçao do MLP }
-
-\textcolor{red}{texto provisório}
 
 Do ponto de vista da implementação de Redes Neurais Multicamadas (MLP) em dispositivos do tipo FPGA, a literatura técnica e acadêmica aponta para diferentes abordagens consolidadas, cuja adoção depende de fatores como complexidade do modelo, precisão numérica desejada, consumo de recursos lógicos e tempo de desenvolvimento. Nesse contexto, observa-se que os métodos mais comumente empregados podem ser agrupados em três grandes famílias, atualmente em fase de levantamento e avaliação neste trabalho.
 

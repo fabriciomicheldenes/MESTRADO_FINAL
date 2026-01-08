@@ -276,40 +276,40 @@
 % \end{fichacatalografica}
 
 %OMITIR NA QUALIFICAÇÃO
-\begin{fichacatalografica}
-	\sffamily
-	\vspace*{\fill}					% Posição vertical
-	\begin{center}					% Minipage Centralizado
-	\fbox{\begin{minipage}[c][8cm]{15.5cm}		% Largura
-	\small
-	\imprimirautor
-	%Sobrenome, Nome do autor
-	
-	\hspace{0.5cm} \imprimirtitulo  / \imprimirautor. --
-	\imprimirlocal, \imprimirdata-
-	
-	\hspace{0.5cm} \thelastpage p. : il. (algumas color.) ; 30 cm.\\
-	
-	\hspace{0.5cm} \imprimirorientadorRotulo~\imprimirorientador\\
-	
-	\hspace{0.5cm}
-	\parbox[t]{\textwidth}{\imprimirtipotrabalho -- \imprimirinstituicao,
-	\imprimirdata.}\\
-	
-	\hspace{0.5cm}
-	1. Emissão Acústica (EA)
-	2. Cavitação
-	3. FPGA
-	4. Processamento Embarcado
-	5. Redes Neurais Multicamada (rede MLP)
-%		I. Orientador.
-%		II. Universidade Estadual do Oeste do Paraná.
-%		III. Faculdade de xxx.
-%		IV. Título 			
-	\end{minipage}}
-	\end{center}
-\end{fichacatalografica}
-% ---
+%\begin{fichacatalografica}
+%	\sffamily
+%	\vspace*{\fill}					% Posição vertical
+%	\begin{center}					% Minipage Centralizado
+%	\fbox{\begin{minipage}[c][8cm]{15.5cm}		% Largura
+%	\small
+%	\imprimirautor
+%	%Sobrenome, Nome do autor
+%	
+%	\hspace{0.5cm} \imprimirtitulo  / \imprimirautor. --
+%	\imprimirlocal, \imprimirdata-
+%	
+%	\hspace{0.5cm} \thelastpage p. : il. (algumas color.) ; 30 cm.\\
+%	
+%	\hspace{0.5cm} \imprimirorientadorRotulo~\imprimirorientador\\
+%	
+%	\hspace{0.5cm}
+%	\parbox[t]{\textwidth}{\imprimirtipotrabalho -- \imprimirinstituicao,
+%	\imprimirdata.}\\
+%	
+%	\hspace{0.5cm}
+%	1. Emissão Acústica (EA)
+%	2. Cavitação
+%	3. FPGA
+%	4. Processamento Embarcado
+%	5. Redes Neurais Multicamada (rede MLP)
+%%		I. Orientador.
+%%		II. Universidade Estadual do Oeste do Paraná.
+%%		III. Faculdade de xxx.
+%%		IV. Título 			
+%	\end{minipage}}
+%	\end{center}
+%\end{fichacatalografica}
+%% ---
 
 % ---
 % Inserir errata
@@ -376,10 +376,10 @@
    \imprimirlocal, 12 de dezembro de 2025:
 
    \assinatura{\textbf{\imprimirorientador} \\ Orientador(a)} 
-   \assinatura{\textbf{Dr(a). Nome Professor(a) 1} \\ Instituição do Professor}
-   \assinatura{\textbf{Dr(a). Nome Professor(a) 2} \\ Instituição do Professor}
-   %\assinatura{\textbf{Professor} \\ Convidado 3}
-   %\assinatura{\textbf{Professor} \\ Convidado 4}
+   \assinatura{\textbf{Dr. Thiago Berticelli Ló. Avaliador Externo \\ IFPR - Cascavel.}}
+   \assinatura{\textbf{Dr. Guilherme Galante}  \\ UNIOESTE - Cascavel.}
+%   %\assinatura{\textbf{Professor} \\ Convidado 3}
+%   %\assinatura{\textbf{Professor} \\ Convidado 4}
       
    \begin{center}
     \vspace*{0.5cm}
@@ -459,12 +459,11 @@
 %\end{resumo}
 
 \begin{resumo}
-	\textcolor{red}{vou revisar após o texto estar ok}
 	Este trabalho investiga técnicas de detecção de cavitação em bombas centrífugas por meio da análise de sinais de Emissão Acústica (EA), com foco na implementação de arquiteturas de processamento eficientes para monitoramento contínuo. A pesquisa alinha-se o Projeto MOMEA — \textit{Monitoramento Online pelo Método de Emissão Acústica} — desenvolvido pelo grupo Itaipu ParqueTec em parceria com a Itaipu Binacional, cujo objetivo é criar soluções de diagnóstico inteligentes e de baixo custo aplicáveis a sistemas hidráulicos industriais.	
 	Na etapa inicial do projeto, foi desenvolvida a plataforma \textbf{MomeaProbe/MomeaCapture}, composta por um hardware de aquisição de alta taxa (ADC de 12 bits a 8~MSps por canal, interface USB~3.0) e um ambiente de software responsável pela transferência, compactação, armazenamento e visualização dos sinais. A infraestrutura construída permitiu a captura contínua de longas séries temporais, bem como a geração de mapas espectro-temporais por meio de FFT janelada. A partir desses espectrogramas, redes neurais convolucionais bidimensionais (\textbf{CNN-2D}) foram treinadas para classificar diferentes estágios de cavitação, obtendo resultados promissores de acurácia.	
 	No entanto, os experimentos revelaram limitações significativas relacionadas ao \textbf{elevado volume de dados produzidos} (dezenas de GB por hora) e ao \textbf{alto custo computacional} associado à compressão, gravação e processamento contínuo via CPU generalista. A complexidade crescente do software — envolvendo multithreading, buffers circulares, compactação LZMA, uso experimental de Redis e posterior substituição por estruturas \textit{lock-free} — evidenciou desafios de escalabilidade e de manutenção de fluxo contínuo em regime de alta taxa. Ensaios comparativos mostraram que, mesmo com otimizações, a compactação em CPU torna-se um gargalo quando o sistema opera em níveis de atividade mais elevados.	
 	Diante dessas limitações, este trabalho propõe o desenvolvimento e a simulação de uma arquitetura embarcada baseada em \textbf{FPGA}, empregando a técnica de \textbf{HIT Detection} para filtrar eventos relevantes diretamente no hardware e uma \textbf{rede MLP quantizada} para inferência em tempo quase real. A filtragem embarcada reduz drasticamente a granularidade e o volume de dados antes mesmo da transmissão, tornando viável o uso de uma interface Ethernet de 100~Mb/s em substituição à USB~3.0. Essa redistribuição do processamento diminui a carga computacional no sistema hospedeiro e cria um pipeline muito mais eficiente e previsível para monitoramento em campo.	
-	Espera-se que a combinação FPGA + HIT + rede MLP permita reduzir latência, consumo de energia e volume transmitido, mantendo elevada sensibilidade na detecção de cavitação incipiente e microfalhas estruturais. Assim, o presente estudo contribui para a construção de uma plataforma de monitoramento inteligente, robusta e adequada ao ambiente industrial, alinhando a precisão das técnicas de aprendizado profundo ao desempenho e paralelismo do hardware reconfigurável.
+	Espera-se que a combinação FPGA + rede MLP permita reduzir latência, consumo de energia e volume transmitido, mantendo elevada sensibilidade na detecção de cavitação incipiente e microfalhas estruturais. Assim, o presente estudo contribui para a construção de uma plataforma de monitoramento inteligente, robusta e adequada ao ambiente industrial, alinhando a precisão das técnicas de aprendizado profundo ao desempenho e paralelismo do hardware reconfigurável.
 	
 \end{resumo}
 
@@ -518,23 +517,15 @@
 	\item[\textbf{ARM}] \textit{Advanced RISC Machines};
 	\item[\textbf{ASIC}] \textit{Application-Specific Integrated Circuit};
 	\item[\textbf{AUC}] \textit{Area Under the Curve};
-	\item[\textbf{BNN}] \textit{Binary Neural Network};
 	\item[\textbf{BRAM}] \textit{Block RAM};
-	\item[\textbf{CBL}] \textit{Convolutional Block Layer};
-	\item[\textbf{rede MLP}] \textit{1D Convolutional Neural Network};
-	\item[\textbf{CNN-2D}] \textit{2D Convolutional Neural Network};
 	\item[\textbf{CPU}] \textit{Central Processing Unit};
 	\item[\textbf{CWRU}] \textit{Case Western Reserve University};
-	\item[\textbf{CWT}] \textit{Continuous Wavelet Transform};
-	\item[\textbf{DBNs}] Deep Belief Networks;
 	\item[\textbf{DDR}] \textit{Double Data Rate};
 	\item[\textbf{DL}] \textit{Deep Learning};
-	\item[\textbf{DNNs}] Deep Neural Network;
 	\item[\textbf{DSP}] \textit{Digital Signal Processing Block};
 	\item[\textbf{EA}] Emissão Acústica;
 	\item[\textbf{F1}] \textit{F1-Score};
 	\item[\textbf{FFT}] \textit{Fast Fourier Transform};
-	\item[\textbf{FINN}] \textit{A Framework for Fast, Scalable Binarized Neural Network Inference};
 	\item[\textbf{FPGA}] \textit{Field-Programmable Gate Array};
 	\item[\textbf{GB}] \textit{Gigabyte};
 	\item[\textbf{Gbps}] \textit{Gigabits per second};
@@ -561,13 +552,10 @@
 	\item[\textbf{RNA}] Rede Neural Artificial;
 	\item[\textbf{RNAs}] Redes Neurais Artificiais;
 	\item[\textbf{RMS}] \textit{Root Mean Square};
-	\item[\textbf{RNN}] Recurrent Neural Networks;
 	\item[\textbf{SCADA}] \textit{Supervisory Control and Data Acquisition};
-	\item[\textbf{SNNs}] Spiking Neural Networks;
 	\item[\textbf{SNR}] \textit{Signal Noise Ratio};
 	\item[\textbf{SoC}] \textit{System-on-Chip};
 	\item[\textbf{SPI}] \textit{Serial Peripheral Interface};
-	\item[\textbf{STDP}] Spike-Timing-Dependent Plasticity;
 	\item[\textbf{STFT}] \textit{Short-Time Fourier Transform};
 	\item[\textbf{SVM}] \textit{Support Vector Machine};
 	\item[\textbf{URAM}] \textit{UltraRAM};
@@ -578,27 +566,42 @@
 % ---
 
 % ---
-% inserir lista de símbolos
-% ---
+%% inserir lista de símbolos
+%% ---
 \begin{simbolos}
 \item[\textbf{$x$}] Sinal de entrada (vetor de amostras).
 \item[\textbf{$\mathbb{R}^{N}$}] Espaço vetorial dos números reais com dimensão $N$.
 \item[\textbf{$N$}] Tamanho total do sinal de entrada.
-\item[\textbf{$w$}] Kernel (filtro) de convolução.
 \item[\textbf{$\mathbb{R}^{K}$}] Espaço vetorial dos números reais com dimensão $K$.
-\item[\textbf{$K$}] Tamanho do kernel (filtro) de convolução.
-\item[\textbf{$y$}] Mapa de ativação de saída (vetor).
-\item[\textbf{$k$}] Índice da camada de convolução.
-\item[\textbf{$j$}] Índice do neurônio de saída (referente ao kernel).
-\item[\textbf{$y_j[i]$}] Valor de ativação do $j$-ésimo neurônio na posição $i$.
-\item[\textbf{$f(\cdot)$}] Função de ativação não linear.
-\item[\textbf{$b_j$}] Viés (\textit{bias}) do $j$-ésimo neurônio.
-\item[\textbf{$\sum_{m=1}^{K}$}] Operador somatório sobre o tamanho $K$ do kernel.
-\item[\textbf{$w_j[m]$}] Peso (coeficiente) do $j$-ésimo kernel na posição $m$.
-\item[\textbf{$x[i + m - 1]$}] Amostra do sinal de entrada na posição de cálculo.
-\item[\textbf{$i$}] Índice temporal da sequência de saída.
+%\item[\textbf{$y_j[i]$}] Valor de ativação do $j$-ésimo neurônio na posição $i$.
+%\item[\textbf{$f(\cdot)$}] Função de ativação não linear.
+%\item[\textbf{$b_j$}] Viés (\textit{bias}) do $j$-ésimo neurônio.
+%\item[\textbf{$\sum_{m=1}^{K}$}] Operador somatório sobre o tamanho $K$ do kernel.
+%\item[\textbf{$w_j[m]$}] Peso (coeficiente) do $j$-ésimo kernel na posição $m$.
+%\item[\textbf{$x[i + m - 1]$}] Amostra do sinal de entrada na posição de cálculo.
+%\item[\textbf{$i$}] Índice temporal da sequência de saída.
+%\item[\textbf{$x_{i,l}$}] Valor da $l$-ésima variável de entrada associado à $i$-ésima amostra.
+\item[\textbf{$l$}] Índice do neurônio na camada de entrada, com $l = \{1,\ldots,p\}$.
+\item[\textbf{$p$}] Número total de variáveis explicativas (neurônios da camada de entrada).
+\item[\textbf{$\omega^{h}_{j,l}$}] Peso sináptico que conecta o neurônio $l$ da camada de entrada ao neurônio $j$ da camada oculta.
+\item[\textbf{$\theta^{h}_{j}$}] Viés (\textit{bias}) associado ao $j$-ésimo neurônio da camada oculta.
+\item[\textbf{$j$}] Índice do neurônio na camada oculta, com $j = \{1,\ldots,h\}$.
+\item[\textbf{$h$}] Número de neurônios na camada oculta.
+\item[\textbf{$\mathrm{rede}^{h}_{j}$}] Potencial interno (soma ponderada das entradas) do $j$-ésimo neurônio da camada oculta.
+\item[\textbf{$f^{h}_{j}(\cdot)$}] Função de ativação aplicada ao $j$-ésimo neurônio da camada oculta.
+\item[\textbf{$f^{h}_{j}(\mathrm{rede}^{h}_{j})$}] Saída do $j$-ésimo neurônio da camada oculta.
+\item[\textbf{$\omega^{o}_{k,j}$}] Peso sináptico que conecta o neurônio $j$ da camada oculta ao neurônio $k$ da camada de saída.
+\item[\textbf{$\theta^{o}_{k}$}] Viés (\textit{bias}) associado ao $k$-ésimo neurônio da camada de saída.
+\item[\textbf{$k$}] Índice do neurônio na camada de saída, com $k = \{1,\ldots,c\}$.
+\item[\textbf{$c$}] Número de neurônios na camada de saída (classes do problema).
+\item[\textbf{$\mathrm{rede}^{o}_{k}$}] Potencial interno do $k$-ésimo neurônio da camada de saída.
+\item[\textbf{$f^{o}_{k}(\cdot)$}] Função de ativação aplicada ao $k$-ésimo neurônio da camada de saída.
+\item[\textbf{$\hat{y}_{i,k}$}] Saída estimada da rede para a $i$-ésima amostra na classe $k$.
+\item[\textbf{$v_k$}] Potencial interno genérico do neurônio $k$, resultante da soma ponderada das entradas.
+\item[\textbf{$\varphi(\cdot)$}] Função de ativação não linear aplicada ao neurônio.
+\item[\textbf{$y_k$}] Saída do neurônio $k$ após a aplicação da função de ativação.
 \end{simbolos}
-% ---
+%% ---
 
 % ---
 % inserir o sumario
