@@ -131,7 +131,7 @@
 \autor{Fabricio Michel Denes}
 \newcommand{\tituloen}{Use of a MLP Model Embedded in an FPGA for Fault Detection in Motor Pumps}
 \local{Cascavel-PR}
-\data{2025}
+\data{2026}
 \orientador[Orientador(a):]{Dr. Marcio Seiji Oyamada }
 \coorientador[Coorientador(a):]{}
 \instituicao{%
@@ -373,7 +373,7 @@
     \vspace*{\fill}
    \end{center}
         
-   \imprimirlocal, 12 de dezembro de 2025:
+   \imprimirlocal, 26 de janeiro de 2026:
 
    \assinatura{\textbf{\imprimirorientador} \\ Orientador(a)} 
    \assinatura{\textbf{Dr. Thiago Berticelli Ló. Avaliador Externo \\ IFPR - Cascavel.}}
@@ -460,30 +460,33 @@
 
 \begin{resumo}
 	Este trabalho investiga técnicas de detecção de cavitação em bombas centrífugas por meio da análise de sinais de Emissão Acústica (EA), com foco na implementação de arquiteturas de processamento eficientes para monitoramento contínuo. A pesquisa alinha-se o Projeto MOMEA — \textit{Monitoramento Online pelo Método de Emissão Acústica} — desenvolvido pelo grupo Itaipu ParqueTec em parceria com a Itaipu Binacional, cujo objetivo é criar soluções de diagnóstico inteligentes e de baixo custo aplicáveis a sistemas hidráulicos industriais.	
-	Na etapa inicial do projeto, foi desenvolvida a plataforma \textbf{MomeaProbe/MomeaCapture}, composta por um hardware de aquisição de alta taxa (ADC de 12 bits a 8~MSps por canal, interface USB~3.0) e um ambiente de software responsável pela transferência, compactação, armazenamento e visualização dos sinais. A infraestrutura construída permitiu a captura contínua de longas séries temporais, bem como a geração de mapas espectro-temporais por meio de FFT janelada. A partir desses espectrogramas, redes neurais convolucionais bidimensionais (\textbf{CNN-2D}) foram treinadas para classificar diferentes estágios de cavitação, obtendo resultados promissores de acurácia.	
+	Na etapa inicial do projeto, foi desenvolvida a plataforma \textbf{MomeaProbe/MomeaCapture}, composta por um hardware de aquisição de alta taxa (ADC de 12 bits a 8~MSps por canal, interface USB~3.0) e um ambiente de software responsável pela transferência, compactação, armazenamento e visualização dos sinais. A infraestrutura construída permitiu a captura contínua de longas séries temporais, de posse desses dados, outro membro da equipe, gerou de mapas espectro-temporais por meio de FFT janelada. A partir desses espectrogramas treinou redes neurais convolucionais bidimensionais (\textbf{CNN-2D}) para classificar diferentes estágios de cavitação, obtendo resultados promissores de acurácia.	
 	No entanto, os experimentos revelaram limitações significativas relacionadas ao \textbf{elevado volume de dados produzidos} (dezenas de GB por hora) e ao \textbf{alto custo computacional} associado à compressão, gravação e processamento contínuo via CPU generalista. A complexidade crescente do software — envolvendo multithreading, buffers circulares, compactação LZMA, uso experimental de Redis e posterior substituição por estruturas \textit{lock-free} — evidenciou desafios de escalabilidade e de manutenção de fluxo contínuo em regime de alta taxa. Ensaios comparativos mostraram que, mesmo com otimizações, a compactação em CPU torna-se um gargalo quando o sistema opera em níveis de atividade mais elevados.	
-	Diante dessas limitações, este trabalho propõe o desenvolvimento e a simulação de uma arquitetura embarcada baseada em \textbf{FPGA}, empregando a técnica de \textbf{HIT Detection} para filtrar eventos relevantes diretamente no hardware e uma \textbf{rede MLP quantizada} para inferência em tempo quase real. A filtragem embarcada reduz drasticamente a granularidade e o volume de dados antes mesmo da transmissão, tornando viável o uso de uma interface Ethernet de 100~Mb/s em substituição à USB~3.0. Essa redistribuição do processamento diminui a carga computacional no sistema hospedeiro e cria um pipeline muito mais eficiente e previsível para monitoramento em campo.	
+	Diante dessas limitações, este trabalho propõe o desenvolvimento e a simulação de uma arquitetura embarcada baseada em \textbf{FPGA}, empregando a técnica de \textbf{HIT Detection} para filtrar eventos relevantes na borda e e uma \textbf{rede MLP quantizada} para inferência online. A filtragem embarcada reduz drasticamente a granularidade e o volume de dados antes mesmo da transmissão, tornando viável o uso de uma interface Ethernet de 100~Mb/s em substituição à USB~3.0. Essa redistribuição do processamento diminui a carga computacional no sistema hospedeiro e cria um pipeline muito mais eficiente e previsível para monitoramento em campo.	
 	Espera-se que a combinação FPGA + rede MLP permita reduzir latência, consumo de energia e volume transmitido, mantendo elevada sensibilidade na detecção de cavitação incipiente e microfalhas estruturais. Assim, o presente estudo contribui para a construção de uma plataforma de monitoramento inteligente, robusta e adequada ao ambiente industrial, alinhando a precisão das técnicas de aprendizado profundo ao desempenho e paralelismo do hardware reconfigurável.
 	
 \end{resumo}
 
 
 % abstract
-%\begin{resumo}[Abstract]
-%This work investigates the use of Field-Programmable Gate Arrays (FPGAs) combined with one-dimensional convolutional neural networks (\textbf{1D-MLP}) for cavitation detection in centrifugal pumps based on Acoustic Emission (AE) signals. Integrated into the MOMEA Project — \textit{Online Monitoring by the Acoustic Emission Method} — the study aims to develop and simulate an embedded inference architecture, optimized and quantized to operate in near real-time with low hardware resource consumption. The previous phase implemented a continuous spectral analysis system using windowed FFT and 2D-MLP, achieving high accuracy but at a high computational cost. The current proposal seeks to significantly reduce processing latency and data volume while maintaining diagnostic sensitivity. The FPGA+1D-CNN architecture is expected to contribute to the development of intelligent monitoring and predictive maintenance systems applicable to complex industrial environments.
-%\end{resumo}
+\begin{resumo}[Abstract]
+This work investigates cavitation detection techniques in centrifugal pumps by analyzing Acoustic Emission (AE) signals, with a focus on implementing efficient processing architectures for continuous condition monitoring. The research is part of the MOMEA Project – Online Monitoring via the Acoustic Emission Method – developed by the Itaipu ParqueTec research group in partnership with Itaipu Binacional. The project's objective is to create intelligent, low-cost diagnostic solutions for industrial hydraulic systems.
+In the initial stage, the MomeaProbe/MomeaCapture platform was developed, consisting of high-throughput data acquisition hardware (12-bit ADC operating at 8 MSps per channel, USB 3.0 interface) and a software environment for signal transfer, compression, storage, and visualization. This infrastructure enabled continuous acquisition of long time-series data. Using these datasets, another member of the research team generated time–frequency maps with windowed FFT techniques. From these spectrograms, two-dimensional convolutional neural networks (CNN-2D) were trained to classify different cavitation stages, achieving promising accuracy.
+However, experimental analyses revealed significant limitations due to the large volume of data generated (tens of gigabytes per hour) and the high computational cost of continuous compression, storage, and processing on a general-purpose CPU. Increasing software complexity – including multithreading, circular buffers, LZMA compression, experimental use of Redis, and subsequent replacement with lock-free data structures – highlighted challenges in scalability and maintaining sustained high-throughput data flow. Comparative experiments showed that, even with optimizations, CPU-based compression becomes a performance bottleneck when the system operates at higher activity levels.
+To address these limitations, this work proposes the development and simulation of an FPGA-based embedded architecture, using HIT detection to filter relevant events at the edge and a quantized MLP network for online inference. Embedded filtering drastically reduces data granularity and volume before transmission, enabling replacement of the USB 3.0 interface with a 100 Mb/s Ethernet link. This redistribution of processing significantly reduces the computational burden on the host system and establishes a more efficient and predictable processing pipeline for field monitoring.
+The combination of FPGA-based processing and MLP inference is expected to reduce latency, power consumption, and transmitted data volume while maintaining high sensitivity in detecting incipient cavitation and microstructural faults. Therefore, this study contributes to developing an intelligent, robust monitoring platform suitable for industrial environments, effectively aligning the accuracy of machine learning techniques with the performance and parallelism offered by reconfigurable hardware.
+\end{resumo}
 
-\begin{abstract}
-%	This work investigates techniques for cavitation detection in centrifugal pumps through the analysis of Acoustic Emission (AE) signals, with a focus on implementing efficient processing architectures for continuous monitoring. The research is part of the MOMEA Project -- \textit{Online Monitoring by the Acoustic Emission Method} -- developed by the Itaipu ParqueTec research group in partnership with Itaipu Binacional, whose goal is to create intelligent and low-cost diagnostic solutions for industrial hydraulic systems.	
-%	In the initial stage of the project, the \textbf{MomeaProbe/MomeaCapture} platform was developed, comprising a high-rate acquisition hardware (12-bit ADC operating at 8~MSps per channel, USB~3.0 interface) and a software environment responsible for data transfer, compression, storage and visualization. This infrastructure enabled continuous capture of long time series as well as the generation of time–frequency maps via windowed FFT. Based on these spectrograms, two-dimensional convolutional neural networks (\textbf{CNN-2D}) were trained to classify different cavitation stages, achieving promising accuracy.	
-%	However, the experiments revealed significant limitations related to the \textbf{large volume of data produced} (tens of GB per hour) and the \textbf{high computational cost} associated with continuous compression, storage and processing on a general-purpose CPU. The increasing complexity of the software --- involving multithreading, circular buffers, LZMA compression, experimental use of Redis and subsequent replacement by \textit{lock-free} structures --- highlighted scalability challenges and difficulties in sustaining a continuous high-rate data flow. Comparative tests showed that, even with optimizations, CPU-based compression becomes a bottleneck when the system operates under higher activity levels.
-%	In response to these limitations, this work proposes the development and simulation of an embedded architecture based on \textbf{FPGA}, employing \textbf{HIT Detection} to filter relevant events directly in hardware and a quantized \textbf{1D-CNN} for near real-time inference. The embedded filtering drastically reduces data granularity and volume prior to transmission, making it feasible to replace the USB~3.0 link with a 100~Mb/s Ethernet interface. This redistribution of processing load reduces the computational burden on the host system and yields a much more efficient and predictable pipeline for field monitoring.	
-%	It is expected that the combined FPGA + HIT + 1D-CNN approach will reduce latency, energy consumption and transmitted volume, while maintaining high sensitivity to incipient cavitation and structural micro-failures. Thus, this study contributes to the construction of a robust intelligent monitoring platform suitable for industrial environments, aligning the accuracy of deep learning techniques with the performance and parallelism of reconfigurable hardware.	
-\end{abstract}
+%\begin{resumo}[Abstract]
+%This work investigates cavitation detection techniques in centrifugal pumps through the analysis of Acoustic Emission (AE) signals, with an emphasis on the implementation of efficient processing architectures for continuous condition monitoring. The research is aligned with the MOMEA Project — Online Monitoring via the Acoustic Emission Method — developed by the Itaipu ParqueTec research group in partnership with Itaipu Binacional, whose goal is to deliver intelligent and low-cost diagnostic solutions applicable to industrial hydraulic systems.In the initial stage of the project, the MomeaProbe/MomeaCapture platform was developed, comprising a high-throughput data acquisition hardware (12-bit ADC at 8 MSps per channel, USB 3.0 interface) and a software environment responsible for signal transfer, compression, storage, and visualization. This infrastructure enabled continuous acquisition of long time series as well as the generation of time–frequency maps using windowed FFT. Based on these spectrograms, two-dimensional convolutional neural networks (CNN-2D) were trained to classify different cavitation stages, achieving promising classification accuracy.However, experimental results revealed significant limitations related to the large data volumes generated (tens of gigabytes per hour) and the high computational cost associated with continuous compression, storage, and processing using a general-purpose CPU. The increasing software complexity—encompassing multithreading, circular buffers, LZMA compression, experimental use of Redis, and subsequent replacement by lock-free data structures—highlighted scalability challenges and difficulties in maintaining a sustained high-throughput data flow. Comparative tests showed that, even with software optimizations, CPU-based compression becomes a bottleneck when the system operates at higher activity levels.
+%To overcome these limitations, this work proposes the development and simulation of an FPGA-based embedded architecture, employing HIT detection to filter relevant acoustic events directly in hardware and a quantized MLP network for near–real-time inference. Embedded filtering drastically reduces data granularity and volume prior to transmission, enabling the replacement of the USB 3.0 interface with a 100 Mb/s Ethernet link. This redistribution of processing significantly alleviates the computational burden on the host system and establishes a far more efficient and predictable pipeline for field monitoring.
+%The proposed combination of FPGA-based processing and MLP inference is expected to reduce latency, power consumption, and transmitted data volume while preserving high sensitivity for the detection of incipient cavitation and microstructural faults. Consequently, this study contributes to the development of an intelligent, robust monitoring platform suitable for industrial environments, effectively combining the accuracy of machine learning techniques with the performance and parallelism offered by reconfigurable hardware.
+%\end{abstract}
 
 
 % inserir lista de ilustrações
 % ---
+\pagebreak
 \pdfbookmark[0]{\listfigurename}{lof}
 \listoffigures*
 \cleardoublepage
@@ -509,7 +512,8 @@
 % inserir lista de abreviaturas e siglas
 % ---
 \begin{siglas}
-	\item[\textbf{ADC}] \textit{Analog-to-Digital Converter};
+	\item[\textbf{Adam}] \textit{Adaptive Moment Estimation}
+	\item[\textbf{ADC}] \textit{Analog-to-Digital Converter};	
 	\item[\textbf{AMD}] \textit{Advanced Micro Devices};
 	\item[\textbf{ANN}] \textit{Artificial Neural Network};
 	\item[\textbf{ANNs}] Artificial Neural Networks;
@@ -537,6 +541,7 @@
 	\item[\textbf{IA}] Inteligência Artificial;
 	\item[\textbf{JTAG}] \textit{Joint Test Action Group};
 	\item[\textbf{k-NN}] \textit{k-Nearest Neighbors};
+	\item[\textbf{MLP}] \textit{Multilayer Perceptron};
 	\item[\textbf{LSTM}] \textit{Long Short-Term Memory};
 	\item[\textbf{LUT}] \textit{Look-Up Table};
 	\item[\textbf{LVDS}] \textit{Low-Voltage Differential Signaling};
@@ -549,10 +554,12 @@
 	\item[\textbf{PCIe}] \textit{Peripheral Component Interconnect Express};
 	\item[\textbf{PLL}] \textit{Phase Locked Loop};
 	\item[\textbf{PTZ}] \textit{Lead Zirconate Titanate};
+	\item[\textbf{ReLU}] \textit{Rectified Linear Unit}
 	\item[\textbf{RNA}] Rede Neural Artificial;
 	\item[\textbf{RNAs}] Redes Neurais Artificiais;
 	\item[\textbf{RMS}] \textit{Root Mean Square};
 	\item[\textbf{SCADA}] \textit{Supervisory Control and Data Acquisition};
+	\item[\textbf{SGD}] \textit{Stochastic Gradient Descent};
 	\item[\textbf{SNR}] \textit{Signal Noise Ratio};
 	\item[\textbf{SoC}] \textit{System-on-Chip};
 	\item[\textbf{SPI}] \textit{Serial Peripheral Interface};
@@ -600,6 +607,44 @@
 \item[\textbf{$v_k$}] Potencial interno genérico do neurônio $k$, resultante da soma ponderada das entradas.
 \item[\textbf{$\varphi(\cdot)$}] Função de ativação não linear aplicada ao neurônio.
 \item[\textbf{$y_k$}] Saída do neurônio $k$ após a aplicação da função de ativação.
+
+\item[\textbf{$x$}] Vetor de entrada do modelo.
+\item[\textbf{$x_i$}] Vetor de entrada associado ao $i$-ésimo exemplo do conjunto de dados.
+\item[\textbf{$y$}] Rótulo (saída desejada) associado a uma entrada.
+\item[\textbf{$y_i$}] Rótulo associado ao $i$-ésimo exemplo do conjunto de dados.
+\item[\textbf{$\hat{y}$}] Saída estimada (predição) produzida pela MLP.
+\item[\textbf{$f_{\theta}(\cdot)$}] Função representada pela MLP parametrizada por $\theta$.
+\item[\textbf{$\theta$}] Conjunto de parâmetros treináveis da MLP (pesos e vieses).
+
+\item[\textbf{$\mathbb{R}^{d}$}] Espaço vetorial dos números reais de dimensão $d$.
+\item[\textbf{$d$}] Dimensão do vetor de entrada (número de atributos).
+
+\item[\textbf{$a^{(0)}$}] Ativação da camada de entrada, definida como $a^{(0)} = x$.
+\item[\textbf{$a^{(\ell)}$}] Vetor de ativações (saídas) da camada $\ell$ após a não linearidade.
+\item[\textbf{$z^{(\ell)}$}] Vetor pré-ativação da camada $\ell$ (combinação linear antes da ativação).
+\item[\textbf{$W^{(\ell)}$}] Matriz de pesos da camada $\ell$.
+\item[\textbf{$b^{(\ell)}$}] Vetor de vieses (\textit{bias}) da camada $\ell$.
+\item[\textbf{$\phi^{(\ell)}(\cdot)$}] Função de ativação aplicada na camada $\ell$.
+\item[\textbf{$\ell$}] Índice de camada, com $\ell = 1,\ldots,L$.
+\item[\textbf{$L$}] Número total de camadas parametrizadas da MLP (camadas com pesos).
+
+\item[\textbf{$\mathcal{D}$}] Conjunto de dados de treinamento, $\mathcal{D}=\{(x_i,y_i)\}_{i=1}^{N}$.
+\item[\textbf{$N$}] Número total de exemplos no conjunto de treinamento.
+\item[\textbf{$\mathcal{B}$}] Mini-batch (subconjunto) de $\mathcal{D}$ usado em uma iteração de treinamento.
+\item[\textbf{$|\mathcal{B}|$}] Cardinalidade (tamanho) do mini-batch.
+\item[\textbf{$B$}] Tamanho do mini-batch, $|\mathcal{B}|=B$.
+
+\item[\textbf{$\mathcal{L}(\hat{y},y)$}] Função de perda (erro) que quantifica discrepância entre predição e rótulo.
+\item[\textbf{$J_{\mathcal{B}}(\theta)$}] Função custo restrita ao mini-batch $\mathcal{B}$ (perda média + regularização).
+\item[\textbf{$\Omega(\theta)$}] Termo de regularização aplicado aos parâmetros do modelo.
+\item[\textbf{$\lambda$}] Hiperparâmetro que pondera a contribuição da regularização.
+
+\item[\textbf{$\nabla_{\theta}$}] Operador gradiente em relação aos parâmetros $\theta$.
+\item[\textbf{$g$}] Gradiente do custo em relação a $\theta$, tipicamente $g \gets \nabla_{\theta} J_{\mathcal{B}}(\theta)$.
+\item[\textbf{$\eta$}] Taxa de aprendizado (\textit{learning rate}) usada na atualização dos parâmetros.
+
+\item[\textbf{$E$}] Número de épocas de treinamento.
+\item[\textbf{$e$}] Índice da época, com $e = 1,\ldots,E$.
 \end{simbolos}
 %% ---
 

@@ -217,12 +217,116 @@ A Figura~\ref{fig:AprendizadoDeMaquinaConceitos} sintetiza graficamente essa cla
 %A escolha pela rede MLP neste trabalho é fundamentada nas propriedades de ``Compacidade'' e ``Eficiência Adaptativa'' definidas por \citeonline{kiranyaz20211d}.Primeiramente, a convolução 1D preserva a topologia temporal original do sinal de Emissão Acústica, permitindo que a rede explore correlações de fase e eventos transientes que poderiam ser suavizados ou perdidos em uma conversão para espectrograma.Em segundo lugar, a redução drástica no número de Operações de Multiplicação e Acumulação, MACs, torna a rede MLP inerentemente adequada para implementação em FPGA. Enquanto uma CNN-2D exigiria \textit{buffers} de linha complexos e intenso acesso à memória externa para armazenar mapas bidimensionais intermediários, a rede MLP permite um fluxo de dados simplificado e menor latência de inferência, requisitos mandatórios para o sistema de monitoramento em tempo real proposto.
 
 
-\section{Redes Neurais MLP)}
+\section{Redes Neurais MLP}
 
-As Redes Neurais Multicamadas (Multilayer Perceptron, MLP) constituem um dos modelos mais difundidos de redes neurais artificiais empregadas em tarefas de classificação e regressão em aprendizado supervisionado.
+%As Redes Neurais Multicamadas (Multilayer Perceptron, MLP) constituem um dos modelos mais difundidos de redes neurais artificiais empregadas em tarefas de classificação e regressão em aprendizado supervisionado.
+%
+%Uma MLP é uma forma de rede feedforward totalmente conectada, organizada em camadas hierárquicas de neurônios artificiais, como exemplifica a Figura \ref{fig:mlp}, nas quais cada unidade de processamento recebe entradas, processa informação e transmite um sinal adiante até a camada de saída.
+%  
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[width=0.9\linewidth]{figs/MLP/MLP}
+%	\caption{Exemplo de Perceptron Multicamadas. Fonte: O autor.}
+%	\label{fig:mlp}
+%\end{figure}
+%
+%O fluxo de informação em uma Rede Neural Multicamadas (MLP) ocorre de forma
+%\textit{unidirecional}, da camada de entrada em direção à camada de saída, sem a
+%presença de ciclos de realimentação, caracterizando-a como uma rede do tipo
+%\textit{feedforward}. Estruturalmente, a MLP é composta por uma camada de entrada,
+%uma ou mais camadas ocultas (\textit{hidden layers}) e uma camada de saída, conforme
+%descrito por \citeonline{haykin2009neural}.
+%
+%A camada de entrada possui um número de neurônios equivalente à quantidade de
+%variáveis explicativas utilizadas no modelo. Esses neurônios são usualmente
+%indexados por \( l \), com \( l = \{1, \ldots, p\} \), onde \( p \) representa o número
+%total de atributos da amostra de treinamento. Essa camada não apresenta parâmetros
+%ajustáveis, uma vez que sua função é simplesmente repassar os valores de entrada
+%para a camada subsequente, operando como uma função identidade.
+%
+%As camadas ocultas são responsáveis pela extração de representações intermediárias
+%dos dados, permitindo à rede modelar relações não lineares. A quantidade de
+%neurônios em cada camada oculta está diretamente relacionada à capacidade de
+%representação do modelo, sendo frequentemente associada à construção de múltiplos
+%hiperplanos no espaço de características. Os neurônios dessas camadas são
+%indexados por \( j = \{1, \ldots, h\} \), onde \( h \) indica o número de neurônios na
+%respectiva camada. É possível empregar mais de uma camada oculta, o que amplia a
+%capacidade expressiva da rede, ainda que ao custo de maior complexidade
+%computacional.
+%
+%A camada de saída, em problemas de classificação, é configurada de acordo com o
+%número de classes do problema. Frequentemente, utiliza-se uma codificação
+%semelhante a variáveis indicadoras (\textit{dummies}), na qual cada neurônio
+%representa uma classe ou uma combinação de classes. No contexto da detecção de
+%falhas em motobombas por meio de sinais de Emissão Acústica, por exemplo, as
+%classes podem representar diferentes condições operacionais do equipamento,
+%tais como \textit{operação normal}, \textit{cavitação incipiente},
+%\textit{cavitação severa} e \textit{falha em rolamento}. Nessa configuração, a
+%camada de saída pode ser composta por múltiplos neurônios, cada um associado à
+%ativação de uma dessas condições, produzindo saídas compatíveis com decisões de
+%classificação multiclasse.
+%
+%Do ponto de vista funcional, o comportamento de um neurônio \( k \), pertencente a
+%uma camada oculta ou à camada de saída, é descrito pela combinação linear
+%ponderada de suas entradas, seguida da aplicação de uma função de ativação. Se
+%\( x_j \) representa o sinal proveniente do neurônio \( j \) da camada anterior,
+%\( w_{kj} \) o peso sináptico associado a essa conexão e \( b_k \) o termo de viés
+%(\textit{bias}), o potencial interno do neurônio é dado por
+%\begin{equation}
+%	v_k = \sum_{j=1}^{m} w_{kj} x_j + b_k,
+%\end{equation}
+%sendo a saída do neurônio obtida pela aplicação da função de ativação
+%\( \varphi(\cdot) \),
+%\begin{equation}
+%	y_k = \varphi(v_k).
+%\end{equation}
+%
+%A capacidade da MLP de resolver problemas não linearmente separáveis está
+%diretamente associada ao uso de funções de ativação não lineares, como a função
+%sigmoidal, a tangente hiperbólica e a ReLU (\textit{Rectified Linear Unit}). Nesse
+%contexto, destaca-se o Teorema da Aproximação Universal, que estabelece que uma
+%MLP com apenas uma camada oculta e um número suficiente de neurônios é capaz de
+%aproximar qualquer função contínua com precisão arbitrária, desde que a função de
+%ativação seja não linear e limitada \citeonline{cybenko1989approximation,hornik1991approximation}. Esse resultado
+%fundamenta teoricamente o amplo uso das MLPs em tarefas de aproximação funcional,
+%classificação e regressão.
+%
+%
+%Essa arquitetura permite ao MLP aprender relações não lineares complexas entre as variáveis de entrada e saída, função essa que redes simples (como perceptrons de camada única) não conseguem realizar. A capacidade de modelar tais relações deriva do uso de funções de ativação não lineares nas camadas ocultas, que introduzem não linearidade no processamento de sinais, \cite{jaiswal2024multilayer}. 
+%
+%
+%O processo de construção e treinamento de uma MLP baseia-se em um aprendizado supervisionado, no qual o modelo ajusta seus parâmetros (pesos de conexão) a partir de exemplos rotulados, de modo a minimizar a discrepância entre as saídas previstas e as saídas desejadas. Essa configuração a torna apropriada para problemas onde existe um conjunto de dados com rótulos conhecidos, como acontece nas tarefas de detecção e classificação de padrões, . 
+%
+%%Na literatura, as MLPs são descritas como redes feedforward amplamente empregadas em uma diversidade de aplicações, dada sua versatilidade e capacidade de generalização. Elas têm sido utilizadas em domínios tão diversos quanto previsão de séries temporais, reconhecimento de padrões, classificação de sinais e problemas de predição em engenharia e ciências aplicadas. 
+%
+%Além disso, estudos comparativos ressaltam que apesar de modelos mais complexos (como redes com camadas convolucionais) poderem superar MLPs em tarefas que envolvem estruturas espaciais ou sequenciais explícitas, as MLPs continuam sendo uma abordagem robusta e eficaz em problemas clássicos de classificação quando corretamente treinadas e combinadas com técnicas de pré-processamento e extração de características, \cite{abd2023multi}.
+%
+%No contexto de sistemas embarcados e de inferência em hardware reconfigurável (como FPGAs), a simplicidade estrutural das MLPs — em comparação com arquiteturas mais profundas ou especializadas — favorece seu mapeamento em lógica programável, reduzindo custos de implementação e facilitando o controle de trade-offs entre precisão, consumo de recursos e latência de inferência.
 
-Uma MLP é uma forma de rede feedforward totalmente conectada, organizada em camadas hierárquicas de neurônios artificiais, como exemplifica a Figura \ref{fig:mlp}, nas quais cada unidade de processamento recebe entradas, processa informação e transmite um sinal adiante até a camada de saída.
-  
+As Redes Neurais Multicamadas (\emph{Multilayer Perceptron}, MLP) constituem um dos
+modelos mais difundidos de redes neurais artificiais empregadas em tarefas de
+classificação ou regressão no contexto do aprendizado supervisionado. Uma MLP pode
+ser compreendida como um modelo funcional que relaciona vetores de entrada e
+saída por meio da composição sucessiva de transformações afins e não lineares,
+cujos parâmetros são estimados a partir de dados rotulados.
+
+Dependendo da natureza do problema, a camada de saída e a função de ativação são
+definidas de modo a atender aos requisitos da tarefa. Em problemas de
+\textit{regressão}, a MLP é usualmente configurada com funções de ativação lineares
+na camada de saída, permitindo a estimação de variáveis contínuas. Já em tarefas
+de \textit{classificação}, empregam-se funções de ativação não lineares, como a
+sigmoide ou a \textit{softmax}, de forma a produzir saídas associadas a
+probabilidades de pertencimento a classes, possibilitando decisões binárias ou
+multiclasse.
+
+Uma MLP é uma rede do tipo \emph{feedforward} totalmente conectada, organizada em
+camadas hierárquicas de neurônios artificiais, conforme ilustrado na
+Figura~\ref{fig:mlp}. O fluxo de informação ocorre de forma unidirecional, da
+camada de entrada em direção à camada de saída, sem a presença de ciclos de
+realimentação, característica que distingue esse modelo de arquiteturas
+recorrentes \citeonline{haykin2009neural}.
+
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.9\linewidth]{figs/MLP/MLP}
@@ -230,79 +334,119 @@ Uma MLP é uma forma de rede feedforward totalmente conectada, organizada em cam
 	\label{fig:mlp}
 \end{figure}
 
-O fluxo de informação em uma Rede Neural Multicamadas (MLP) ocorre de forma
-\textit{unidirecional}, da camada de entrada em direção à camada de saída, sem a
-presença de ciclos de realimentação, caracterizando-a como uma rede do tipo
-\textit{feedforward}. Estruturalmente, a MLP é composta por uma camada de entrada,
-uma ou mais camadas ocultas (\textit{hidden layers}) e uma camada de saída, conforme
-descrito por \citeonline{haykin2009neural}.
-
 A camada de entrada possui um número de neurônios equivalente à quantidade de
 variáveis explicativas utilizadas no modelo. Esses neurônios são usualmente
-indexados por \( l \), com \( l = \{1, \ldots, p\} \), onde \( p \) representa o número
-total de atributos da amostra de treinamento. Essa camada não apresenta parâmetros
-ajustáveis, uma vez que sua função é simplesmente repassar os valores de entrada
+indexados por \( l \), com \( l = \{1,\ldots,p\} \), onde \( p \) representa o número
+total de atributos da amostra de treinamento. Essa camada não possui parâmetros
+ajustáveis, uma vez que sua função é simplesmente propagar os valores de entrada
 para a camada subsequente, operando como uma função identidade.
 
 As camadas ocultas são responsáveis pela extração de representações intermediárias
-dos dados, permitindo à rede modelar relações não lineares. A quantidade de
-neurônios em cada camada oculta está diretamente relacionada à capacidade de
-representação do modelo, sendo frequentemente associada à construção de múltiplos
-hiperplanos no espaço de características. Os neurônios dessas camadas são
-indexados por \( j = \{1, \ldots, h\} \), onde \( h \) indica o número de neurônios na
-respectiva camada. É possível empregar mais de uma camada oculta, o que amplia a
-capacidade expressiva da rede, ainda que ao custo de maior complexidade
-computacional.
+dos dados, permitindo à rede modelar relações não lineares entre as variáveis de
+entrada e saída. A quantidade de neurônios em cada camada oculta está diretamente
+associada à capacidade de representação do modelo, podendo ser interpretada como
+a construção de múltiplos hiperplanos no espaço de características. Os neurônios
+dessas camadas são indexados por \( j = \{1,\ldots,h\} \), onde \( h \) indica o
+número de neurônios na respectiva camada. É possível empregar mais de uma camada
+oculta, ampliando a expressividade do modelo, ainda que ao custo de maior
+complexidade computacional.
 
 A camada de saída, em problemas de classificação, é configurada de acordo com o
 número de classes do problema. Frequentemente, utiliza-se uma codificação
-semelhante a variáveis indicadoras (\textit{dummies}), na qual cada neurônio
-representa uma classe ou uma combinação de classes. No contexto da detecção de
-falhas em motobombas por meio de sinais de Emissão Acústica, por exemplo, as
-classes podem representar diferentes condições operacionais do equipamento,
-tais como \textit{operação normal}, \textit{cavitação incipiente},
-\textit{cavitação severa} e \textit{falha em rolamento}. Nessa configuração, a
-camada de saída pode ser composta por múltiplos neurônios, cada um associado à
-ativação de uma dessas condições, produzindo saídas compatíveis com decisões de
-classificação multiclasse.
+semelhante a variáveis indicadoras (\emph{dummies}), na qual cada neurônio está
+associado a uma classe ou condição. No contexto da detecção de falhas em
+motobombas por meio de sinais de Emissão Acústica, por exemplo, as classes podem
+representar diferentes estados operacionais do equipamento, tais como
+\emph{operação normal}, \emph{cavitação incipiente}, \emph{cavitação severa} e
+\emph{falha em rolamento}, possibilitando decisões de classificação multiclasse.
 
-Do ponto de vista funcional, o comportamento de um neurônio \( k \), pertencente a
-uma camada oculta ou à camada de saída, é descrito pela combinação linear
-ponderada de suas entradas, seguida da aplicação de uma função de ativação. Se
-\( x_j \) representa o sinal proveniente do neurônio \( j \) da camada anterior,
-\( w_{kj} \) o peso sináptico associado a essa conexão e \( b_k \) o termo de viés
-(\textit{bias}), o potencial interno do neurônio é dado por
-\begin{equation}
-	v_k = \sum_{j=1}^{m} w_{kj} x_j + b_k,
-\end{equation}
-sendo a saída do neurônio obtida pela aplicação da função de ativação
-\( \varphi(\cdot) \),
-\begin{equation}
-	y_k = \varphi(v_k).
-\end{equation}
+Do ponto de vista funcional, o comportamento de um neurônio em uma camada oculta
+ou de saída é descrito por uma combinação linear ponderada de suas entradas,
+seguida da aplicação de uma função de ativação não linear. Formalmente, dado um
+vetor de entrada \(x \in \mathbb{R}^{d}\), a MLP produz uma saída estimada
+\(\hat{y}\) por meio de sucessivas transformações:
+\[
+a^{(0)} = x,\qquad
+z^{(\ell)} = W^{(\ell)} a^{(\ell-1)} + b^{(\ell)},\qquad
+a^{(\ell)} = \phi^{(\ell)}\!\big(z^{(\ell)}\big), \quad \ell = 1,\ldots,L,
+\]
+em que \(W^{(\ell)}\) e \(b^{(\ell)}\) representam, respectivamente, os pesos e
+vieses da camada \(\ell\), e \(\phi^{(\ell)}\) a função de ativação associada. O
+termo \(z^{(\ell)}\) corresponde à combinação linear das ativações da camada
+anterior, enquanto \(a^{(\ell)}\) representa a saída não linear propagada à
+camada subsequente.
 
-A capacidade da MLP de resolver problemas não linearmente separáveis está
-diretamente associada ao uso de funções de ativação não lineares, como a função
-sigmoidal, a tangente hiperbólica e a ReLU (\textit{Rectified Linear Unit}). Nesse
-contexto, destaca-se o Teorema da Aproximação Universal, que estabelece que uma
-MLP com apenas uma camada oculta e um número suficiente de neurônios é capaz de
-aproximar qualquer função contínua com precisão arbitrária, desde que a função de
-ativação seja não linear e limitada \citeonline{cybenko1989approximation,hornik1991approximation}. Esse resultado
-fundamenta teoricamente o amplo uso das MLPs em tarefas de aproximação funcional,
-classificação e regressão.
+A capacidade da MLP de resolver problemas não linearmente separáveis decorre do
+uso de funções de ativação não lineares, como a função sigmoidal, a tangente
+hiperbólica e a ReLU (\emph{Rectified Linear Unit}). Nesse contexto, destaca-se o
+Teorema da Aproximação Universal, segundo o qual uma MLP com apenas uma camada
+oculta e um número suficiente de neurônios é capaz de aproximar qualquer função
+contínua com precisão arbitrária, desde que a função de ativação seja não linear
+e limitada \citeonline{cybenko1989approximation,hornik1991approximation}. Esse
+resultado fundamenta teoricamente o amplo uso das MLPs em tarefas de aproximação
+funcional, classificação e regressão.
+
+O processo de treinamento de uma MLP baseia-se em aprendizado supervisionado, no
+qual os parâmetros do modelo são ajustados a partir de exemplos rotulados, de
+modo a minimizar uma função de perda empírica, possivelmente acrescida de termos
+de regularização, isto é o treinamento da MLP consiste em ajustar \(\theta=\{(W^{(\ell)},b^{(\ell)})\}_{\ell=1}^{L}\) minimizando uma função de perda empírica com possível regularização:
+\[
+\min_{\theta}\;\; \frac{1}{N}\sum_{i=1}^{N}\mathcal{L}\big(f_{\theta}(x_i),y_i\big)\;+\;\lambda\,\Omega(\theta),
+\]
+em que \(\mathcal{L}\) pode ser a entropia cruzada no caso da classificação, e em que \(\Omega(\theta)\) pode ser o regularizador \(\ell_2\) (``weight decay''). 
+
+O gradiente \(\nabla_{\theta}\) da função  de custo é calculado de forma eficiente
+por meio do algoritmo de retropropagação (\emph{backpropagation}), que aplica a
+regra da cadeia ao grafo computacional definido pelas camadas da rede. Métodos de
+otimização baseados em gradiente descendente estocástico (SGD), bem como suas
+variações, são amplamente utilizados por apresentarem boa eficiência
+computacional e propriedades favoráveis de generalização.
+
+O pseudo-algoritmo abaixo descreve o fluxo lógico do treinamento de uma MLP via \emph{SGD puro}, omitindo detalhes de implementação específicos de bibliotecas, mas preservando todas as etapas conceituais essenciais. 
+Variantes populares substituem a etapa de atualização por regras com momentos (Momentum ou Nesterov) ou estimativas adaptativas (Adam), e podem incluir dropout no \emph{forward}, normalização por camadas e \(\ell_2\) acoplado à atualização (weight decay).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Pseudo-algoritmo de alto nível: Treinamento de MLP com SGD em mini-batches}
+
+\begin{algorithm}[H]
+	\caption{\textbf{Treinamento de uma MLP via SGD com mini-batches}}
+	\label{alg:mlp_sgd_minibatch}
+	\begin{algorithmic}[1]
+		\Require
+		Conjunto de treino \(\mathcal{D}=\{(x_i,y_i)\}_{i=1}^{N}\);
+		arquitetura (camadas, ativações) de \(f_{\theta}\);
+		perda \(\mathcal{L}(\hat{y},y)\);
+		regularização \(\Omega(\theta)\) (opcional);
+		taxa de aprendizado \(\eta>0\);
+		tamanho do mini-batch \(B\);
+		número de épocas \(E\).
+		\Ensure
+		Parâmetros treinados \(\theta\).
+		
+		\State \textbf{Inicializar} parâmetros \(\theta=\{W^{(\ell)},b^{(\ell)}\}_{\ell=1}^{L}\) (ex.: Xavier ou He).
+		
+		\For{\(e = 1,2,\dots,E\)}
+		\State \textbf{Embaralhar} os índices de \(\mathcal{D}\).
+		\For{cada mini-batch \(\mathcal{B}\subset\mathcal{D}\) com \(|\mathcal{B}|=B\)}
+		\State \textbf{(Forward)} Computar \(\hat{y}=f_{\theta}(x)\) e armazenar ativações intermediárias.
+		\State \textbf{(Perda)} Calcular \(J_{\mathcal{B}}(\theta)\).
+		\State \textbf{(Backprop)} Computar \(g \gets \nabla_{\theta} J_{\mathcal{B}}(\theta)\).
+		\State \textbf{(Atualização)} \(\theta \gets \theta - \eta g\).
+		\EndFor
+		\EndFor
+		
+		\State \Return \(\theta\).
+	\end{algorithmic}
+\end{algorithm}
 
 
 Essa arquitetura permite ao MLP aprender relações não lineares complexas entre as variáveis de entrada e saída, função essa que redes simples (como perceptrons de camada única) não conseguem realizar. A capacidade de modelar tais relações deriva do uso de funções de ativação não lineares nas camadas ocultas, que introduzem não linearidade no processamento de sinais, \cite{jaiswal2024multilayer}. 
 
 
-O processo de construção e treinamento de uma MLP baseia-se em um aprendizado supervisionado, no qual o modelo ajusta seus parâmetros (pesos de conexão) a partir de exemplos rotulados, de modo a minimizar a discrepância entre as saídas previstas e as saídas desejadas. Essa configuração a torna apropriada para problemas onde existe um conjunto de dados com rótulos conhecidos, como acontece nas tarefas de detecção e classificação de padrões, . 
-
-%Na literatura, as MLPs são descritas como redes feedforward amplamente empregadas em uma diversidade de aplicações, dada sua versatilidade e capacidade de generalização. Elas têm sido utilizadas em domínios tão diversos quanto previsão de séries temporais, reconhecimento de padrões, classificação de sinais e problemas de predição em engenharia e ciências aplicadas. 
-
 Além disso, estudos comparativos ressaltam que apesar de modelos mais complexos (como redes com camadas convolucionais) poderem superar MLPs em tarefas que envolvem estruturas espaciais ou sequenciais explícitas, as MLPs continuam sendo uma abordagem robusta e eficaz em problemas clássicos de classificação quando corretamente treinadas e combinadas com técnicas de pré-processamento e extração de características, \cite{abd2023multi}.
 
 No contexto de sistemas embarcados e de inferência em hardware reconfigurável (como FPGAs), a simplicidade estrutural das MLPs — em comparação com arquiteturas mais profundas ou especializadas — favorece seu mapeamento em lógica programável, reduzindo custos de implementação e facilitando o controle de trade-offs entre precisão, consumo de recursos e latência de inferência.
-
 
 \subsection{MLP em FPGA para diagnóstico de falhas}
 \label{subsection:MLP}
@@ -315,6 +459,6 @@ Um exemplo notável é o trabalho de \citeonline{garcia2025detection}, que desen
 \citeonline{shreejith2016} discutem um arranjo em plataforma Xilinx Zynq no qual uma rede ANN (compatível com MLP no paradigma feedforward) é colocada em uma região parcialmente reconfigurável, permitindo alternar entre um modo ''normal`` (detecção) e um modo ''fault-tolerant`` (rede mais complexa para substituir sensor defeituoso). O ponto central é o co-design para garantir latência previsível abaixo de 1 $\mu$s e integração com aquisição paralela de sensores.
 
 
-Complementarmente, \citeonline{toumi2022fpga} abordaram a diagnose de falhas em rolamentos — componentes críticos em máquinas rotativas — propondo uma arquitetura de hardware baseada na plataforma FPGA Zynq-7000. A metodologia integrou a técnica de análise de envelope para a extração de características do sinal de vibração, as quais serviram de entrada para uma MLP. Validado com o dataset padrão da Case Western Reserve University (CWRU), o sistema embarcado atingiu uma acurácia média de 95\% na identificação do tipo de falha e 89\% na estimativa da severidade, demonstrando alta coerência entre as simulações em software e a implementação física.
+Complementarmente, \citeonline{toumi2022fpga} abordaram o diagnostico de falhas em rolamentos — componentes críticos em máquinas rotativas — propondo uma arquitetura de hardware baseada na plataforma FPGA Zynq-7000. A metodologia integrou a técnica de análise de envelope para a extração de características do sinal de vibração, as quais serviram de entrada para uma MLP. Validado com o dataset padrão da Case Western Reserve University (CWRU), o sistema embarcado atingiu uma acurácia média de 95\% na identificação do tipo de falha e 89\% na estimativa da severidade, demonstrando alta coerência entre as simulações em software e a implementação física.
 
 %Já focado especificamente em motobombas centrífugas, o estudo de Al-Tameemi et al. (2020) explorou o uso de MLPs para detectar falhas comuns como cavitação e bloqueio do impelidor. O sistema utilizou sinais de vibração no domínio do tempo e alcançou altas taxas de acerto ao treinar a rede com dados experimentais de uma bancada de testes. A comparação com implementações puramente em software (microcontroladores convencionais) reforçou que a arquitetura paralela da FPGA oferece uma vantagem significativa em termos de tempo de resposta, permitindo que o sistema de proteção atue antes que a falha se torne catastrófica."

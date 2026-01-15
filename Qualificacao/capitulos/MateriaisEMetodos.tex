@@ -79,26 +79,26 @@ para o ambiente Vivado e integrado ao sistema por meio do \textit{IP Integrator}
 Esse fluxo facilita a prototipagem rápida e a exploração de diferentes
 configurações arquiteturais da MLP.
 
-\subsubsection*{hls4ml}
-
-Como ferramenta acadêmica de apoio, o \textit{hls4ml} é utilizado para facilitar
-a transposição de modelos de aprendizado profundo treinados em ambiente de
-software para arquiteturas em FPGA. Trata-se de uma biblioteca \textit{open
-	source} que traduz automaticamente modelos desenvolvidos em frameworks de alto
-nível, como Keras, TensorFlow ou PyTorch, em código C++ otimizado para o fluxo do
-Vitis HLS.
-
-No contexto deste trabalho, o hls4ml pode ser empregado como uma ferramenta
-auxiliar para acelerar a geração inicial da arquitetura da MLP, permitindo a
-avaliação de diferentes topologias e configurações de quantização. O código
-gerado pode então ser refinado e integrado ao fluxo padrão de síntese e
-implementação no Vivado, mantendo compatibilidade com o FPGA Arty A7-35T.
-
-A utilização conjunta dessas ferramentas estabelece um fluxo de desenvolvimento
-coerente e flexível, no qual a modelagem em alto nível, a síntese em hardware, a
-simulação funcional e a avaliação de desempenho são integradas de forma
-sistemática, permitindo analisar a viabilidade da implementação da MLP em FPGA
-sob as restrições típicas de aplicações de \textit{Edge AI}.
+%\subsubsection*{hls4ml}
+%
+%Como ferramenta acadêmica de apoio, o \textit{hls4ml} é utilizado para facilitar
+%a transposição de modelos de aprendizado profundo treinados em ambiente de
+%software para arquiteturas em FPGA. Trata-se de uma biblioteca \textit{open
+%	source} que traduz automaticamente modelos desenvolvidos em frameworks de alto
+%nível, como Keras, TensorFlow ou PyTorch, em código C++ otimizado para o fluxo do
+%Vitis HLS.
+%
+%No contexto deste trabalho, o hls4ml pode ser empregado como uma ferramenta
+%auxiliar para acelerar a geração inicial da arquitetura da MLP, permitindo a
+%avaliação de diferentes topologias e configurações de quantização. O código
+%gerado pode então ser refinado e integrado ao fluxo padrão de síntese e
+%implementação no Vivado, mantendo compatibilidade com o FPGA Arty A7-35T.
+%
+%A utilização conjunta dessas ferramentas estabelece um fluxo de desenvolvimento
+%coerente e flexível, no qual a modelagem em alto nível, a síntese em hardware, a
+%simulação funcional e a avaliação de desempenho são integradas de forma
+%sistemática, permitindo analisar a viabilidade da implementação da MLP em FPGA
+%sob as restrições típicas de aplicações de \textit{Edge AI}.
 
 
 \section{Metodologia}

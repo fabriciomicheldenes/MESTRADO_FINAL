@@ -161,7 +161,23 @@ A arquitetura já otimizada é então traduzida para uma \textbf{descrição em 
 
 A etapa seguinte corresponde à \textbf{sintese lógica}, na qual a descrição funcional é convertida em uma rede lógica equivalente composta por LUTs, flip-flops, blocos DSP e memórias internas (BRAMs) do FPGA. As ferramentas de síntese aplicam otimizações de lógica booleana, realizam o mapeamento para os recursos específicos do dispositivo e geram uma representação intermediária que servirá de base para o \mbox{processo de implementação física.}
 
-Concluída a síntese, procede-se à \textbf{implementação física (\textit{place \& route})}. Nessa fase, os elementos lógicos são posicionados na matriz do FPGA (\textit{placement}) e as conexões elétricas entre eles são estabelecidas (\textit{routing}). A forma como os blocos (CLBs, DSPs, BRAMs) são distribuídos e interligados impacta diretamente a frequência máxima de operação e o consumo de energia. Congestionamentos na rede de interconexão ou rotas excessivamente longas podem impedir o cumprimento das metas de \mbox{temporização definidas no projeto.}
+Antes da etapa de implementação física, realiza-se o \textbf{planejamento de
+entradas e saídas e a atribuição de pinos (\textit{pin assignment})}. Nessa fase,
+os sinais lógicos do projeto são associados aos pinos físicos do FPGA,
+considerando as restrições impostas pelo hardware externo, tais como sensores,
+conversores A/D, interfaces de comunicação e padrões elétricos. São definidos
+parâmetros como tipo de I/O, níveis de tensão, normas de sinalização
+(\textit{single-ended} ou diferencial), além de restrições de temporização
+relacionadas a interfaces síncronas ou assíncronas.
+
+O planejamento adequado dos pinos é fundamental para garantir a integridade dos
+sinais, minimizar interferências e facilitar o roteamento interno durante a
+implementação física. Em projetos que envolvem aquisição de sinais em alta taxa
+ou comunicação externa de dados, decisões incorretas nessa etapa podem resultar
+em degradação de desempenho, aumento de consumo ou dificuldades no fechamento de
+temporização, exigindo revisões posteriores no projeto.
+
+Concluída a síntese, e o planejamento de IO, procede-se à \textbf{implementação física (\textit{place \& route})}. Nessa fase, os elementos lógicos são posicionados na matriz do FPGA (\textit{placement}) e as conexões elétricas entre eles são estabelecidas (\textit{routing}). A forma como os blocos (CLBs, DSPs, BRAMs) são distribuídos e interligados impacta diretamente a frequência máxima de operação e o consumo de energia. Congestionamentos na rede de interconexão ou rotas excessivamente longas podem impedir o cumprimento das metas de \mbox{temporização definidas no projeto.}
 
 Após o roteamento, realiza-se a \textbf{análise de tempo e o \textit{timing closure}}. Por meio de análise estática de temporização, verificam-se as restrições de \textit{setup} e \textit{hold} em todos os caminhos relevantes. Caso os caminhos críticos excedam o período de clock especificado, torna-se necessário aplicar técnicas de otimização, tais como inserção de estágios adicionais de pipeline, replicação de lógica, refinamento de restrições ou reorganização de blocos. O objetivo é garantir que o design opere de forma confiável na frequência alvo.
 
@@ -430,7 +446,7 @@ Em linhas gerais, essas estratégias buscam reduzir latência, consumo de energi
 %\end{tabular}}
 %\end{table}
 
-Diversos estudos e \textit{surveys} analisam essas estratégias sob diferentes perspectivas, comparando \textit{frameworks} e abordagens de implementação. A Tabela~\ref{tab:otimizacao_mlp_fpga} apresenta um resumo de publicações recentes que investigam técnicas de aceleração de redes neurais em FPGAs, destacando o foco principal e as contribuições de cada estudo.
+Diversos estudos e \textit{surveys} analisam essas estratégias sob diferentes perspectivas, comparando \textit{frameworks} e abordagens de implementação. A Tabela~\ref{tab:mlp_fpga_optimization} apresenta um resumo de publicações recentes que investigam técnicas de aceleração de redes neurais em FPGAs, destacando o foco principal e as contribuições de cada estudo.
 
 %\begin{table}[H]
 %	\footnotesize
@@ -564,17 +580,17 @@ Essas iniciativas apontam para um futuro em que o mapeamento de IA em FPGAs ser�
 
 Na sequência das técnicas de otimização discutidas anteriormente, esta subseção volta-se para o estudo de ferramentas e \textit{frameworks} voltados à síntese e aceleração de redes neurais em FPGAs. Entre as diversas soluções disponíveis no ecossistema atual, destacam-se aquelas desenvolvidas por fabricantes e grupos de pesquisa que buscam abstrair a complexidade do fluxo de implementação em hardware, automatizando etapas de quantização, mapeamento e geração de IPs reconfiguráveis.
 
-\section{Implementaçao do MLP }
-
-Do ponto de vista da implementação de Redes Neurais Multicamadas (MLP) em dispositivos do tipo FPGA, a literatura técnica e acadêmica aponta para diferentes abordagens consolidadas, cuja adoção depende de fatores como complexidade do modelo, precisão numérica desejada, consumo de recursos lógicos e tempo de desenvolvimento. Nesse contexto, observa-se que os métodos mais comumente empregados podem ser agrupados em três grandes famílias, atualmente em fase de levantamento e avaliação neste trabalho.
-
-Uma primeira abordagem amplamente difundida consiste na utilização de ferramentas de Síntese em Alto Nível (High-Level Synthesis – HLS), como o Vitis HLS, nas quais cada camada da MLP é modelada como uma operação de produto matriz-vetor, acrescida de termos de polarização (\textit{bias}) e funções de ativação. Essa estratégia faz uso predominante de aritmética em ponto fixo, explorando os blocos DSP do FPGA para operações do tipo multiplicação-acumulação (MAC), além de técnicas de paralelismo, como \textit{loop unrolling} e \textit{pipelining}. Tal abordagem é amplamente adotada devido à boa adequação da arquitetura das MLPs à estrutura de processamento do FPGA, baseada em operações aritméticas elementares.
-
-Uma segunda linha de implementação recorre a \textit{frameworks} HLS de mais alto nível, como o \textit{hls4ml}, que automatizam a geração de arquiteturas dedicadas para redes neurais artificiais, incluindo MLPs. Esses ambientes permitem uma rápida exploração de compromissos entre latência, uso de recursos lógicos e precisão numérica, sendo recorrentes em trabalhos recentes que investigam a estimativa e otimização de recursos para redes neurais embarcadas em FPGA.
-
-Por fim, uma terceira abordagem consiste na implementação direta em nível de descrição de hardware (RTL), utilizando linguagens como VHDL ou Verilog, geralmente baseada em arquiteturas do tipo matriz-vetor (MVU) ou arranjos sistólicos. Embora mais trabalhosa, essa alternativa oferece maior controle sobre a microarquitetura do sistema, permitindo detalhamento explícito de aspectos como organização de buffers, paralelismo interno, quantização numérica e fechamento de temporização (\textit{timing closure}), sendo particularmente atrativa em contextos acadêmicos nos quais se busca uma análise aprofundada da arquitetura implementada.
-
-Diante dessas possibilidades, o presente trabalho encontra-se em fase de levantamento e análise comparativa de artigos e teses que tratam da implementação eficiente de MLPs em FPGA, com o objetivo de identificar a abordagem mais adequada aos requisitos do sistema proposto e às restrições de tempo e recursos inerentes ao desenvolvimento do projeto, bem como de avaliar alternativas à utilização de \textit{frameworks} específicos previamente considerados.
+%\section{Implementaçao do MLP }
+%
+%Do ponto de vista da implementação de Redes Neurais Multicamadas (MLP) em dispositivos do tipo FPGA, a literatura técnica e acadêmica aponta para diferentes abordagens consolidadas, cuja adoção depende de fatores como complexidade do modelo, precisão numérica desejada, consumo de recursos lógicos e tempo de desenvolvimento. Nesse contexto, observa-se que os métodos mais comumente empregados podem ser agrupados em três grandes famílias, atualmente em fase de levantamento e avaliação neste trabalho.
+%
+%Uma primeira abordagem amplamente difundida consiste na utilização de ferramentas de Síntese em Alto Nível (High-Level Synthesis – HLS), como o Vitis HLS, nas quais cada camada da MLP é modelada como uma operação de produto matriz-vetor, acrescida de termos de polarização (\textit{bias}) e funções de ativação. Essa estratégia faz uso predominante de aritmética em ponto fixo, explorando os blocos DSP do FPGA para operações do tipo multiplicação-acumulação (MAC), além de técnicas de paralelismo, como \textit{loop unrolling} e \textit{pipelining}. Tal abordagem é amplamente adotada devido à boa adequação da arquitetura das MLPs à estrutura de processamento do FPGA, baseada em operações aritméticas elementares.
+%
+%Uma segunda linha de implementação recorre a \textit{frameworks} HLS de mais alto nível, como o \textit{hls4ml}, que automatizam a geração de arquiteturas dedicadas para redes neurais artificiais, incluindo MLPs. Esses ambientes permitem uma rápida exploração de compromissos entre latência, uso de recursos lógicos e precisão numérica, sendo recorrentes em trabalhos recentes que investigam a estimativa e otimização de recursos para redes neurais embarcadas em FPGA.
+%
+%Por fim, uma terceira abordagem consiste na implementação direta em nível de descrição de hardware (RTL), utilizando linguagens como VHDL ou Verilog, geralmente baseada em arquiteturas do tipo matriz-vetor (MVU) ou arranjos sistólicos. Embora mais trabalhosa, essa alternativa oferece maior controle sobre a microarquitetura do sistema, permitindo detalhamento explícito de aspectos como organização de buffers, paralelismo interno, quantização numérica e fechamento de temporização (\textit{timing closure}), sendo particularmente atrativa em contextos acadêmicos nos quais se busca uma análise aprofundada da arquitetura implementada.
+%
+%Diante dessas possibilidades, o presente trabalho encontra-se em fase de levantamento e análise comparativa de artigos e teses que tratam da implementação eficiente de MLPs em FPGA, com o objetivo de identificar a abordagem mais adequada aos requisitos do sistema proposto e às restrições de tempo e recursos inerentes ao desenvolvimento do projeto, bem como de avaliar alternativas à utilização de \textit{frameworks} específicos previamente considerados.
 
 %Nesse contexto, o FINN desponta como um dos \textit{frameworks} mais relevantes, sendo amplamente adotado na literatura por sua eficiência e integração com o ecossistema de ferramentas da AMD/Xilinx.
 %

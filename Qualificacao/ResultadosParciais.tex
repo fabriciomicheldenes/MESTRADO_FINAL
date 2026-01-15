@@ -198,7 +198,7 @@ No lado direito da figura, a \textit{Aplicação} consome os dados do \textit{bu
 	
 	\item \textit{Persistência Final:} Gravação dos dados estruturados no ``Banco de dados SQLite Aplicação'', que serve como repositório definitivo para consultas e análises históricas. \end{itemize}
 	
-	\item \textbf{Inferência com Modelos AM-DL:} O bloco de ``Modelos de ML/DL'' (\textit{Machine Learning} e \textit{Deep Learning}) consome os dados já tratados do banco final. É nesta etapa que ocorrem a classificação de padrões (ex: detecção de cavitação) \mbox{e a predição de anomalias.}
+	\item \textbf{Inferência com Modelos ML-DL:} O bloco de ``Modelos de ML/DL'' (\textit{Machine Learning} e \textit{Deep Learning}) consome os dados já tratados do banco final. É nesta etapa que ocorrem a classificação de padrões (ex: detecção de cavitação) \mbox{e a predição de anomalias.}
 	
 	\item \textbf{\textit{Feedback} de Resultados:} Conforme indicado pelas setas de retorno na figura, os resultados das inferências (diagnósticos, probabilidades de falha) são gravados de volta no banco de dados da aplicação. Isso cria um registro histórico auditável, permitindo correlacionar os sinais brutos com os diagnósticos gerados pelo modelo ao longo do tempo.
 \end{itemize}
@@ -350,6 +350,25 @@ Essa topologia em dois estágios evidencia que o pipeline foi concebido para lid
 
 Baseado na metodologia de detecção por \textbf{HIT (Hit Detection)}, descrita anteriormente na Seção~\ref{sec:UsoEA}, está em desenvolvimento uma implementação dedicada em \textbf{FPGA}, com o objetivo de realizar o pré-processamento e a filtragem dos sinais de Emissão Acústica (EA) diretamente no hardware, reduzindo significativamente o volume de dados a serem transmitidos e processados posteriormente no sistema de monitoramento.
 
+\subsection{Fluxo de Operação do Sistema Momea FPGA}
+
+O fluxo de operação do sistema Momea FPGA é sintetizado na Figura \ref{fig:MomeaFPGA}, que organiza visualmente as etapas de aquisição, pré-processamento, armazenamento e aplicação de modelos de aprendizado de máquina no novo arranjo baseado em filtragem embarcada. A representação destaca como a inserção do FPGA altera significativamente o pipeline original ao deslocar parte do processamento crítico para o próprio dispositivo embarcado, reduzindo o volume de dados transferido e simplificando as etapas subsequentes no software.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\linewidth]{figs/FluxoOperacaoMOMEAFPGA}
+	\caption[Fluxo de operação do sistema Momea FPGA]{Fluxo de operação do sistema Momea FPGA. Fonte: O autor}
+	\label{fig:MomeaFPGA}
+\end{figure}
+
+A Figura \ref{fig:MomeaFPGA} mostra que os sinais provenientes dos sensores são inicialmente encaminhados ao Sistema de Aquisição, que agora opera em conjunto com o módulo FPGA. Diferentemente da arquitetura USB original, onde os dados brutos eram transmitidos integralmente à aplicação, no modelo FPGA ocorre uma etapa adicional de filtragem e compactação prévia diretamente no hardware reconfigurável. Essa filtragem reduz a granularidade dos dados, eliminando trechos irrelevantes e retendo apenas segmentos significativos para análise, o que torna viável o envio das informações por meio de uma interface Ethernet de 100 Mb/s.
+
+Após o processamento no FPGA, os dados filtrados são gravados em um banco de dados SQLite temporário, responsável por armazenar o fluxo contínuo de amostras de forma compactada. Em seguida, o sistema de aplicação realiza operações de descompactação, transformação, ajuste de granularidade e persistência final no banco de dados SQLite da aplicação, etapa em que os dados são organizados no formato apropriado para inferência e análises posteriores.
+
+A Figura \ref{fig:MomeaFPGA} também ilustra o fluxo de processamento que alimenta os modelos de aprendizado de máquina e \textit{deep learning}. Os dados provenientes do banco de aplicação podem ser submetidos a algoritmos de classificação ou predição, cujo resultado é reintegrado ao pipeline para fins de diagnóstico, geração de relatórios ou \mbox{monitoramento em tempo real.}
+
+Assim, o diagrama enfatiza como a introdução do FPGA redistribui o esforço computacional ao longo da cadeia: parte significativa do pré-processamento passa a ocorrer no hardware embarcado, diminuindo a carga do software e permitindo que a etapa de aplicação opere com dados mais compactos, relevantes e de menor volume. Isso contribui para maior eficiência, menor uso de disco e maior previsibilidade temporal — aspectos críticos em sistemas de monitoramento contínuo de alta taxa.
+
 \subsection{Hardware}
 A plataforma selecionada para essa implementação é a \textbf{Arty A7-35T}, da Digilent, mostrada na Figura \ref{fig:Arty} equipada com o \textbf{FPGA Xilinx Artix-7 XC7A35T}. Esse dispositivo conta com aproximadamente 33.280 células lógicas, 1.800~kB de memória interna distribuída (Block RAM), 90 blocos DSP~(Digital Signal Processing) e interfaces externas configuráveis. O Artix-7 oferece excelente equilíbrio entre custo, consumo energético e capacidade de processamento paralelo, sendo ideal para aplicações de prototipagem de sistemas embarcados de processamento em tempo real.
 
@@ -391,24 +410,6 @@ Na camada de \textbf{software} do sistema \textbf{MomeaFPGA}, o foco desloca-se 
 %
 %A adoção do fluxo Ethernet 100~Mb/s pré-filtrado, portanto, redefine o papel do software: ao invés de funcionar como um pipeline de alta performance responsável por absorver um volume massivo de dados brutos, ele passa a atuar como uma camada de coleta, organização e visualização dos eventos já processados no hardware. Isso reduz a carga computacional, simplifica a arquitetura interna e aumenta a robustez geral do sistema, tornando-o mais adequado para aplicações reais de monitoramento contínuo.
 
-\subsection{Fluxo de Operação do Sistema Momea FPGA}
-
-O fluxo de operação do sistema Momea FPGA é sintetizado na Figura \ref{fig:MomeaFPGA}, que organiza visualmente as etapas de aquisição, pré-processamento, armazenamento e aplicação de modelos de aprendizado de máquina no novo arranjo baseado em filtragem embarcada. A representação destaca como a inserção do FPGA altera significativamente o pipeline original ao deslocar parte do processamento crítico para o próprio dispositivo embarcado, reduzindo o volume de dados transferido e simplificando as etapas subsequentes no software.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.9\linewidth]{figs/FluxoOperacaoMOMEAFPGA}
-	\caption[Fluxo de operação do sistema Momea FPGA]{Fluxo de operação do sistema Momea FPGA. Fonte: O autor}
-	\label{fig:MomeaFPGA}
-\end{figure}
-
-A Figura \ref{fig:MomeaFPGA} mostra que os sinais provenientes dos sensores são inicialmente encaminhados ao Sistema de Aquisição, que agora opera em conjunto com o módulo FPGA. Diferentemente da arquitetura USB original, onde os dados brutos eram transmitidos integralmente à aplicação, no modelo FPGA ocorre uma etapa adicional de filtragem e compactação prévia diretamente no hardware reconfigurável. Essa filtragem reduz a granularidade dos dados, eliminando trechos irrelevantes e retendo apenas segmentos significativos para análise, o que torna viável o envio das informações por meio de uma interface Ethernet de 100 Mb/s.
-
-Após o processamento no FPGA, os dados filtrados são gravados em um banco de dados SQLite temporário, responsável por armazenar o fluxo contínuo de amostras de forma compactada. Em seguida, o sistema de aplicação realiza operações de descompactação, transformação, ajuste de granularidade e persistência final no banco de dados SQLite da aplicação, etapa em que os dados são organizados no formato apropriado para inferência e análises posteriores.
-
-A Figura \ref{fig:MomeaFPGA} também ilustra o fluxo de processamento que alimenta os modelos de aprendizado de máquina e \textit{deep learning}. Os dados provenientes do banco de aplicação podem ser submetidos a algoritmos de classificação ou predição, cujo resultado é reintegrado ao pipeline para fins de diagnóstico, geração de relatórios ou \mbox{monitoramento em tempo real.}
-
-Assim, o diagrama enfatiza como a introdução do FPGA redistribui o esforço computacional ao longo da cadeia: parte significativa do pré-processamento passa a ocorrer no hardware embarcado, diminuindo a carga do software e permitindo que a etapa de aplicação opere com dados mais compactos, relevantes e de menor volume. Isso contribui para maior eficiência, menor uso de disco e maior previsibilidade temporal — aspectos críticos em sistemas de monitoramento contínuo de alta taxa.
 
 \subsection{Comparação entre os fluxos Momea USB e Momea FPGA}
 
@@ -518,11 +519,42 @@ A principal limitação do método de HIT reside no fato de que sua operação d
     O desempenho do método depende fortemente da calibração experimental, que pode variar conforme o tipo de sensor, o acoplamento mecânico, o ruído estrutural e as condições de operação da máquina. Pequenas variações nessas condições podem alterar significativamente a amplitude dos sinais, exigindo reconfigurações frequentes dos parâmetros de detecção.
 \end{itemize}
 
-Além disso, o método de HIT não considera a \textbf{estrutura temporal e espectral completa} do sinal, pois registra apenas parâmetros estatísticos resumidos, como amplitude máxima, duração, energia e número de contagens, sem preservar a forma de onda original. Isso limita a capacidade do sistema de capturar padrões complexos ou sutis que poderiam ser indicativos de processos físicos distintos, como cavitação transitória, impactos mecânicos ou ruídos estruturais.
+Além disso, o método de HIT não considera a \textbf{estrutura temporal e
+	espectral completa} do sinal, pois registra apenas parâmetros estatísticos
+resumidos, como amplitude máxima, duração, energia e número de contagens, sem
+preservar a forma de onda original. Isso limita a capacidade do sistema de
+capturar padrões complexos ou sutis que poderiam ser indicativos de processos
+físicos distintos, como cavitação transitória, impactos mecânicos ou ruídos
+estruturais.
 
-Em contraste, modelos de aprendizado profundo, como as redes MLP, analisam diretamente os sinais brutos ou suas representações espectro-temporais, aprendendo automaticamente características discriminativas que podem não ser evidentes a partir de parâmetros manuais. Essas redes são capazes de detectar relações não lineares, correlações temporais e variações espectrais de pequena magnitude, o que as torna particularmente eficazes para identificar estágios iniciais de cavitação ou falhas de natureza intermitente.
+Em contraste, modelos de aprendizado profundo, como as redes MLP, analisam
+diretamente os sinais brutos ou suas representações espectro-temporais,
+aprendendo automaticamente características discriminativas que podem não ser
+evidentes a partir de parâmetros manuais. Essas redes são capazes de capturar
+relações não lineares e variações espectrais de pequena magnitude, o que as torna
+particularmente eficazes para a identificação de estágios iniciais de cavitação
+ou falhas de natureza intermitente.
 
-Por fim, embora o método de HIT seja extremamente eficiente para \textbf{monitoramento contínuo embarcado}, ele se mostra limitado em cenários que demandam \textbf{diagnóstico detalhado ou classificação precisa de eventos}. Assim, uma solução híbrida, na qual a detecção inicial por HIT seja complementada por um módulo de inferência baseado em CNN embarcado em FPGA, surge como uma alternativa promissora, combinando a eficiência do pré-processamento em hardware com o poder discriminativo do aprendizado profundo.
+É importante destacar que, quando comparadas a arquiteturas mais complexas,
+como redes convolucionais (CNN) ou recorrentes (RNN, LSTM), as MLPs apresentam
+limitações quanto à exploração explícita de estruturas espaciais ou temporais
+de longo alcance. No entanto, essa simplicidade estrutural representa uma
+vantagem significativa no contexto de implementação em hardware
+reconfigurável. A organização baseada essencialmente em operações de
+multiplicação e acumulação favorece o mapeamento eficiente em FPGA, resultando
+em menor consumo de blocos lógicos, uso reduzido de memória e maior
+previsibilidade de latência, características fundamentais para sistemas
+embarcados de monitoramento contínuo.
+
+Por fim, embora o método de HIT seja extremamente eficiente para
+\textbf{monitoramento contínuo embarcado}, ele se mostra limitado em cenários que
+demandam \textbf{diagnóstico detalhado ou classificação precisa de eventos}.
+Nesse sentido, uma solução híbrida, na qual a detecção inicial por HIT seja
+complementada por um módulo de inferência baseado em MLP embarcado em FPGA,
+surge como uma alternativa promissora, combinando a eficiência do
+pré-processamento em hardware com o poder discriminativo do aprendizado
+profundo.
+
 
 %\section{Proposta de Trabalho}
 %
