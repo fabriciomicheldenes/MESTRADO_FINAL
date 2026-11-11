@@ -1,0 +1,135 @@
+% Gerado por ferramentas/importar_relatorios.py a partir de ARTIGO_V2-10.11.2026/7-Conclusoes2.tex.
+% Revisado à mão na dissertação: edite este arquivo, não a fonte.
+% =======================================================================================================
+
+Esta seção sintetiza as contribuições efetivamente mostradas, os resultados quantitativos obtidos e o alcance das evidências produzidas. Ela não antecipa resultados que não tenham sido apresentados na Seção~\ref{sec:res_extrator} nem extrapola as conclusões para além das condições ensaiadas.
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Síntese da contribuição}
+\label{v2:subsec:sintese_contribuicao_conclusao}
+
+Este trabalho apresentou o desenvolvimento de um sistema embarcado baseado em FPGA para aquisição, detecção e parametrização de \textit{hits} de emissão acústica. A arquitetura integra condicionamento analógico, conversão A/D, filtragem digital, detecção por máquina de estados, extração de descritores, formação de registros e comunicação com o nível superior do sistema.
+
+No modo de operação investigado, a forma de onda contínua é substituída por registros contendo descritores dos \textit{hits}. Essa decisão reduz a quantidade de dados transmitidos ao custo de não preservar integralmente o sinal original. A contribuição é, portanto, formulada como implementação e caracterização de uma arquitetura de processamento na borda, e não como método de compressão reversível ou sistema completo de diagnóstico de cavitação.
+
+A verificação utilizou estímulos elétricos controlados, uma forma de onda de referência medida independentemente e o Vallen AMSY-6 como instrumento comercial de comparação. Esse delineamento avalia a cadeia posterior ao plano de injeção, mas não substitui a validação com sensores, acoplamento, propagação estrutural e fontes físicas de cavitação.
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Síntese quantitativa}
+\label{v2:subsec:sintese_quantitativa_conclusao}
+
+A conclusão apresenta os resultados centrais obtidos nos ensaios, todos acompanhados de unidade, faixa de operação, incerteza ou intervalo de confiança, e confrontados com os critérios de aceitação \(\tau_x\) definidos na Seção~\ref{sec:mm_delineamento} (valores iniciais na Tabela~\ref{v2:tab:tau_x_iniciais}). O Quadro~\ref{v2:qua:resultados_conclusao_secao7} organiza as informações mínimas.
+
+O Quadro~\ref{v2:qua:resultados_conclusao_secao7} foi preenchido com as estimativas preliminares da sessão R1 (Seção~\ref{sec:res_extrator}).
+
+\begingroup
+\renewcommand{\tablename}{Quadro}
+\footnotesize
+\renewcommand{\arraystretch}{1.22}
+\begin{longtable}{|
+		>{\raggedright\arraybackslash}p{3.2cm}|
+		>{\raggedright\arraybackslash}p{4.0cm}|
+		>{\raggedright\arraybackslash}p{3.2cm}|
+		>{\raggedright\arraybackslash}p{3.8cm}|}
+	\caption{Resultados quantitativos da conclusão.}
+	\label{v2:qua:resultados_conclusao_secao7}\\
+	\hline
+	\textbf{Resultado} & \textbf{Estimativa obtida} & \textbf{Faixa e incerteza} & \textbf{Conclusão autorizada} \\
+	\hline
+	\endfirsthead
+	\multicolumn{4}{c}
+	{\tablename\ \thetable{} -- continuação}\\
+	\hline
+	\textbf{Resultado} & \textbf{Estimativa obtida} & \textbf{Faixa e incerteza} & \textbf{Conclusão autorizada} \\ \hline
+	\endhead
+	\hline
+	\multicolumn{4}{r}{Continua na próxima página.}\\
+	\endfoot
+	\hline
+	\endlastfoot
+	Detecção & Sistema proposto: 99,94 a 99,96\,\% dos estímulos; AMSY-6: 96,8 a 97,6\,\%; sem fragmentação; 2 fusões (preliminar). & Amplitude única (\(\approx 95\,\mathrm{dB}_{\mathrm{AE}}\)), 3 frequências, 5 taxas, 1 sessão simultânea. & Desempenho de detecção demonstrado apenas nas condições ensaiadas. \\
+	\hline
+	Descritores & Amplitude: \(+0{,}47\) a \(+0{,}76\,\mathrm{dB}\) em relação ao AMSY-6, \(\sigma\) de 0,04 a 0,07\,dB; contagens 10 \(\times\) 11; duração e energia assemelhadas (preliminar). & Faixa do mensurando, número de observações, incerteza e tratamento de medidas repetidas. & Concordância ou atendimento à tolerância somente para o descritor e a faixa avaliados. \\
+	\hline
+	Referência elétrica & & Plano de referência, calibração, orçamento de incerteza e condições de injeção. & Erro instrumental perante a referência. \\
+	\hline
+	Latência & Mínimo de \(T_{\mathrm{HDT}} + T_{\mathrm{HLT}} = 2{,}25\,\mathrm{ms}\) após o último cruzamento (por projeto). & Ponto inicial e final, carga, duração do \textit{hit}, DDT e tamanho da amostra. & Desempenho temporal no plano e na carga explicitados. \\
+	\hline
+	Taxa e perdas & 333 \textit{hits}/s por canal; 0/48\,280 na comunicação. Rajadas não ensaiadas. & Blocos de 30\,s; limite superior de 95\,\% de \(6\times10^{-5}\). & Capacidade demonstrada para o regime ensaiado, sem garantia universal de perda nula. \\
+	\hline
+	Redução de dados & \(\Gamma_{\mathrm{hit}}\) de 13 a 118; \(\Gamma_{\mathrm{global}} \approx 770\) a 333 \textit{hits}/s (calculados). Tráfego não medido. & Mesmo intervalo, limite de contabilização, taxa de \textit{hits} e sobrecargas. & Redução com perda de informação nas condições observadas. \\
+	\hline
+	Recursos e temporização & LUTs em 92\,\% após a migração da FIFO para BRAM; temporização fechada. & Versão do \textit{bitstream}, dispositivo, restrições e relatório pós-implementação. & Suficiência para a implementação atual; extensões exigem nova estimativa. \\
+\end{longtable}
+\endgroup
+
+Em síntese, nas condições de \textit{bursts} senoidais de 10 ciclos a 50, 200 e 450\,kHz, com até 10\,000 estímulos em 30\,s por canal, o sistema apresentou detecção de 99,94 a 99,96\,\% dos estímulos, sem perda de registros na comunicação (0/48\,280), diferenças de amplitude de \(+0{,}47\) a \(+0{,}76\,\mathrm{dB}\) em relação ao AMSY-6 e razão global de redução estimada em \(\approx 770\).
+
+Não se deve selecionar apenas os melhores resultados. A conclusão registra explicitamente descritores ou regiões da matriz em que os limites não foram atendidos, bem como resultados inconclusivos por insuficiência de dados ou incerteza excessiva.
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Alcance das conclusões e limitações}
+\label{v2:subsec:alcance_limitacoes_conclusao}
+
+Uma conclusão de concordância ou atendimento aos critérios é restrita ao descritor, à faixa de operação e à tolerância \(\tau_x\) efetivamente avaliados. Concordância média, correlação e ausência de diferença estatisticamente significativa não demonstram concordância funcional.
+
+Mesmo que os requisitos instrumentais sejam atendidos com estímulos elétricos, o estudo não demonstra, nesta etapa:
+\begin{itemize}
+	\item Detecção de cavitação incipiente em uma máquina hidráulica;
+	
+	\item Robustez a variações de sensor, acoplamento e propagação pela estrutura;
+	
+	\item Capacidade de classificar o mecanismo físico gerador do \textit{hit};
+	
+	\item Localização de fontes;
+	
+	\item Estabilidade metrológica em longo prazo ou em ambiente industrial; e
+	
+	\item Generalização para bandas, taxas, amplitudes ou configurações não incluídas na matriz experimental.
+\end{itemize}
+
+As principais limitações retomadas na conclusão são a utilização de estímulos sintéticos, a incerteza da referência elétrica, as diferenças residuais de configuração entre instrumentos, a perda da forma de onda no modo normal, a dependência entre repetições do mesmo bloco, o número limitado de canais e a ausência de validação no domínio de aplicação.
+
+Além dessas, permanecem limitações específicas da etapa atual:
+\begin{itemize}
+	\item os resultados são preliminares: uma única sessão simultânea, com um nível de amplitude (\(\approx 95\,\mathrm{dB}_{\mathrm{AE}}\)), envelope retangular, sem ruído somado e sem registro das condições ambientais;
+	\item os descritores de referência obtidos da forma de onda medida ainda não estão disponíveis, de modo que os erros perante a referência elétrica, as curvas de detecção e a proporção de resultados dentro de \(\tau_x\) não foram avaliados;
+	\item o carimbo de tempo de \textit{hardware} não está implementado: a associação entre estímulos e registros foi feita por bloco, e a deriva entre as bases de tempo e a latência fim a fim não foram medidas;
+	\item a assimetria dos ramos do divisor, o isolamento entre ramos, a tensão efetiva em cada plano de injeção e a tensão de modo comum entre os terras não foram medidos, de modo que a diferença de amplitude entre os sistemas não pôde ser separada da diferença de ganho dos pré-amplificadores;
+	\item o ruído, a excursão, o \textit{slew rate} e a recuperação após saturação do pré-amplificador, bem como o ENOB do ADC, não foram caracterizados, pois exigem instrumentação de maior resolução que a disponível; e
+	\item a carga foi ensaiada até 333 \textit{hits}/s por canal, sem rajadas, e a contagem de registros entregues ao DMA existe apenas no \textit{firmware}.
+\end{itemize}
+
+A forma de onda completa não está disponível no sistema proposto no modo normal de operação; portanto, novos descritores não podem ser recalculados retrospectivamente, e a inspeção de eventos anômalos fica limitada aos campos transmitidos. Essa limitação é confrontada com a vantagem de redução de dados, sem ser apresentada como consequência desprezível.
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Desdobramentos e trabalhos futuros}
+\label{v2:subsec:trabalhos_futuros_conclusao}
+
+Os trabalhos futuros são ordenados de acordo com as dependências técnicas e científicas do projeto.
+
+\begin{enumerate}
+	\item \textbf{Fechamento metrológico da implementação:} completar a caracterização do ADC, dos filtros, dos ganhos, do fator de escala da energia, dos temporizadores, da saturação, dos transbordos, da sincronização e da integridade do transporte. Essas atividades não são extensões opcionais quando ainda condicionarem a interpretação dos resultados atuais.
+	
+	\item \textbf{Validação em bancada de cavitação:} submeter o sistema a condições hidráulicas controladas, com sensores, acoplamento e pontos de operação documentados. A validação deve incluir referências independentes do estado de cavitação e repetição em diferentes condições operacionais.
+	
+	\item \textbf{Modo híbrido de aquisição:} avaliar a captura seletiva de formas de onda para calibração, auditoria de \textit{hits}, desenvolvimento de novos descritores e formação de bases de dados, mantendo a parametrização na borda como modo predominante.
+	
+	\item \textbf{Sincronização e operação distribuída:} investigar base temporal comum, deriva, associação entre canais, observabilidade de perdas, comportamento em rajadas e escalabilidade para mais pontos de medição.
+	
+	\item \textbf{Ganho e banda do \textit{front-end} para a aplicação:} com o ganho de 34\,dB do pré-amplificador, o limite da faixa do conversor A/D corresponde a cerca de 102 a \(103\,\mathrm{dB}_{\mathrm{AE}}\) referidos à entrada. Em ensaios preliminares em bancada com bomba centrífuga, cerca de 70\,\% dos \textit{hits} saturaram, e a partir de 40 a 50\,Hz de rotação praticamente todos atingiram esse limite, de modo que amplitude e energia perderam a capacidade de distinguir as condições de operação. Recomenda-se reduzir o ganho ou adotar o estágio de ganho ajustável previsto e estudar filtros passa-banda que separem o ruído hidráulico e mecânico da bomba, concentrado em frequências mais baixas, das componentes de alta frequência associadas a vórtices e à cavitação incipiente. Como esses ensaios não dispõem de referência independente do estado de cavitação, essa separação permanece uma hipótese a ser verificada.
+
+	\item \textbf{Aprimoramento do \textit{front-end}:} avaliar uma interface compatível com transdutores IEPE, na qual alimentação por corrente constante e sinal alternado compartilham o cabo. O desenvolvimento deve incluir fonte de corrente, desacoplamento, proteção, ruído, faixa dinâmica, compatibilidade e segurança elétrica, sem assumir que a modificação é apenas uma alteração de conector.
+	
+	\item \textbf{Inferência embarcada:} selecionar uma tarefa e um modelo concretos, quantificar memória, operações, latência, consumo e precisão numérica e comparar a execução em software no MicroBlaze com eventuais aceleradores na lógica programável. A existência de recursos remanescentes no FPGA não demonstra, por si só, a viabilidade de uma rede neural quantizada.
+\end{enumerate}
+
+A classificação do mecanismo físico somente é incorporada depois que os descritores produzidos pelo sistema estiverem validados para as condições de interesse e que exista uma base de dados representativa. Caso contrário, o modelo de inferência pode aprender características específicas da bancada, do sensor ou do instrumento em vez do fenômeno físico pretendido.
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Encerramento}
+\label{v2:subsec:encerramento_conclusao}
+
+O trabalho mostrou que uma arquitetura embarcada de baixo custo, baseada no Artix-7, pode substituir o fluxo contínuo de amostras por registros de \textit{hits} de 32 bytes, extraídos na borda com as mesmas convenções temporais do AMSY-6 (DDT, rearme e duração máxima). Nos ensaios elétricos preliminares, o sistema registrou de 99,94 a 99,96\,\% dos estímulos, sem perda na comunicação em 48\,280 registros, com amplitudes a menos de 0,8\,dB das do AMSY-6 e redução estimada de dados da ordem de 770 vezes na maior taxa ensaiada. Esses resultados valem para \textit{bursts} senoidais de 10 ciclos, amplitude única e uma sessão simultânea, e não demonstram desempenho em cavitação. Os próximos passos prioritários são o carimbo de tempo de \textit{hardware}, que permite a associação \textit{hit} a \textit{hit}, a medição da deriva e a da latência, e, após o fechamento instrumental, a validação na bancada de cavitação em andamento no Itaipu Parquetec.
+
+% -------------------------------------------------------------------------------------------------------

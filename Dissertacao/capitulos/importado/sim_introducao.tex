@@ -1,0 +1,20 @@
+% Gerado por ferramentas/importar_relatorios.py a partir de MLP/ARTIGO_SIM_EMBARCADO-10.11.2026/ARTIGO_SIM_EMBARCADO.tex.
+% Revisado à mão na dissertação: edite este arquivo, não a fonte.
+\subsection{Introdução}
+\label{sim:sec:introducao}
+
+O monitoramento contínuo de máquinas hidráulicas por emissão acústica (EA) depende de reduzir na borda o volume de dados. O MOMEA faz isso na lógica programável: detecta os \textit{hits} e transmite, por UDP, um registro de 32 bytes por \textit{hit}, com amplitude de pico, contagens, tempo de subida, duração e energia \cite{unnthorsson2013,vallen2022}. Em um estudo complementar (Seção~\ref{sec:mm_bomba}), redes MLP treinadas sobre descritores desses registros, agregados em janelas de 5\,s, estimaram a frequência de rotação de uma bomba com erro de 4 a 6\,Hz em condições não vistas e reconheceram a configuração das válvulas quando a corrida aparecia no treino.
+
+Nesse arranjo, a classificação ainda acontece no computador. Levá-la para o FPGA fecharia o ciclo na borda: o sistema enviaria, a cada janela, uma estimativa do estado da máquina, além ou no lugar dos registros. O XC7A35T do MOMEA já abriga um processador MicroBlaze, que trata os registros e a pilha de rede, e tem recursos livres de lógica, DSP e BRAM. Há, portanto, duas rotas: executar a inferência em software, na MicroBlaze, ou em um acelerador dedicado gerado por síntese de alto nível (HLS) \cite{amd_ug1399,duarte2018}.
+
+Este trabalho foi feito sem acesso às placas. Por isso, toda a verificação usa simulação, o que exige critérios explícitos de aceitação em cada nível. O objetivo é responder a três perguntas: (i) a implementação embarcada reproduz o modelo de referência e com que diferença numérica; (ii) quanto custa, em tempo e em recursos, em cada rota; e (iii) o que a simulação garante e o que só o ensaio em placa poderá confirmar.
+
+As contribuições são:
+\begin{itemize}
+	\item a porta em C do cálculo dos 36 descritores por janela, com conversão do registro bruto para unidades físicas e dois modos de percentis, exato e por histograma (Seção~\ref{sim:sec:implementacao});
+	\item a quantização int8 das duas MLPs, com requantização inteira emulada bit a bit em Python, e um núcleo de inferência com fonte única para MicroBlaze e HLS (Seção~\ref{sim:sec:implementacao});
+	\item uma metodologia de verificação em seis níveis, que culmina na simulação RTL da MicroBlaze executando o binário final, com medição de ciclos por marcas em GPIO (Seção~\ref{sim:sec:verificacao});
+	\item os resultados de fidelidade numérica, latência, ocupação de memória, carga de CPU e recursos pós-roteamento, e a comparação entre as rotas (Seções~\ref{sim:sec:resultados} e~\ref{sim:sec:discussao}).
+\end{itemize}
+
+% =======================================================================================================

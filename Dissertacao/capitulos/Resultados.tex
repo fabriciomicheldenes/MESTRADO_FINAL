@@ -1,0 +1,69 @@
+% =======================================================================================================
+% Capítulo 4 - Resultados e Discussão
+% =======================================================================================================
+
+Este capítulo apresenta os resultados na mesma ordem do Capítulo~\ref{chap:metodos}: o ensaio do extrator de \textit{hits} contra o sistema comercial (Seção~\ref{sec:res_extrator}), a classificação das condições da bomba a partir dos registros (Seção~\ref{sec:res_bomba}), a implementação embarcada da classificação (Seção~\ref{sec:res_embarcado}) e a validação externa na base CWRU (Seção~\ref{sec:res_cwru}). A Seção~\ref{sec:discussao_integrada} reúne os resultados para responder às questões que motivaram o trabalho.
+
+% -------------------------------------------------------------------------------------------------------
+\section{Extrator de \textit{hits}: ensaio simultâneo com o AMSY-6}
+\label{sec:res_extrator}
+\input{capitulos/importado/v2_resultados}
+
+% -------------------------------------------------------------------------------------------------------
+\section{Classificação das condições de operação da bomba}
+\label{sec:res_bomba}
+\input{capitulos/importado/mlp_resultados}
+
+% -------------------------------------------------------------------------------------------------------
+\section{Inferência embarcada}
+\label{sec:res_embarcado}
+\input{capitulos/importado/sim_resultados}
+
+% -------------------------------------------------------------------------------------------------------
+\section{Validação externa na base CWRU}
+\label{sec:res_cwru}
+\input{capitulos/importado/cwru_resultados}
+
+% -------------------------------------------------------------------------------------------------------
+\section{Discussão integrada}
+\label{sec:discussao_integrada}
+
+As seções anteriores avaliaram, separadamente, cada parte da cadeia. Esta seção as reúne em torno das perguntas que orientaram o trabalho, várias delas levantadas na qualificação.
+
+\subsection{O que se ganha com a extração de \textit{hits} seguida de uma MLP?}
+
+A extração de \textit{hits} resolve o problema de volume. Com registros de 32 bytes, o fluxo de um canal cai de 20\,MB/s para cerca de 26\,kB/s, incluindo os cabeçalhos de rede, na maior taxa ensaiada (redução global de cerca de 770 vezes; Seção~\ref{sec:res_extrator}). Isso dispensa a compactação contínua e a escrita de alta vazão que a plataforma USB exigia (Seção~\ref{sec:mm_antecedentes}) e permite transmitir por Ethernet a 100\,Mb/s. O extrator reproduziu as convenções temporais do sistema comercial e registrou de 99,94 a 99,96\,\% dos estímulos, sem perda na comunicação.
+
+A extração, porém, não diz em que condição a máquina está. Um \textit{hit} é um evento; a condição aparece na estatística dos eventos ao longo do tempo. Por isso a classificação usa descritores por janela (taxa, percentis de amplitude, energia, duração, contagens e periodicidade), e não um limiar fixo sobre um único \textit{hit}. Nos ensaios da bomba, esses descritores permitiram estimar a frequência de rotação com erro médio de 4 a 6\,Hz em corridas não vistas (Seção~\ref{sec:res_bomba}). Na base CWRU, a ordem do intervalo entre \textit{hits} reproduziu as frequências teóricas de defeito dos rolamentos (Seção~\ref{sec:res_cwru}). Nenhum desses resultados seria obtido comparando cada \textit{hit} com um limiar.
+
+\subsection{O sistema opera em tempo real?}
+
+Depende da etapa. O extrator opera em tempo real: cada \textit{hit} é detectado e parametrizado na lógica, e o registro é emitido \(T_{\mathrm{DDT}} + T_{\mathrm{HLT}} = 2{,}25\,\mathrm{ms}\) após o último cruzamento, mais o serviço do DMA, do \textit{firmware} e da rede. Na plataforma USB, os dados passavam por um banco intermediário e eram analisados depois; com o extrator, os registros chegam à aplicação à medida que os eventos ocorrem.
+
+A classificação, por construção, decide uma vez por janela. Com janelas de 5\,s, o atraso de decisão é de até 5\,s, mais o tempo de inferência, que é desprezível: de 1,5 a 2,1\,ms na MicroBlaze e 114\,\(\mu\)s no IP HLS (Seção~\ref{sec:res_embarcado}). Para o monitoramento de cavitação e de desgaste, cuja evolução ocorre em minutos ou horas, esse atraso é adequado. A janela é um compromisso entre estabilidade e rapidez: no estudo da bomba, janelas de 2\,s melhoraram ligeiramente o reconhecimento da frequência, mas aumentam a variância dos descritores quando a taxa de \textit{hits} é baixa.
+
+\subsection{Quanto tempo de coleta é necessário para identificar uma condição?}
+
+A resposta depende da taxa de \textit{hits}, porque os descritores são estatísticas da população de eventos. Nos ensaios da bomba, havia cerca de 30 a 50 \textit{hits} por canal em cada janela de 5\,s. Na base CWRU, com 60 a 180 impactos por segundo, janelas de 0,25\,s bastaram para estimar a periodicidade do defeito. Como regra prática, a janela precisa conter algumas dezenas de \textit{hits} e vários períodos do fenômeno de interesse. Em termos de coleta para \emph{treinar} o modelo, o fator limitante não foi a duração das gravações, mas o número de corridas independentes: com uma única corrida por condição, o modelo aprende a assinatura da corrida, e não a condição (Seções~\ref{sec:res_bomba} e~\ref{sec:res_cwru}).
+
+\subsection{O FPGA tem capacidade para a cadeia completa?}
+
+Para o fluxo de dados, sim: o detector processa as amostras a 10\,MSa/s na lógica, e a carga restante é proporcional à taxa de \textit{hits}, não à taxa de amostragem. Na MicroBlaze, a cadeia de descritores e a MLP ocupam menos de 1\,\% da CPU na taxa dos ensaios e cerca de 26\,\% sem FPU a 333 \textit{hits}/s por canal (Seção~\ref{sec:res_embarcado}).
+
+Em recursos lógicos, a margem é pequena. Após a migração da FIFO para BRAM, o extrator de dois canais ocupa cerca de 92\,\% das LUTs do XC7A35T (Seção~\ref{sec:mm_implementacao}). O IP HLS da MLP acrescentaria 656 LUTs (3,2\,\%) e 14 DSPs, e a FPU da MicroBlaze, 961 LUTs (4,6\,\%). Ambas as opções caberiam, mas no limite, com risco para o fechamento temporal. A rota recomendada para o hardware atual é, portanto, a inferência int8 em software, na MicroBlaze já existente e sem FPU: ela não consome lógica adicional e cabe com folga no tempo disponível. O IP HLS e a FPU tornam-se justificáveis em um FPGA maior ou se a taxa de \textit{hits} crescer muito.
+
+\subsection{Por que uma MLP, e não uma rede convolucional?}
+
+Porque a entrada do classificador é um vetor de descritores, e não uma série temporal. A arquitetura proposta não transmite as amostras: o FPGA entrega registros de \textit{hits}, dos quais se calculam 36 descritores por janela. Uma rede convolucional unidimensional (CNN-1D) ou temporal exigiria a forma de onda, isto é, justamente o fluxo que se quer evitar. As redes convolucionais bidimensionais sobre espectrogramas, estudadas anteriormente no projeto, são compatíveis com a aquisição contínua, mas não com o processamento na borda proposto. A MLP é o modelo natural para um vetor curto de atributos, tem custo previsível (cerca de 4,6 mil multiplicações-acumulações por rede) e é simples de quantizar e de mapear em \textit{hardware}. Uma extensão possível é capturar seletivamente a forma de onda de alguns \textit{hits} e combiná-la com os descritores, o que é discutido como trabalho futuro.
+
+\subsection{Como a MLP foi implementada no FPGA?}
+
+Em vez de \textit{frameworks} como FINN ou hls4ml \cite{Umuroglu2017FINN,duarte2018}, que partem de modelos treinados em \textit{frameworks} de aprendizado profundo e visam redes maiores, optou-se por um núcleo próprio em C. O modelo do \texttt{scikit-learn} é exportado como tabelas de pesos int8, e um único código-fonte compila para a MicroBlaze e para o Vitis HLS. Isso manteve a aritmética sob controle a ponto de exigir igualdade bit a bit entre o Python, o C e o RTL gerado, o que um fluxo automatizado não garantiria com a mesma transparência.
+
+\subsection{O que foi comparado e o que não foi}
+
+A qualificação previa comparar a solução em FPGA com CPU e GPU quanto a eficiência, tempo de resposta e consumo. A comparação realizada foi entre as rotas viáveis no próprio FPGA (MicroBlaze sem e com FPU e acelerador HLS), com o computador como referência de exatidão. Comparar com uma GPU não faz sentido para duas redes de cerca de 4,6 mil operações cada, executadas uma vez a cada 5\,s: o custo é dominado pela transferência e pela inicialização, e não pelo cálculo. O consumo de energia não foi medido, porque exige a placa; as estimativas de potência das ferramentas de síntese não foram usadas como substitutas.
+
+\subsection{Limites do que foi demonstrado}
+
+Os resultados demonstram que o extrator é equivalente ao sistema comercial na faixa ensaiada, que os descritores de \textit{hits} contêm informação sobre a condição de operação e que a classificação pode ser executada no FPGA com fidelidade ao modelo de referência. Eles não demonstram que o sistema detecta cavitação em uma turbina. Os ensaios do extrator são elétricos, sem sensor nem propagação estrutural; o estudo da bomba tem uma única corrida por condição, saturação de 70\,\% dos \textit{hits} e limiar variável entre sessões; e a base CWRU é de vibração, com defeitos artificiais. Esses limites orientam os trabalhos futuros do Capítulo~\ref{chap:conclusoes}.

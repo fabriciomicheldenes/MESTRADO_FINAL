@@ -1,0 +1,253 @@
+% Gerado por ferramentas/importar_relatorios.py a partir de MLP/artigo/MLP_EA_bomba.tex.
+% Revisado à mão na dissertação: edite este arquivo, não a fonte.
+\subsection{Resultados}
+\label{mlp:sec:resultados}
+
+\subsubsection{Frequência do motor}
+
+A Tabela~\ref{mlp:tab:freq} e as Figuras~\ref{mlp:fig:blocos_loro} a~\ref{mlp:fig:conf_loso} resumem os resultados. Com a corrida presente no treino (BLOCOS), o MAE fica entre 1,1 e 2,1\,Hz. Com a corrida ou a série inteira fora do treino, o MAE sobe para 4,2 a 5,6\,Hz, mas 92 a 95\,\% das janelas continuam a até um nível do valor real. Os níveis de 20 e 30\,Hz, sem saturação, são reconhecidos quase sempre. Os erros concentram-se entre níveis vizinhos de 40 a 90\,Hz, onde a saturação achata a amplitude. Por frequência, o MAE em LORO vai de 0,1 a 1,6\,Hz em 20 e 30\,Hz e de 9,5 a 11,5\,Hz em 50\,Hz.
+
+\begin{table}[htbp]
+	\centering
+	\caption{Frequência do motor: métricas por janela e por corrida. MAE e RMSE em Hz; Nível = acerto da previsão arredondada a 20, 30, \ldots, 90\,Hz; Corrida = acerto do nível usando a mediana das janelas da corrida.}
+	\label{mlp:tab:freq}
+	\small
+	\begin{tabular}{llrrrrrr}
+		\toprule
+		\textbf{Validação} & \textbf{Modelo} & \textbf{MAE} & \textbf{RMSE} & \(\boldsymbol{R^2}\) & \textbf{Nível} & \(\boldsymbol{\pm}\)\textbf{10\,Hz} & \textbf{Corrida} \\
+		\midrule
+		BLOCOS & MLP & 2,06 & 4,47 & 0,962 & 0,927 & 0,991 & 0,982 \\
+		BLOCOS & RF & 1,08 & 2,84 & 0,985 & 0,943 & 0,990 & 0,982 \\
+		BLOCOS & GB & 1,16 & 2,98 & 0,983 & 0,952 & 0,988 & 0,982 \\
+		\midrule
+		LORO & MLP & 5,61 & 10,56 & 0,790 & 0,691 & 0,918 & 0,714 \\
+		LORO & RF & 4,85 & 7,87 & 0,883 & 0,612 & 0,942 & 0,589 \\
+		LORO & GB & 4,97 & 8,03 & 0,879 & 0,608 & 0,949 & 0,625 \\
+		\midrule
+		LOSO & MLP & 5,09 & 8,93 & 0,850 & 0,698 & 0,939 & 0,768 \\
+		LOSO & RF & 4,23 & 7,80 & 0,885 & 0,691 & 0,951 & 0,679 \\
+		LOSO & GB & 4,21 & 7,72 & 0,888 & 0,701 & 0,951 & 0,714 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+RF e GB têm MAE menor, enquanto a MLP acerta mais o nível exato em LORO (69\,\% contra 61\,\%). Com 56 corridas, nenhuma das diferenças entre modelos é conclusiva.
+
+Em LOSO (Figura~\ref{mlp:fig:mae_fold}), o pior caso é a série 100-25, com sucção a 25\,\% e MAE de 9,9 a 10,6\,Hz. Essa série é a mais distinta: a energia do canal A cai acima de 70\,Hz e a fração MAXDUR é praticamente nula, o que é coerente com outro regime de escoamento na sucção estrangulada. As séries ensaiadas em ordem decrescente (25-100 e 100-50) têm MAE de 3,6 a 7,9\,Hz. A previsão da frequência, portanto, não se apoia apenas no sentido crescente da varredura.
+
+Um teste adicional fora do tempo, treinando com as séries de um dia e testando nas do outro (Figura~\ref{mlp:fig:oot}), deu MAE de 4,4 a 6,6\,Hz (05/11\(\rightarrow\)06/11) e de 4,0 a 5,7\,Hz (06/11\(\rightarrow\)05/11). Esses valores estão na mesma faixa do LOSO, apesar da troca de dia e de limiar.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figs/mlp/fig_blocos_vs_loro.png}
+	\caption{O mesmo modelo avaliado por validações diferentes. A frequência perde precisão, mas generaliza. As válvulas caem para perto do acaso quando a corrida sai do treino.}
+	\label{mlp:fig:blocos_loro}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figs/mlp/fig_freq_previsto_real_BLOCOS.png}
+	\caption{Frequência prevista \(\times\) real na validação BLOCOS. Caixas: distribuição das janelas; pontos: mediana de cada corrida.}
+	\label{mlp:fig:pr_blocos}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figs/mlp/fig_freq_previsto_real_LORO.png}
+	\caption{Frequência prevista \(\times\) real com a corrida deixada de fora (LORO).}
+	\label{mlp:fig:pr_loro}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figs/mlp/fig_freq_previsto_real_LOSO.png}
+	\caption{Frequência prevista \(\times\) real com a série de válvulas deixada de fora (LOSO).}
+	\label{mlp:fig:pr_loso}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figs/mlp/fig_confusao_LOSO.png}
+	\caption{Matrizes de confusão da frequência arredondada em LOSO, com linhas normalizadas.}
+	\label{mlp:fig:conf_loso}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figs/mlp/fig_mae_por_fold.png}
+	\caption{MAE da frequência por fold: trechos de tempo em BLOCOS (esquerda) e séries de válvulas em LOSO (direita).}
+	\label{mlp:fig:mae_fold}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figs/mlp/fig_oot_por_dia.png}
+	\caption{Teste fora do tempo entre dias: treino com as séries de um dia e teste nas do outro (mediana e quartis das janelas).}
+	\label{mlp:fig:oot}
+\end{figure}
+
+\subsubsection{Configuração das válvulas}
+
+A Tabela~\ref{mlp:tab:valv} mostra o contraste central do trabalho. Em BLOCOS, as válvulas parecem bem reconhecidas: 89 a 95\,\% por janela e 100\,\% por corrida. Em LORO, a acurácia cai para 21 a 28\,\%, pouco acima do acaso de 14\,\%. Os acertos de \% recalque e \% sucção (53 a 59\,\%) ficam no nível de um classificador que sempre responde 100\,\% (57\,\%).
+
+\begin{table}[htbp]
+	\centering
+	\caption{Configuração das válvulas (7 classes): acurácia por janela, acurácia balanceada, F1 macro, acerto de \% recalque e \% sucção derivados e acurácia por corrida (voto majoritário).}
+	\label{mlp:tab:valv}
+	\small
+	\begin{tabular}{llrrrrrr}
+		\toprule
+		\textbf{Validação} & \textbf{Modelo} & \textbf{Acurácia} & \textbf{Ac. bal.} & \textbf{F1} & \textbf{\% rec} & \textbf{\% suc} & \textbf{Corrida} \\
+		\midrule
+		BLOCOS & MLP & 0,888 & 0,888 & 0,888 & 0,919 & 0,946 & 1,000 \\
+		BLOCOS & RF & 0,945 & 0,944 & 0,944 & 0,958 & 0,970 & 1,000 \\
+		BLOCOS & GB & 0,934 & 0,933 & 0,933 & 0,948 & 0,964 & 1,000 \\
+		\midrule
+		LORO & MLP & 0,280 & 0,279 & 0,276 & 0,573 & 0,594 & 0,304 \\
+		LORO & RF & 0,210 & 0,208 & 0,194 & 0,535 & 0,530 & 0,179 \\
+		LORO & GB & 0,224 & 0,221 & 0,209 & 0,546 & 0,532 & 0,232 \\
+		\midrule
+		\multicolumn{2}{l}{Acaso} & 0,143 & 0,143 & --- & 0,571 & 0,571 & 0,143 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+Os modelos aprendem, portanto, a assinatura de cada corrida, e essa assinatura não se transfere para a mesma configuração em outra frequência. Ela inclui o estado do acoplamento, a deriva térmica, o limiar da sessão e a própria frequência. As confusões em LORO são sistemáticas: 75-100 com 50-100, e 100-75 e 100-50 com 100-25 (Figura~\ref{mlp:fig:conf_loro}). As configurações mais restritivas (100-25 e 25-100) têm acerto próximo de 50\,\%, mas concentrado em poucas frequências (Figura~\ref{mlp:fig:mapa_loro}). Com uma corrida por condição, não é possível distinguir um efeito de válvula de um efeito de sessão.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figs/mlp/fig_confusao_BLOCOS.png}
+	\caption{Matrizes de confusão em BLOCOS (linhas normalizadas): frequência arredondada (acima) e válvulas (abaixo).}
+	\label{mlp:fig:conf_blocos}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figs/mlp/fig_confusao_LORO.png}
+	\caption{Matrizes de confusão em LORO. A diagonal das válvulas praticamente desaparece.}
+	\label{mlp:fig:conf_loro}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figs/mlp/fig_mapa_LORO.png}
+	\caption{Desempenho por corrida deixada de fora: MAE da frequência nos três modelos e acerto das válvulas na MLP.}
+	\label{mlp:fig:mapa_loro}
+\end{figure}
+
+\subsubsection{Importância dos descritores}
+
+A importância foi medida pela queda de desempenho ao permutar cada descritor nos blocos de teste (Figura~\ref{mlp:fig:imp}). Para a frequência, dominam a energia por segundo do canal A, o RA e a amplitude baixa (p10) do canal B e os percentis de energia dos dois canais. Ou seja, o modelo lê o nível de energia contínua, que cresce com a rotação. Para as válvulas, dominam a frequência média e a fração MAXDUR do canal A, além da duração e das contagens dos dois canais, que são descritores de forma e de continuidade do sinal. Pelo resultado em LORO, porém, esses descritores identificam a corrida, e não a válvula. Como os descritores são correlacionados, a permutação individual subestima grupos redundantes, como energia, contagens e duração. A ordem relativa é mais confiável que os valores absolutos.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figs/mlp/fig_importancia_descritores.png}
+	\caption{Importância por permutação (média dos 5 blocos de teste) dos 15 principais descritores para a frequência e para as válvulas.}
+	\label{mlp:fig:imp}
+\end{figure}
+
+\subsubsection{Sensibilidade}
+
+Sem o corte comum de limiar, o MAE da frequência mudou menos de 0,2\,Hz e a acurácia das válvulas menos de 1 ponto percentual, como esperado de um corte que remove 0,001\,\% dos \textit{hits}. Com janelas de 2\,s, a MLP melhorou um pouco: acerto do nível em LORO de 72\,\%, ou 79\,\% por corrida. RF e GB pioraram (MAE de 5,6 a 5,7\,Hz), porque cada janela passa a ter cerca de 20 \textit{hits} por canal e os percentis ficam mais ruidosos (Figura~\ref{mlp:fig:sens}). Nenhuma variante altera as conclusões.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figs/mlp/fig_sensibilidade.png}
+	\caption{Sensibilidade ao corte de limiar e ao tamanho da janela, em LORO e LOSO.}
+	\label{mlp:fig:sens}
+\end{figure}
+
+% =======================================================================================================
+\subsection{Verificação não supervisionada}
+\label{mlp:sec:naosup}
+
+Para checar se a estrutura dos dados acompanha os fatores sem usar rótulos, aplicou-se o \textit{k}-means aos 36 descritores padronizados, com \(k \in \{2, 3, 7, 8, 14, 56\}\). Os agrupamentos foram comparados aos fatores pelo índice de Rand ajustado (ARI) \cite{hubert1985} e pela informação mútua normalizada (NMI).
+
+\begin{table}[htbp]
+	\centering
+	\caption{ARI entre os agrupamentos do \textit{k}-means e os fatores (0 = acaso; 1 = partição idêntica).}
+	\label{mlp:tab:ari}
+	\small
+	\begin{tabular}{rrrrrr}
+		\toprule
+		\(\boldsymbol{k}\) & \textbf{Frequência} & \textbf{Válvulas} & \textbf{Corrida} & \textbf{Dia} & \textbf{Limiar} \\
+		\midrule
+		2 & 0,163 & 0,002 & 0,024 & 0,007 & 0,010 \\
+		3 & 0,202 & 0,094 & 0,055 & 0,012 & \(-\)0,007 \\
+		7 & 0,309 & 0,095 & 0,110 & 0,035 & 0,011 \\
+		8 & 0,310 & 0,096 & 0,110 & 0,035 & 0,011 \\
+		14 & 0,309 & 0,145 & 0,205 & 0,038 & 0,063 \\
+		56 & 0,200 & 0,124 & 0,465 & 0,023 & 0,034 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+A estrutura dominante é a frequência, com ARI de 0,31 para \(k = 8\) (Tabela~\ref{mlp:tab:ari}, Figuras~\ref{mlp:fig:pca} a~\ref{mlp:fig:naosup}). A primeira componente principal explica 56\,\% da variância e separa as janelas de 20 e 30\,Hz, sem saturação, das de 40\,Hz ou mais, saturadas. As válvulas quase não aparecem (ARI \(\approx 0{,}1\)). Com \(k = 56\), os grupos coincidem bastante com as corridas (ARI = 0,47), o que confirma, sem rótulos, a assinatura de corrida vista nos modelos supervisionados. O ARI contra o dia e contra o limiar é próximo de zero: a sessão não domina a estrutura global, embora possa pesar na separação fina entre corridas.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figs/mlp/fig_pca.png}
+	\caption{Projeção PCA das 3\,540 janelas, colorida por frequência, por válvula e por dia do ensaio.}
+	\label{mlp:fig:pca}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.7\textwidth]{figs/mlp/fig_pca_carregamentos.png}
+	\caption{Carregamentos dos descritores nas duas primeiras componentes principais.}
+	\label{mlp:fig:pca_load}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figs/mlp/fig_kmeans_ari.png}
+	\caption{ARI e NMI entre os agrupamentos do \textit{k}-means e cada fator, em função de \(k\).}
+	\label{mlp:fig:ari}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figs/mlp/fig_nao_supervisionado.png}
+	\caption{PCA e tabela de contingência entre os grupos do \textit{k}-means (\(k = 8\)) e a frequência.}
+	\label{mlp:fig:naosup}
+\end{figure}
+
+% =======================================================================================================
+\subsection{Discussão e limitações}
+\label{mlp:sec:discussao}
+
+\paragraph{O que os dados sustentam.} Os descritores de \textit{hits} do MOMEA, agregados em janelas, permitem estimar a frequência do motor com erro de cerca de 5\,Hz em condições e sessões não vistas, e com acerto de \(\pm 10\)\,Hz em mais de 92\,\% das janelas. O sinal útil é essencialmente o nível de energia contínua e a forma dos \textit{hits}. A estimativa é mais precisa abaixo de 40\,Hz, onde não há saturação.
+
+\paragraph{O que os dados não sustentam.} Não é possível afirmar que a configuração das válvulas seja reconhecível a partir destes dados. O desempenho alto em BLOCOS é um artefato da presença da corrida no treino, e o LORO derruba a acurácia para perto do acaso. O resultado também não prova que as válvulas não tenham assinatura de EA. Com uma corrida por condição e as séries ensaiadas em blocos contínuos, o efeito da válvula está confundido com o dia, o horário, a temperatura e o limiar.
+
+\paragraph{Validação interna da MLP.} A parada antecipada da MLP usa 15\,\% das janelas do treino, sorteadas. Essas janelas têm vizinhas da mesma corrida no treino efetivo. Na classificação das válvulas, a validação interna indicou cerca de 90\,\% de acurácia nos folds LORO, enquanto o teste deu 18\,\% (Figura~\ref{mlp:fig:val_int}). Isso não contamina o teste, que é sempre externo ao fold. Mas significa que a parada antecipada escolhe a época que melhor reconhece corridas já vistas. Uma validação interna por corrida inteira seria mais coerente com a pergunta.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figs/mlp/fig_validacao_interna_vs_teste.png}
+	\caption{MLP: escore da validação interna da parada antecipada (janelas sorteadas dentro do treino) \(\times\) escore no teste do fold. Em LORO, foram usados 14 dos 56 folds.}
+	\label{mlp:fig:val_int}
+\end{figure}
+
+\paragraph{Saturação do conversor e filtragem.} Com o ganho de 34\,dB do pré-amplificador (fator 50), a faixa calibrada do conversor A/D, de \(\pm 6{,}3\) a \(\pm 6{,}9\)\,V na entrada da placa, corresponde a 126 a 138\,mV no sensor, ou seja, 102,0 a 102,8\,dB\(_{\mathrm{AE}}\) referidos à entrada. Nos ensaios na bomba, 69,8\,\% dos \textit{hits} atingiram esse limite. A partir de 40 a 50\,Hz de rotação, praticamente todos saturaram (Figuras~\ref{mlp:fig:exemplo}, \ref{mlp:fig:amplitude} e~\ref{mlp:fig:mapas}). Nessa faixa, a amplitude de pico deixou de distinguir as condições de operação. A energia, calculada sobre o sinal recortado, também ficou truncada: a energia por segundo do canal A praticamente estabiliza acima de 60\,Hz (Figura~\ref{mlp:fig:mapas}). Isso explica parte da confusão entre níveis vizinhos de 40 a 90\,Hz (Figuras~\ref{mlp:fig:conf_loro} e~\ref{mlp:fig:conf_loso}) e o melhor desempenho em 20 e 30\,Hz, sem saturação. Recomenda-se reduzir o ganho ou adotar o estágio de ganho ajustável previsto. Recomenda-se também estudar filtros passa-banda que separem o ruído hidráulico e mecânico da bomba, concentrado em frequências mais baixas, das componentes de alta frequência associadas a vórtices e à cavitação incipiente \cite{Neill1997Detection,Alfayez2005ndt}. Como os ensaios atuais não dispõem de referência independente do estado de cavitação, essa separação permanece uma hipótese a ser verificada.
+
+\paragraph{Limitações.}
+\begin{enumerate}
+	\item \textbf{Sem repetições.} Não há como estimar a variabilidade entre repetições nem validar deixando uma repetição de fora. O BLOCOS é otimista por construção. O LORO é a estimativa honesta, mas cada fold testa uma única corrida.
+	\item \textbf{Ordem fixa e deriva.} Válvulas, dia, horário e limiar estão confundidos. Para a frequência, o LOSO e o teste entre dias mostram robustez à troca de sessão. Para as válvulas, isso não pode ser testado.
+	\item \textbf{Limiar variável} (50 a 65\,dB\(_{\mathrm{AE}}\)). Duração, contagens e energia foram medidas acima de limiares diferentes, sem correção possível.
+	\item \textbf{Cadência imposta pelo rearme} (cerca de 10 \textit{hits}/s por canal) e ROVL sempre ativo. Os \textit{hits} são uma amostragem de um sinal contínuo, e a taxa de \textit{hits} não é um descritor físico.
+	\item \textbf{Saturação a partir de 40\,Hz} (limite de 102,0 a 102,8\,dB\(_{\mathrm{AE}}\) com 34\,dB de ganho). A amplitude e a energia perdem informação justamente na faixa em que as condições mais se confundem; ver o parágrafo sobre saturação e filtragem.
+	\item \textbf{Dependência entre janelas.} As métricas por janela inflam o número efetivo de amostras. A unidade independente é a corrida (56).
+	\item \textbf{Hiperparâmetros fixos.} Os resultados são linhas de base, e não desempenho otimizado.
+\end{enumerate}
+
+\paragraph{Recomendações para o próximo ensaio.}
+\begin{itemize}
+	\item Repetir cada condição pelo menos 2 ou 3 vezes, em ordem aleatorizada ou em blocos aleatorizados por dia, voltando a condições já ensaiadas. Só assim é possível validar com uma repetição deixada de fora e separar o efeito da válvula da deriva.
+	\item Manter ganho e limiar fixos em todas as sessões, reduzir o ganho (ou usar o estágio de ganho ajustável) para evitar a saturação acima de 40\,Hz e avaliar filtros passa-banda, como discutido acima.
+	\item Confirmar no HDL o limite do bloqueio re-armável e, para sinal contínuo, complementar os \textit{hits} com descritores de nível, como RMS e energia por intervalo fixo, ou com bandas espectrais \cite{derakhshan1991}.
+	\item Reservar uma campanha futura inteira como teste final bloqueado, fora do tempo, avaliado uma única vez.
+\end{itemize}
+
+% =======================================================================================================

@@ -1,0 +1,142 @@
+Este capítulo apresenta os fundamentos conceituais e técnicos que sustentam o trabalho. Ele integra fenômenos físicos, técnicas de aquisição e análise de sinais, algoritmos de aprendizado de máquina e implementação em \textit{hardware} reconfigurável.
+
+Inicialmente, apresenta-se a EA como ensaio não destrutivo, utilizada no monitoramento de processos de degradação e na detecção de falhas em sistemas hidráulicos e rotativos (Seção~\ref{sec:UsoEA}), e a detecção de \textit{hits}, técnica de redução de dados adotada neste trabalho (Seção~\ref{sec:fund_hits}). Em seguida, aborda-se o Aprendizado de Máquina (AM), com ênfase nas redes MLP (Seções~\ref{sec:AM} e~\ref{sec:MLP}). Por fim, apresentam-se os FPGAs, suas características de paralelismo, latência e reconfigurabilidade, e as técnicas para executar modelos de AM nesses dispositivos (Seção~\ref{sec:FPGA}). Cada tema é acompanhado de uma análise de trabalhos relacionados.
+
+\section{Uso de Emissão Acústica na detecção de falhas}
+\label{sec:UsoEA}
+
+A EA é um método passivo de ensaio não destrutivo, destinado ao monitoramento e ao diagnóstico de fenômenos como trincas, deslizamentos de discordâncias, delaminações e transições de fase \cite{grosse2008acoustic,iso12716_2026}. Esses eventos liberam energia de forma abrupta e geram ondas elásticas transitórias que se propagam pela estrutura até serem captadas por sensores piezoelétricos, tipicamente de cerâmica de titanato-zirconato de chumbo (PZT), que convertem o estímulo mecânico em sinal elétrico.
+
+A Figura~\ref{fig:nde-ed-org-Fig1} apresenta o diagrama funcional de um sistema de EA multicanal, com a cadeia completa de aquisição, dos sensores até o armazenamento e a exibição dos dados. Cada canal é composto por estágios responsáveis pela detecção, amplificação, filtragem e digitalização dos sinais.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=.9\linewidth]{figs/Artigos/nde-ed-org/Figura1.pdf}
+    \caption{Esquema funcional de um sistema de EA com sensores piezoelétricos, pré-amplificadores, filtros, amplificadores principais e sistema de aquisição digital. Adaptado de \citeonline{nde-ed-ae-equipment}.}
+    \label{fig:nde-ed-org-Fig1}
+\end{figure}
+
+Os \textbf{sensores piezoelétricos} são fixados sobre a superfície do equipamento monitorado com um acoplante, que melhora a transmissão das ondas elásticas. Eles respondem a variações de pressão e a deformações locais e produzem um sinal elétrico proporcional à amplitude da onda incidente \cite{grosse2008acoustic}.
+
+O sinal do sensor é encaminhado a um \textbf{pré-amplificador}, que eleva o nível de tensão, geralmente da ordem de microvolts, para níveis adequados à filtragem e à digitalização. Em muitos sistemas, esse estágio já incorpora um filtro passa-faixa, tipicamente entre 100\,kHz e 1\,MHz, que elimina componentes de baixa frequência e ruído ambiental \cite{grosse2008acoustic,vallen2022}.
+
+Em seguida, o sinal passa por um \textbf{amplificador principal}, também dotado de filtros ajustáveis, que permite controlar o ganho. Essa amplificação em dois estágios (pré-amplificador e amplificador principal) é essencial para garantir uma relação sinal-ruído satisfatória em ambientes industriais com interferência eletromagnética.
+
+Após o condicionamento analógico, o sinal é digitalizado por um conversor analógico-digital (\textit{Analog-to-Digital Converter}, ADC), com taxas de amostragem geralmente entre 1 e 40\,MHz, conforme a aplicação \cite{vallen2022}. Os dados digitalizados são armazenados temporariamente em um \textit{buffer}, que atua como intermediário entre o \textit{front-end} analógico e o sistema de processamento.
+
+A unidade de processamento gerencia a aquisição e o armazenamento dos dados e executa o processamento necessário à análise: a detecção de eventos, o cálculo de seus parâmetros (amplitude, duração, energia e contagens) e, eventualmente, a classificação de padrões associados a diferentes condições do equipamento. Dependendo da arquitetura, essas operações são executadas \textit{offline}, em computadores de propósito geral, ou \textit{online}, em plataformas embarcadas com requisitos de tempo real, como os dispositivos de \textit{hardware} reconfigurável. Essa unidade também pode se comunicar com sistemas supervisórios e redes industriais.
+
+Por fim, o sistema inclui módulos de \textbf{visualização e controle}, que exibem formas de onda, histogramas de energia, espectros e alarmes quando limiares pré-definidos são excedidos.
+
+A análise dos sinais de EA baseia-se em parâmetros como \textbf{amplitude} (pico do sinal), \textbf{tempo de subida} (do primeiro cruzamento do limiar ao pico), \textbf{duração} (do primeiro ao último cruzamento do limiar), \textbf{contagens} (número de cruzamentos do limiar) e uma medida de \textbf{energia} do evento. Na terminologia de \citeonline{nde-ed-ae-equipment}, essa energia é chamada de MARSE (\textit{measured area under the rectified signal envelope}, área medida sob o envelope retificado do sinal), como esquematizado na Figura~\ref{fig:nde-ed-org-Fig2}. Esses parâmetros permitem caracterizar cada evento e separar as ocorrências significativas do ruído de fundo \cite{unnthorsson2013}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=.7\linewidth]{figs/Artigos/nde-ed-org/Figura2.pdf}
+    \caption{Parâmetros clássicos de um \textit{hit} de EA: amplitude, tempo de subida (\textit{rise time}), duração, contagens de limiar (\textit{counts}) e energia (MARSE). O circuito comparador gera um pulso a cada cruzamento do limiar. Adaptado de \citeonline{nde-ed-ae-equipment}.}
+    \label{fig:nde-ed-org-Fig2}
+\end{figure}
+
+Do ponto de vista operacional, o \textbf{limiar} (\textit{threshold}) é definido acima do nível de ruído para que a detecção seja seletiva. Um evento começa no primeiro cruzamento do limiar e termina quando o sinal permanece abaixo dele por um intervalo pré-definido, o tempo de definição do evento (\textit{hit definition time}, HDT, também chamado de DDT); segue-se um tempo de bloqueio (\textit{hit lockout time}, HLT), durante o qual novos cruzamentos não iniciam outro evento \cite{vallen2022,unnthorsson2013}. Esse procedimento é conhecido como \textbf{detecção de \textit{hits}} (\textit{hit detection}), e o evento delimitado, como \textit{hit}. É esse o nome adotado ao longo deste trabalho; a definição operacional usada no extrator é detalhada na Seção~\ref{sec:fund_hits}. A partir do \textit{hit}, calculam-se:
+\begin{itemize}
+    \item \textbf{Amplitude} (\(A_\text{pico}\)): valor máximo do sinal dentro do \textit{hit}, usualmente expresso em dB\(_{\mathrm{AE}}\), isto é, em decibéis em relação a \(1\,\mu\)V na entrada do pré-amplificador.
+    \item \textbf{Tempo de subida} (\(t_\text{sub}\)): intervalo do primeiro cruzamento do limiar até \(A_\text{pico}\); é sensível à natureza da fonte e ao caminho de propagação.
+    \item \textbf{Duração} (\(t_\text{dur}\)): tempo entre o primeiro e o último cruzamento do limiar; aumenta na presença de reverberações e reflexões.
+    \item \textbf{Contagens} (\textit{counts}): número de cruzamentos do limiar; relaciona-se ao conteúdo de frequência e à duração do evento.
+    \item \textbf{Energia (MARSE)}: área sob o envelope retificado do sinal dentro do \textit{hit}. Em uma discretização simples, ela pode ser escrita como na Equação~\eqref{eq:marse}:
+    \begin{equation}
+    	\label{eq:marse}
+    	\text{MARSE} \;\approx\; \sum_{n=n_0}^{n_1} \big|\,x[n]\,\big| \;\Delta t
+    	\quad\text{ou}\quad
+    	\text{MARSE} \;\approx\; \sum_{n=n_0}^{n_1} e[n] \;\Delta t,
+    \end{equation}
+    em que \(x[n]\) é o sinal de EA amostrado e \(e[n]\) denota o envelope, obtido, por exemplo, por retificação seguida de filtragem passa-baixas ou pela transformada de Hilbert. Essa métrica mede a quantidade de atividade ao longo do \textit{hit}.
+\end{itemize}
+
+Não há consenso terminológico na literatura quanto à energia do evento de EA. Enquanto \citeonline{nde-ed-ae-equipment} empregam MARSE, revisões como \citeonline{liu2023review} usam frequentemente uma energia baseada na potência instantânea, proporcional à soma dos quadrados do sinal, como na Equação~\eqref{eq:energia}:
+\begin{equation}
+	\label{eq:energia}
+	E_\text{sq} \;\propto\; \sum_{n=n_0}^{n_1} x^2[n] \;\Delta t.
+\end{equation}
+Em aplicações comparativas, por exemplo na distinção entre cavitação incipiente e estabelecida, essa diferença pode alterar escalas de normalização e correlações com grandezas físicas. Neste trabalho, adota-se a energia quadrática, que é também a convenção do sistema comercial usado como referência; suas definições e unidades são detalhadas na Seção~\ref{sec:fund_hits}.
+
+O diferencial da EA está em seu caráter passivo: ela registra a emissão do próprio material sob carga, em vez de estimular o componente, como ocorre no ultrassom ou na radiografia. Isso permite o monitoramento contínuo e não intrusivo em condições reais de operação, com poucos sensores cobrindo grandes volumes estruturais \cite{grosse2008acoustic}. Sistemas de EA também podem localizar a fonte, por meio de redes de sensores e das diferenças entre os tempos de chegada do sinal.
+
+Além de informar sobre a natureza física do evento, os parâmetros dos \textit{hits} são a base para a extração de atributos em algoritmos de AM. Neste trabalho, os \textit{hits} de cada canal são agregados em janelas de tempo, das quais se calculam estatísticas (taxa de \textit{hits}, percentis de amplitude, energia, duração, contagens e tempo de subida, entre outras). Esse vetor de descritores representa a atividade acústica da janela de forma compacta e pode ser usado por diferentes algoritmos de classificação; aqui, por redes MLP (Seção~\ref{sec:mm_bomba}). Alternativamente, a literatura usa representações espectrais, como a transformada rápida de Fourier (\textit{Fast Fourier Transform}, FFT) ou a transformada de Fourier de tempo curto (\textit{Short-Time Fourier Transform}, STFT), que exigem a forma de onda completa \cite{liu2023review}.
+
+A onda originada em um evento de EA é de curta duração (microssegundos a milissegundos) e sua propagação é afetada por atenuação geométrica e estrutural e pela dispersão causada pela microestrutura do material. Além disso, nem toda EA indica falha: fricção mecânica, vazamentos e o próprio escoamento podem produzir sinais semelhantes, chamados de pseudo-fontes. Filtros, análise espectral e critérios baseados em tempo de chegada são estratégias usadas para distinguir esses eventos e reduzir falsos positivos \cite{grosse2008acoustic,mba2006development}.
+
+Em síntese, a EA é uma abordagem promissora para o monitoramento contínuo e a detecção precoce de falhas, pela sensibilidade e pela natureza não intrusiva. A seguir, são discutidos estudos que aplicam a EA e outros sinais à detecção de cavitação em bombas e turbomáquinas.
+
+\subsection{Revisão de pesquisas sobre detecção de cavitação}
+
+Segundo \citeonline{liu2023review}, a cavitação em bombas é um fenômeno multifásico que provoca a formação e o colapso de bolhas quando a pressão local do escoamento cai abaixo da pressão de vapor do líquido. Esse processo resulta em perda de desempenho hidráulico, erosão, vibração e ruído característico, podendo levar a falhas estruturais.
+
+Os autores revisam metodologias de detecção baseadas em vibração, EA, ruído hidrodinâmico e pulsação de pressão. Conforme a Figura~\ref{fig:LiuFig1}, esses métodos seguem um fluxo comum: aquisição em pontos estratégicos da bomba, processamento nos domínios do tempo, da frequência ou do tempo-frequência, extração de atributos e identificação do estado de cavitação com algoritmos de Inteligência Artificial (IA). A Figura~\ref{fig:LiuFig2} resume essas metodologias.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\linewidth]{figs/Artigos/Liu/Figura1.pdf}
+    \caption{Fluxograma básico de detecção de cavitação com base em diferentes sinais. Adaptado de \citeonline{liu2023review}.}
+    \label{fig:LiuFig1}
+\end{figure}
+
+O diagrama da Figura~\ref{fig:LiuFig1} organiza a detecção por famílias de sinais e explicita a relação entre a física da cavitação e o sensor:
+\begin{itemize}
+    \item \textbf{vibração (acelerômetros)}: sensível à excitação mecânica do conjunto rotor-estator; capta impactos e modulações de banda larga, junto com outros efeitos como desbalanceamento e instabilidades hidráulicas;
+    \item \textbf{EA (sensores piezoelétricos)}: opera em altas frequências, tipicamente de dezenas a centenas de quilohertz, em que os transientes de cavitação têm relação sinal-ruído elevada; adequada à detecção incipiente \cite{Neill1997Detection,Alfayez2005};
+    \item \textbf{ruído (microfones ou hidrofones)}: informativo para estágios mais intensos de cavitação, mas suscetível a interferências ambientais;
+    \item \textbf{pulsação de pressão (transdutores de pressão)}: evidencia flutuações do campo de pressão; útil para mapear regimes e instabilidades do escoamento.
+\end{itemize}
+
+Cada sensor observa um aspecto da cavitação. A partir daí, o fluxo converge para o processamento de sinais (no tempo: RMS, pico, curtose, fator de crista; no espectro: centroides e bandas de energia; no tempo-frequência: STFT e \textit{wavelets}), para a extração de atributos e para o reconhecimento do estado por algoritmos de IA, como máquinas de vetores de suporte (\textit{Support Vector Machine}, SVM), florestas aleatórias (\textit{Random Forest}), \(k\) vizinhos mais próximos (\(k\)-\textit{Nearest Neighbors}, \(k\)-NN), MLP ou redes recorrentes (\textit{Long Short-Term Memory}, LSTM). Embora os sensores sejam diversos, o \textit{pipeline} é comum e modular.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=1\linewidth]{figs/Artigos/Liu/Figura2.pdf}
+    \caption{Diagrama principal do conteúdo da pesquisa de \citeonline{liu2023review}. Adaptado de \citeonline{liu2023review}.}
+    \label{fig:LiuFig2}
+\end{figure}
+
+A Figura~\ref{fig:LiuFig2} sintetiza o ciclo de pesquisa em cinco camadas:
+\begin{enumerate}
+    \item \textbf{introdução}: a cavitação como problema de desempenho e integridade;
+    \item \textbf{princípio de detecção}: relaciona a origem física da cavitação com o que cada sensor capta; o colapso de bolhas gera altas frequências (EA), enquanto as flutuações de pressão aparecem mais nos transdutores de pressão e na vibração de baixa e média frequência;
+    \item \textbf{estado da pesquisa}, em quatro eixos: (a) características induzidas pela cavitação (intermitência, assimetria, picos espectrais, alargamento de banda, mudanças na curtose e na taxa de cruzamentos do limiar); (b) métodos de processamento de sinais; (c) eficiência de detecção (acurácia, sensibilidade, especificidade, área sob a curva ROC e F1, além de latência e robustez a ruído); e (d) posicionamento dos pontos de medição;
+    \item \textbf{discussão e análise comparativa};
+    \item \textbf{tendências}: sensores avançados, otimização de métodos existentes e detecção inteligente, eficiente e unificada.
+\end{enumerate}
+
+A detecção de cavitação evoluiu, assim, de abordagens empíricas para arquiteturas modulares e orientadas a dados, nas quais a escolha do sensor, o processamento e o classificador se integram em um único \textit{pipeline}.
+
+A Tabela~\ref{tab:sintese_literatura_unificada} resume os domínios de análise, as técnicas de extração de atributos e os modelos empregados na detecção de cavitação e de falhas, com os resultados relatados pelos autores. A primeira parte reúne as estratégias gerais revisadas por \citeonline{liu2023review} e estudos representativos com EA; a segunda, aplicações de redes MLP implementadas em FPGA, discutidas na Seção~\ref{subsection:MLP}. Nas aplicações gerais, a revisão não aponta um modelo superior de modo absoluto: o desempenho depende do sinal, do delineamento experimental e da validação adotada.
+
+\begin{table}[htbp]
+	\footnotesize
+	\centering
+	\caption{Síntese da literatura: sinais, técnicas de extração de atributos, modelos de diagnóstico e resultados relatados, com destaque para implementações em FPGA.}
+	\label{tab:sintese_literatura_unificada}
+	\renewcommand{\arraystretch}{1.25}
+	\resizebox{\textwidth}{!}{%
+		\begin{tabular}{p{2.6cm} p{2.0cm} p{3.6cm} p{3.4cm} p{4.0cm} p{2.6cm}}
+			\hline
+			\textbf{Alvo} & \textbf{Sinal} & \textbf{Atributos} & \textbf{Modelo / implementação} & \textbf{Resultados relatados} & \textbf{Referências} \\ \hline
+			\multicolumn{6}{l}{\textit{Estratégias gerais de detecção de cavitação}} \\ \hline
+			Cavitação em bombas & Vibração & RMS, curtose, fator de crista, \textit{cepstrum}, entropia espectral & SVM, \textit{Random Forest}, LSTM, CNN & Eficaz para cavitação moderada a severa; menos sensível à incipiente & \citeonline{liu2023review} \\ \hline
+			Cavitação em bombas & EA & Amplitude, RMS, energia, contagens, espectro & Análise de parâmetros e limiares & Detecção da cavitação incipiente antes da queda de desempenho hidráulico & \citeonline{Neill1997Detection,Alfayez2005,Alfayez2005ndt} \\ \hline
+			Mancais hidrodinâmicos & EA e vibração & RMS, fator de crista, energia, contagens, tempo-frequência & Comparação de sensibilidade e classificação & EA mais sensível que a vibração nos estágios iniciais & \citeonline{poddar2021classification} \\ \hline
+			Cavitação em turbinas & Acústico (microfone) & Atributos espectrais (FFT) & \(k\)-NN e GMM & 100\,\% em ensaios estáticos; \(>\)95\,\% em dinâmicos; separação de regimes em usina & \citeonline{amini2022development} \\ \hline
+			Cavitação em bombas & Ruído ou pressão & MFCC, análise espectral, média móvel & SVM, \(k\)-NN, CNN-2D, árvores de decisão & Úteis em cavitação intensa; suscetíveis a ruído ambiental & \citeonline{liu2023review} \\ \hline
+			\multicolumn{6}{l}{\textit{Aplicações com implementação em FPGA}} \\ \hline
+			Rolamentos & EA & Atributos de sinais de EA em taxa ultrassônica & Sistema multinúcleo em FPGA & Diagnóstico em tempo real & \citeonline{kang2015} \\ \hline
+			Motores de indução & Corrente elétrica & Descritores estatísticos no tempo & MLP em FPGA, classificação \textit{online} & Precisão de 93,18\,\% & \citeonline{garcia2025detection} \\ \hline
+			Qualidade de energia & Tensão elétrica & Parâmetros temporais e espectrais & MLP em Artix-7 & Classificação de distúrbios em tempo real & \citeonline{gaona2025fpga} \\ \hline
+			Sistemas automotivos & Sensores diversos & Características temporais multissensoriais & MLP em Zynq com reconfiguração parcial & Latência inferior a 1\,\(\mu\)s & \citeonline{shreejith2016} \\ \hline
+			Rolamentos & Vibração & Análise de envelope e descritores estatísticos & MLP em Zynq-7000 & 95\,\% no tipo de falha e 89\,\% na severidade (base CWRU) & \citeonline{toumi2022fpga} \\ \hline
+			\textbf{Este trabalho} & \textbf{EA} & \textbf{Descritores de \textit{hits} extraídos na lógica e agregados em janelas} & \textbf{MLP int8 na MicroBlaze ou em IP HLS (Artix-7)} & \textbf{Ver Capítulo~\ref{chap:resultados}} & --- \\ \hline
+	\end{tabular}}
+\end{table}
+
+No escopo do Projeto MOMEA, a escolha recai sobre sensores piezoelétricos de EA, conforme os requisitos de monitoramento apontados por \citeonline{santos2025modelagem}, pela sensibilidade a transientes em frequências elevadas, que permite identificar a cavitação incipiente. Os ensaios deste trabalho usam apenas sinais de EA; sinais de vibração aparecem somente na validação externa com a base pública CWRU (Seção~\ref{sec:mm_cwru}).
+
+Em relação aos trabalhos da Tabela~\ref{tab:sintese_literatura_unificada}, este trabalho difere em três pontos. Primeiro, a redução de dados é feita na própria lógica, por detecção de \textit{hits} de EA a 10\,MSa/s, e não sobre sinais de vibração ou corrente de baixa taxa, como na maioria das implementações de MLP em FPGA. Segundo, o classificador recebe estatísticas de populações de \textit{hits}, e não atributos de um sinal contínuo, o que torna o fluxo de dados proporcional à atividade acústica, e não à taxa de amostragem. Terceiro, a avaliação separa explicitamente as unidades físicas independentes (corridas, sessões ou rolamentos), o que, como se mostra no Capítulo~\ref{chap:resultados}, muda substancialmente as conclusões em relação às acurácias usualmente relatadas.

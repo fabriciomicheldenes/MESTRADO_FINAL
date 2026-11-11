@@ -1,0 +1,20 @@
+% Gerado por ferramentas/importar_relatorios.py a partir de MLP/artigo/MLP_EA_bomba.tex.
+% Revisado à mão na dissertação: edite este arquivo, não a fonte.
+\subsection{Introdução}
+\label{mlp:sec:introducao}
+
+A emissão acústica é uma técnica passiva, adequada ao monitoramento contínuo de máquinas hidráulicas. Os colapsos de cavidades e a turbulência do escoamento produzem ondas elásticas que se acoplam à carcaça e podem ser captadas por sensores externos \cite{brennen1995,Neill1997Detection,Alfayez2005ndt}. Em bombas, a atividade de EA cresce com a rotação e muda com a restrição na sucção, que favorece a cavitação. Isso torna plausível reconhecer o ponto de operação a partir do sinal \cite{Neill1997Detection,Alfayez2005ndt,derakhshan1991}.
+
+O MOMEA reduz o fluxo de amostras a registros de \textit{hits} parametrizados na lógica programável: amplitude de pico, contagens, tempo de subida, duração, energia e \textit{Signal Strength} \cite{unnthorsson2013,vallen2022}. A pergunta deste relatório é prática: esses descritores bastam para classificar as condições de operação de uma bomba, e com que confiança o resultado se generaliza?
+
+Responder com honestidade exige cuidado com a validação. \textit{Hits} e janelas de uma mesma corrida são fortemente correlacionados, e as condições foram ensaiadas em ordem fixa ao longo de dois dias. Por isso, sortear \textit{hits} ou janelas entre treino e teste mede, em grande parte, a capacidade de reconhecer a corrida, e não a condição \cite{kaufman2012,roberts2017}. Este trabalho compara três validações com graus crescentes de independência e mostra que a conclusão depende delas.
+
+As contribuições são:
+\begin{itemize}
+	\item uma descrição crítica dos dados do ensaio, com os problemas de aquisição que limitam a análise (Seção~\ref{mlp:sec:qualidade});
+	\item um conjunto de 36 descritores por janela, com tratamento separado dos \textit{hits} truncados por duração máxima (Seção~\ref{mlp:sec:descritores});
+	\item a comparação de MLP, RF e GB sob validações por bloco de tempo, por corrida e por série (Seções~\ref{mlp:sec:metodo} e~\ref{mlp:sec:resultados});
+	\item a verificação não supervisionada e as recomendações para o próximo ensaio (Seções~\ref{mlp:sec:naosup} e~\ref{mlp:sec:discussao}).
+\end{itemize}
+
+% =======================================================================================================

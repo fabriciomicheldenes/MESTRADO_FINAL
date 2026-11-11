@@ -1,0 +1,403 @@
+% Gerado por ferramentas/importar_relatorios.py a partir de ARTIGO_V2-10.11.2026/3-Decisoes_tecnologicas_metodologicas2.tex.
+% Revisado à mão na dissertação: edite este arquivo, não a fonte.
+% =======================================================================================================
+
+Esta seção apresenta os requisitos e as decisões que conduziram à arquitetura adotada. A exposição é organizada segundo a relação requisito--alternativa--decisão--evidência, e não segundo a cronologia do desenvolvimento. O objetivo é explicitar os compromissos envolvidos e estabelecer quais resultados devem sustentar cada escolha nas Seções~\ref{sec:mm_implementacao} a~6.
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Requisitos e critérios de avaliação}
+\label{v2:subsec:requisitos_arquitetura}
+
+O cenário considerado é o monitoramento contínuo, distribuído e de longo prazo de sinais de EA. Nesse contexto, uma decisão de projeto somente pode ser considerada justificada quando o requisito correspondente é associado a um critério verificável. A Tabela~\ref{v2:tab:requisitos_sistema} resume os requisitos adotados e as evidências necessárias. Todavia, algumas informações são obtidas somente quando da realização dos ensaios, que são discutidos na Seção~\ref{sec:res_extrator}.
+
+\begingroup
+\footnotesize
+\renewcommand{\arraystretch}{1.25}
+\begin{longtable}{
+		|>{\raggedright\arraybackslash}p{0.25\textwidth}
+		|>{\raggedright\arraybackslash}p{0.34\textwidth}
+		|>{\raggedright\arraybackslash}p{0.34\textwidth}|}
+	\caption{Requisitos do sistema e respectivos valores quantitativos estabelecidos.}
+	\label{v2:tab:requisitos_sistema}\\
+	\hline
+	\textbf{Requisito} & \textbf{Valor / meta} & \textbf{Situação} \\
+	\hline
+	\endfirsthead
+	\multicolumn{3}{c}
+	{\tablename\ \thetable{} -- continuação}\\
+	\hline
+	\textbf{Requisito} & \textbf{Valor / meta} & \textbf{Situação} \\
+	\hline
+	\endhead
+	\hline
+	\multicolumn{3}{r}{Continua na próxima página.}\\
+	\endfoot
+	\hline
+	\endlastfoot
+	Número de canais & 2 (dois canais independentes, A e B) & Definido \\
+	\hline
+	Taxa de amostragem efetiva & 10 MSa/s por canal ($\Delta t = 100$ ns) & Definido \\
+	\hline
+	Resolução do ADC & 12 bits + 1 bit de sobretensão por canal & Definido \\
+	\hline
+	Maior taxa sustentada de hits & Testada até 333 hits/s por canal (10\,000 \textit{bursts} em 30\,s), sem perda na comunicação (0/48\,280 registros) & Ensaio executado em 15/10/2026 (Seção~\ref{sec:res_extrator}); valor preliminar \\
+	\hline
+	Duração da rajada suportada & A medir (função da profundidade da FIFO/DMA) & Não ensaiada: com HLT de 2000\,\(\mu\)s cada \textit{hit} ocupa o canal por 2,27 a 2,44\,ms, e intervalos bem menores que 3\,ms exigem HLT reduzido e gerador com sequenciamento interno de rajadas \\
+	\hline
+	Latência admissível & A medir (caminho FSM$\to$DMA$\to$UDP$\to$receptor); mínimo de \(T_{\mathrm{HDT}} + T_{\mathrm{HLT}} = 2{,}25\,\mathrm{ms}\) após o último cruzamento & Não medida: a distribuição pedida exige instrumento com estatística de intervalos (Seção~\ref{sec:res_extrator}) \\
+	\hline
+	Erro máximo por descritor ($\tau_x$) & Valores iniciais propostos (Tabela~\ref{v2:tab:tau_x_iniciais}) & Metodológico; congelar antes da análise final \\
+	\hline
+	Custo-alvo por ponto & A consolidar (BOM do ponto completo) & A consolidar \\
+\end{longtable}
+\endgroup
+
+Na versão submetida aos ensaios, o sistema tem dois canais a 10\,MSa/s e sustentou até 333 \textit{hits}/s por canal sem perda; os demais valores quantitativos são apresentados nas Seções~\ref{sec:mm_implementacao} e~\ref{sec:res_extrator}. 
+% -------------------------------------------------------------------------------------------------------
+\subsection{Arquitetura inicial baseada em \textit{streaming} contínuo}
+\label{v2:subsec:streaming_continuo}
+
+A plataforma inicialmente desenvolvida no Projeto MOMEA, denominada MOMEA-USB, transferia integralmente as amostras digitalizadas para um computador hospedeiro. O módulo de aquisição empregava dois conversores A/D com resolução nominal de 12 bits e taxa de amostragem de \(8\,\mathrm{MS/s}\) por canal, com transmissão por USB~3.0. A aplicação hospedeira, desenvolvida em C++ com o \textit{framework} Qt, realizava a recepção, a bufferização, o armazenamento e o processamento dos dados. 
+
+O MOMEA-USB transporta os dois canais combinados em uma palavra de 32 bits, organizada como: 12 bits de dado + 1 bit de sobretensão + 3 bits de padding (canal A) e o mesmo arranjo para o canal B -- totalizando 16 bits por canal alinhados por byte -- e não empacotamento contínuo de 12 bits. Aplica-se compressão LZMA no nível 3 (a escala vai de 0 a 9), obtendo uma razão de compressão de aproximadamente 60\% em média (isto é, o arquivo comprimido fica em torno de 60\% do tamanho original).
+
+A taxa associada às amostras depende do formato utilizado no transporte. Para \(N_{\mathrm{c}}\) canais, taxa \(f_{\mathrm{s}}\) e \(b_{\mathrm{tr}}\) bits transportados por amostra, a taxa sem sobrecargas é:
+\begin{equation}
+	R_{\mathrm{stream}} = N_{\mathrm{c}}f_{\mathrm{s}} \frac{b_{\mathrm{tr}}}{8}
+	\label{v2:eq:taxa_streaming_secao3}
+\end{equation}
+
+Para dois canais a \(8\,\mathrm{MS/s}\), obtêm-se \(24\,\mathrm{MB/s}\) quando 12 bits são efetivamente empacotados e \(32\,\mathrm{MB/s}\) quando cada amostra ocupa uma palavra de 16 bits. Em aquisição ininterrupta, esses valores correspondem, respectivamente, a aproximadamente \(2{,}07\,\mathrm{TB/dia}\) e \(2{,}76\,\mathrm{TB/dia}\), antes de cabeçalhos, metadados, redundância e eventuais arquivos auxiliares.
+
+Esses valores não mostram que o enlace USB~3.0, isoladamente, seja insuficiente. O desempenho depende da cadeia inteira, incluindo empacotamento, controlador USB, cópias em memória, escalonamento do sistema operacional, processamento, sistema de arquivos e unidade de armazenamento. A vazão sustentada medida foi de cerca de 28\,MB/s, sem perdas observadas. O sistema emprega um buffer circular de 1 GB, cuja ocupação máxima atingiu picos de cerca de 5\,\%. A aquisição durou 12 horas contínuas, a 8\,MSa/s, com compressão LZMA e sem perdas registradas pelos contadores. Assim, as limitações da arquitetura foram avaliadas por medições de vazão sustentada, ocupação dos \textit{buffers} e perdas, e não apenas pela taxa nominal da interface.
+
+A arquitetura baseada em \textit{streaming} preserva o conjunto integral de amostras dentro dos limites de banda, resolução e ruído da cadeia. Isso mantém a possibilidade de aplicar posteriormente diferentes métodos de processamento ao mesmo registro. No cenário de operação contínua, entretanto, foram identificados três compromissos:
+
+\begin{itemize}
+	\item \textbf{Processamento e entrada/saída no computador hospedeiro:} a recepção sustentada exige bufferização, processamento concorrente e escrita com vazão suficiente. Por isso, neste trabalho, a ocorrência e a localização de perdas são demonstradas por contadores, e não inferidas de variações de desempenho.
+	
+	\item \textbf{Volume armazenado em relação à atividade de interesse:} em regimes esparsos, grande parte das amostras não pertence às janelas posteriormente identificadas como \textit{hits}. Essa fração depende do limiar, do DDT, da atividade observada e da definição da janela, devendo ser medida nos ensaios.
+	
+	\item \textbf{Latência variável:} as etapas de recepção, eventual compressão, armazenamento e análise introduzem atrasos dependentes da carga do hospedeiro e do subsistema de entrada e saída. Sem uma arquitetura de tempo real e uma análise de pior caso, não se deve atribuir limite determinístico a essa latência.
+\end{itemize}
+
+Esses compromissos não invalidam o \textit{streaming}. A preservação das formas de onda continua especialmente útil para caracterização de sinais, avaliação de novos algoritmos, investigação de 
+ovo{eventos} não previstos e construção de bases de dados. A experiência com a MOMEA-USB motivou, porém, a avaliação de uma arquitetura em que o modo principal de operação transmite descritores extraídos localmente.
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Decisão pela extração de descritores na borda}
+\label{v2:subsec:extracao_borda}
+
+A arquitetura adotada desloca para o dispositivo de aquisição a detecção, a delimitação temporal e a extração dos descritores dos \textit{hits}. A decisão é adequada quando a informação requerida pelo nível superior pode ser representada por esses descritores e quando a taxa resultante é inferior à do fluxo de amostras.
+
+Se \(\lambda_{\mathrm{h}}\) é a taxa total média de \textit{hits}, \(B_{\mathrm{reg}}\) é o tamanho do registro, \(m\) é o número médio de registros agregados por pacote, \(B_{\mathrm{ov}}\) é a sobrecarga por pacote referida ao ponto em que a vazão é avaliada e \(R_{\mathrm{aux}}\) reúne o tráfego de estado (keep-alive), comandos de configuração, mensagens de sincronização e retransmissões eventualmente implementadas, a taxa média pode ser aproximada por:
+\begin{equation}
+	R_{\mathrm{borda}} \approx \lambda_{\mathrm{h}}B_{\mathrm{reg}} + \frac{\lambda_{\mathrm{h}}}{m}B_{\mathrm{ov}} + R_{\mathrm{aux}}
+	\label{v2:eq:taxa_borda}
+\end{equation}
+
+Todas as parcelas da Equação~\eqref{v2:eq:taxa_borda} devem ser expressas na mesma unidade, por exemplo, bytes por segundo. Para o registro de 256 bits descrito na Seção~\ref{sec:mm_implementacao}, \(B_{\mathrm{reg}}=32\) bytes, mas esse valor não inclui cabeçalhos, preenchimento, intervalo entre quadros nem retransmissões eventualmente implementadas pela aplicação. Na versão ensaiada, cada datagrama leva um único registro (\(m = 1\)), e a sobrecarga de Ethernet, IP e UDP é de 42 bytes por datagrama (46 com a sequência de verificação do quadro). A condição de redução de tráfego é
+\begin{equation}
+	R_{\mathrm{borda}} < R_{\mathrm{stream}}
+	\label{v2:eq:condicao_reducao_borda}
+\end{equation}
+
+Desprezando a variação de \(R_{\mathrm{aux}}\) com a taxa de \textit{hits} (aproximação que deve ser verificada experimentalmente), a taxa aproximada de \textit{hits} no ponto de equilíbrio é:
+\begin{equation}
+	\lambda_{\mathrm{h,lim}} \approx \frac{R_{\mathrm{stream}}-R_{\mathrm{aux}}}{B_{\mathrm{reg}}+B_{\mathrm{ov}}/m}
+	\label{v2:eq:taxa_limite_hits}
+\end{equation}
+
+Essa expressão evidencia que a redução não é uma constante da arquitetura. Ela depende da atividade detectada, do limiar, dos parâmetros temporais, do tamanho do registro, da agregação em pacotes e do tráfego auxiliar. A taxa de transmissão deixa de ser diretamente proporcional a \(N_{\mathrm{c}}f_{\mathrm{s}}\), mas a própria taxa de \textit{hits} ainda pode depender da amostragem, da banda e do detector.
+
+O compromisso central é a não preservação integral da forma de onda no modo considerado. Após o descarte das amostras, não é possível recalcular os descritores com outro limiar ou outro DDT, aplicar retrospectivamente métodos baseados na forma de onda nem examinar 
+ovo{eventos} não reconhecidos. A extração local é, portanto, uma transformação com perda de informação, e não uma compressão convencional com reconstrução do sinal.
+
+Em atividade aproximadamente contínua ou sob ruído que produza muitos \textit{hits}, a vantagem de comunicação pode diminuir ou desaparecer. Além da taxa média, importa a maior rajada. Se a lógica produz registros à taxa \(\lambda_{\mathrm{in}}\), o software os retira à taxa de serviço \(\mu_{\mathrm{out}}\), e uma rajada com \(\lambda_{\mathrm{in}}>\mu_{\mathrm{out}}\) dura \(T_{\mathrm{b}}\), uma estimativa mínima para a capacidade adicional de fila é:
+\begin{equation}
+	C_{\mathrm{fila,min}} \geq \left(\lambda_{\mathrm{in}} - \mu_{\mathrm{out}}\right) T_{\mathrm{b}}
+	\label{v2:eq:capacidade_fila_rajada}
+\end{equation}
+
+\noindent
+expressa em número de registros. A validade dessa aproximação requer que as taxas sejam aproximadamente constantes durante a rajada. Quando a capacidade é excedida, o descarte é explícito e registrado por contadores de perda.
+
+Um modo híbrido, com captura seletiva de formas de onda, pode reduzir a perda de flexibilidade analítica. Neste trabalho, esse modo não foi implementado e é tratado como extensão futura.
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Seleção da plataforma de hardware}
+\label{v2:subsec:plataforma_hardware}
+
+A seleção do hardware foi orientada pela execução contínua do caminho por amostra, pela necessidade de paralelismo nos filtros e acumuladores, pelas interfaces disponíveis, pelo custo por ponto e pela complexidade de integração. A Tabela~\ref{v2:tab:alternativas_arquitetura} resume as alternativas documentadas no desenvolvimento.
+
+\begingroup
+\footnotesize
+\renewcommand{\arraystretch}{1.25}
+\begin{longtable}
+	{|>{\raggedright\arraybackslash}p{0.20\textwidth}
+		|>{\raggedright\arraybackslash}p{0.25\textwidth}
+		|>{\raggedright\arraybackslash}p{0.22\textwidth}
+		|>{\raggedright\arraybackslash}p{0.20\textwidth}|}
+	\caption{Alternativas arquiteturais consideradas e decisão adotada.}
+	\label{v2:tab:alternativas_arquitetura}\\
+	\hline
+	\textbf{Alternativa} & \textbf{Vantagem preservada} & \textbf{Compromisso principal} & \textbf{Decisão} \\
+	\hline
+	\endfirsthead
+	\multicolumn{4}{c}
+	{\tablename\ \thetable{} -- continuação}\\
+	\hline
+	\textbf{Alternativa} & \textbf{Vantagem preservada} & \textbf{Compromisso principal} & \textbf{Decisão} \\
+	\hline
+	\endhead
+	\hline
+	\endlastfoot
+	MOMEA-USB com processamento no hospedeiro & Forma de onda integral e grande flexibilidade de processamento posterior. & Vazão e armazenamento contínuos; dependência do hospedeiro; latência variável. & Linha de base. \\
+	\hline
+	Artix-7 com caminho de dados em lógica e MicroBlaze & Paralelismo por amostra, partição explícita entre dados e controle e ausência de processador \textit{hard} não utilizado. & O processador \textit{soft-core} e seus periféricos consomem recursos da lógica; rede e software continuam sujeitos a filas e variação temporal. & Selecionada. \\
+	\hline
+	Zynq-7000 com processador ARM integrado & Processador \textit{hard}, controladores e interfaces integrados ao sistema de processamento. & Complexidade de inicialização e integração entre PS e PL; eventual custo de recursos não exigidos pelo caminho crítico. & Considerada, não adotada. \\
+\end{longtable}
+\endgroup
+
+O dispositivo selecionado foi o Artix-7 XC7A35T. A especificação da família informa \(33\,280\) células lógicas, \(5\,200\) \textit{slices}, 90 blocos DSP48E1 e \(1\,800\,\mathrm{Kb}\) de memória em blocos, equivalentes a 50 blocos de \(36\,\mathrm{Kb}\) \cite{xilinx2020ds180}. Como cada \textit{slice} da série 7 contém quatro LUTs e oito \textit{flip-flops}, o dispositivo oferece \(20\,800\) LUTs e \(41\,600\) registradores de \textit{slice}.
+
+Esses números descrevem capacidade nominal, não suficiência para a aplicação. A decisão somente é sustentada pelos relatórios da versão implementada: utilização hierárquica de LUTs, registradores, BRAM e DSP; recursos de relógio e entrada/saída; potência estimada; e análise temporal pós-roteamento. O dispositivo é o Artix-7 XC7A35TICSG324-1L, encapsulamento CSG324, grau de velocidade -1L (baixa tensão, faixa industrial). A utilização e a análise temporal da versão implementada são apresentadas na Seção~\ref{sec:mm_implementacao} (Tabela~\ref{v2:tab:utilizacao_pos_implementacao}). 
+
+A margem de recursos precisa ser avaliada em conjunto com a temporização e a largura de banda interna: baixa ocupação não garante que novos módulos possam ser acrescentados sem comprometer o fechamento temporal.
+
+A família Zynq-7000 combina lógica programável e sistema de processamento baseado em ARM Cortex-A9 \cite{xilinx2018ds190}. No sistema proposto, o caminho por amostra é executado na lógica e as funções de controle possuem taxa inferior. Embora o Zynq pudesse oferecer maior desempenho de software, a complexidade adicional de inicialização e integração entre PS e PL não se justificava para as funções de controle requeridas, que são de baixa taxa e podem ser atendidas pelo MicroBlaze. Essa justificativa não demonstra superioridade geral do Artix-7: ela é válida para a partição adotada e deve ser complementada por comparação de custo, consumo, recursos e esforço de integração.
+
+O argumento econômico deve considerar o ponto de medição completo. A comparação deve incluir placa de processamento, conversão A/D, condicionamento analógico, memória, comunicação, alimentação, conectores e proteções. Valores monetários devem trazer data, quantidade, moeda e natureza do item---placa de desenvolvimento, protótipo ou estimativa de produção.
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Partição entre lógica programável e software embarcado}
+\label{v2:subsec:divisao_hw_sw}
+
+A arquitetura separa o caminho de dados, executado na taxa das amostras, do caminho de controle, executado na taxa de geração e transmissão dos registros. Essa partição é resumida na Tabela~\ref{v2:tab:particao_hw_sw}.
+\begin{table}[htbp]
+	\centering
+	\footnotesize
+	\caption{Partição funcional entre lógica programável e software.}
+	\label{v2:tab:particao_hw_sw}
+	\renewcommand{\arraystretch}{1.25}
+	\begin{tabular}
+		{|>{\raggedright\arraybackslash}p{0.22\textwidth}
+			|>{\raggedright\arraybackslash}p{0.35\textwidth}
+			|>{\raggedright\arraybackslash}p{0.35\textwidth}|}
+		\hline
+		\textbf{Camada} & \textbf{Funções} & \textbf{Condição de desempenho} \\ 
+		\hline
+		Lógica programável & Recepção das amostras, filtragem, limiar, máquina de estados, pico, contagens e acumuladores. & Fechamento temporal; ausência de bloqueio no caminho por amostra; tratamento explícito de transbordos e cruzamentos de domínio. \\
+		\hline
+		MicroBlaze e FreeRTOS & Configuração, retirada e empacotamento dos registros, pilha de comunicação, comandos e informações de estado. & Tempo de serviço superior à taxa média de entrada; prioridades e filas dimensionadas para a rajada especificada. \\
+		\hline
+		Computador ou nível superior & Recepção, verificação de sequência, persistência, visualização e análise posterior. & Detecção de perdas, tratamento de reordenação e preservação dos metadados de configuração e sincronização. \\
+		\hline
+	\end{tabular}
+\end{table}
+
+A implementação em lógica explora paralelismo e produz uma latência de \textit{pipeline} expressa por número definido de ciclos, desde que todas as restrições temporais sejam satisfeitas e o caminho não seja interrompido por contenção ou contrapressão. Isso não torna fixa a latência de emissão do registro: o registro somente pode ser consolidado depois do último cruzamento e da expiração do DDT.
+
+O MicroBlaze executa FreeRTOS para organizar tarefas assíncronas de comunicação e configuração. O escalonamento preemptivo facilita a atribuição de prioridades, mas não garante, isoladamente, ausência de perda ou prazo de resposta. Da arquitetura tem-se: processador soft-core MicroBlaze executando FreeRTOS e pilha lwIP, com transferência dos registros por DMA e transmissão UDP. Quando da pós-implementação será discutida a frequência do processador, as prioridades das tarefas, os tempos máximos de execução, as interrupções, a profundidade das filas, a política de \textit{cache} e o mecanismo de coerência com o DMA, quando aplicável.
+
+Se a latência for medida desde a entrada da amostra correspondente ao primeiro cruzamento até a disponibilização do registro no receptor, uma decomposição apropriada é \(L_{\mathrm{total}} = L_{\mathrm{pipe}} + t_{\mathrm{dur}} + T_{\mathrm{DDT,impl}} + L_{\mathrm{fin}} + L_{\mathrm{fila}} + L_{\mathrm{SW}} + L_{\mathrm{rede}}\), em que \(L_{\mathrm{pipe}}\) é a latência até a decisão correspondente, \(t_{\mathrm{dur}}\) é a duração entre primeiro e último cruzamentos, \(L_{\mathrm{fin}}\) é a finalização do registro na lógica e as três últimas parcelas representam fila, software e rede. Se a referência temporal for o último cruzamento, o termo \(t_{\mathrm{dur}}\) deve ser omitido. Apenas \(L_{\mathrm{pipe}}\), \(T_{\mathrm{DDT,impl}}\) e \(L_{\mathrm{fin}}\) podem ser associados diretamente a quantidades determinadas de ciclos; as demais parcelas dependem da carga.
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Comunicação, observabilidade de perdas e sincronização}
+\label{v2:subsec:interface_comunicacao}
+
+Adotou-se Ethernet 10/100 para desacoplar o ponto de aquisição de uma conexão USB direta e permitir sua integração a uma rede comutada. No modo de \(100\,\mathrm{Mb/s}\), a taxa nominal do enlace equivale a \(12{,}5\,\mathrm{MB/s}\); no modo de \(10\,\mathrm{Mb/s}\), equivale a \(1{,}25\,\mathrm{MB/s}\). A vazão útil é menor devido aos cabeçalhos, ao preenchimento, ao preâmbulo e ao intervalo entre quadros. Nos ensaios, o enlace operou no modo de 100\,Mb/s. 
+
+Para taxa de pacotes \(\lambda_{\mathrm{p}}\), conteúdo útil médio \(B_{\mathrm{payload}}\) e sobrecarga por pacote \(B_{\mathrm{ov,rede}}\), a taxa no enlace pode ser estimada por 
+\begin{equation}
+	R_{\mathrm{rede}} \approx 8\lambda_{\mathrm{p}} \left(B_{\mathrm{payload}} + B_{\mathrm{ov,rede}}\right)
+	\label{v2:eq:taxa_rede}
+\end{equation}
+
+\noindent
+em bits por segundo. A definição de \(B_{\mathrm{ov,rede}}\) deve indicar se a medição considera apenas UDP/IP, o quadro Ethernet ou todos os elementos transmitidos no meio físico.
+
+Os registros são transportados por UDP. Esse protocolo reduz o estado e os mecanismos do transporte, mas não garante entrega, ordenação nem proteção contra duplicação \cite{postel1980udp}. A decisão por UDP deve, portanto, ser acompanhada na camada de aplicação por número sequencial de pacotes, quantidade de registros por pacote, contador cumulativo de registros produzidos e indicação de reinicialização. 
+
+O cabeçalho de aplicação com versão do protocolo, identificação do dispositivo, número de sequência, quantidade de registros, contador cumulativo, carimbo de tempo de referência, tamanho do conteúdo e indicadores de erro ou reinicialização foi especificado, mas não implementado na versão ensaiada. Cada datagrama da porta 5007 leva apenas os 32 bytes de um registro de \textit{hit}, sem cabeçalho de aplicação nem número de sequência gerado no dispositivo. Na versão ensaiada, a observabilidade de perdas é obtida por contadores independentes em cada etapa: na lógica, o contador \texttt{HITCNT} (\textit{hits}, ROVL e MAXDUR por canal) e os registradores de depuração do mapa AXI; no firmware, os contadores de transferências do DMA e de falhas de envio; e, no receptor, a numeração dos datagramas e dos registros na chegada. Ao fim de cada captura, o \textit{software} de aquisição compara o total de registros contado na lógica com o total recebido e gravado, de modo que \(N_{\mathrm{perdidos}} = N_{\mathrm{HITCNT}} - N_{\mathrm{rx}}\). Duplicações e trocas de ordem não são detectáveis individualmente sem número de sequência; o risco é reduzido pelo enlace direto entre a placa e o computador, sem comutadores. O cabeçalho especificado permanece como evolução prevista, e o campo de 32 bits livre no registro é candidato a número de sequência.
+
+A Ethernet também não fornece determinismo temporal nem qualificação industrial por si só. A robustez física depende de transceptor, isolamento, conectores, cabeamento, alimentação, proteção contra transientes e compatibilidade eletromagnética. A latência depende das filas, da pilha, do controlador, dos comutadores e da carga da rede.
+
+Se registros de diferentes canais ou dispositivos forem correlacionados pelo tempo, deve existir mecanismo explícito de sincronização. A arquitetura prevista é um carimbo de tempo gerado por um contador livre no FPGA, com largura de 64 bits e resolução de 100 ns (um período de amostra a 10 MHz, igual à grade do AMSY-6), com época zerada nos comandos START e STOP. O campo correspondente já está reservado no registro do \textit{hit}, mas o \textit{bitstream} ensaiado o envia zerado. Como a conectividade Ethernet não estabelece base de tempo comum, a sincronização com o AMSY-6 prevista é um sinal de disparo do gerador aplicado às duas cadeias, com associação entre estímulos e \textit{hits} por janelas temporais em torno de cada disparo. Sem o carimbo, essa associação \textit{hit} a \textit{hit} e a medição da deriva entre as bases de tempo não são possíveis; nos ensaios desta etapa, a associação foi feita por bloco de estímulos.
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Verificação instrumental e validação no domínio de aplicação}
+\label{v2:subsec:metodologia_validacao}
+
+O trabalho distingue \textit{verificação instrumental} e \textit{validação no domínio de aplicação}. A primeira examina se a cadeia elétrica e digital implementa os descritores especificados. A segunda examina se o instrumento fornece informação útil para detectar ou caracterizar cavitação no ambiente de uso. As duas etapas respondem a perguntas diferentes e não são equivalentes.
+
+\subsubsection{Estratégias experimentais}
+Duas estratégias são complementares:
+
+\begin{description}
+	\item[Estímulo elétrico controlado:] um gerador produz formas de onda com amplitude, duração, frequência, fase e espaçamento configurados. A injeção após o sensor elimina da avaliação os efeitos do acoplamento e da propagação mecânica e é adequada para verificar aquisição, detecção e parametrização.
+	
+	\item[Ensaio de cavitação:] inclui o fenômeno físico, o sensor, o acoplamento, a estrutura e o ruído da máquina. É necessário para a validação no domínio, mas não isola com facilidade erros da eletrônica ou do algoritmo, pois as fontes físicas ativas não são diretamente conhecidas.
+\end{description}
+
+Este trabalho adota, nesta etapa, o estímulo elétrico controlado. Logo, suas conclusões limitam-se à parte da cadeia posterior ao ponto de injeção. O ensaio não valida sensor, acoplamento, propagação estrutural nem capacidade de discriminar cavitação em operação real.
+
+\subsubsection{Hierarquia das referências}
+Os valores configurados no gerador não constituem referência exata. Cabos, divisores, terminações, impedâncias de entrada e largura de banda modificam o sinal. A metodologia deve distinguir quatro níveis:
+
+\begin{enumerate}
+	\item Os valores nominais programados no gerador;
+	
+	\item A forma de onda efetivamente aplicada em um plano de referência elétrico, medida por instrumento independente com calibração, largura de banda, taxa de amostragem e incerteza conhecidas;
+	
+	\item Os descritores de referência calculados \textit{off-line} a partir dessa forma de onda, empregando as definições da Seção~\ref{sec:fund_hits} e convenções explícitas de amostragem, limiar e janela; e
+	
+	\item Os descritores do AMSY-6, utilizado como instrumento de comparação, mas não como 
+ovo{referência primária}.
+\end{enumerate}
+
+A mesma forma de onda é aplicada simultaneamente às duas cadeias, por meio de um divisor cujas atenuação, largura de banda, isolamento e impedâncias precisam ser caracterizados; em ensaios sequenciais, a repetibilidade e a deriva do gerador entram na avaliação de incerteza. Os instrumentos são um gerador de sinais e um osciloscópio digital Minipa MVB DSO de 100\,MHz, usado como referência da forma de onda (nível 2 da hierarquia de referências), com as características da Tabela~\ref{v2:tab:instrumentos}.
+
+\begingroup
+\footnotesize
+\renewcommand{\arraystretch}{1.25}
+\begin{longtable}{
+		|>{\raggedright\arraybackslash}p{0.19\textwidth}
+		|>{\raggedright\arraybackslash}p{0.34\textwidth}
+		|>{\raggedright\arraybackslash}p{0.38\textwidth}|}
+	\caption{Instrumentos utilizados nos ensaios e respectivas especificações principais.}
+	\label{v2:tab:instrumentos}\\
+	\hline
+	\textbf{Instrumento} & \textbf{Especificação} & \textbf{Valor / Observação} \\
+	\hline
+	\endfirsthead
+	\multicolumn{3}{c}
+	{\tablename\ \thetable{} -- continuação}\\
+	\hline
+	\textbf{Instrumento} & \textbf{Especificação} & \textbf{Valor / Observação} \\
+	\hline
+	\endhead
+	\hline
+	\multicolumn{3}{r}{Continua na próxima página.}\\
+	\endfoot
+	\hline
+	\endlastfoot
+	Osciloscópio digital & Modelo & Minipa, linha MVB DSO, 100 MHz \\
+	\hline
+	& Banda (upgrade) & 50 / 70 / 100 MHz \\
+	\hline
+	& Amostragem em tempo real & até 1 GSa/s \\
+	\hline
+	& Amostragem acumulativa & 50 GSa/s por canal (sinais repetitivos) \\
+	\hline
+	& Canais de entrada & 2 \\
+	\hline
+	& Base de tempo & 2 ns ~ 50 s/DIV \\
+	\hline
+	& Fator de deflexão vertical & 1 mV ~ 20 V/DIV \\
+	\hline
+	& Precisão vertical básica & 3\% \\
+	\hline
+	& Precisão horizontal básica & ±50 ppm \\
+	\hline
+	& Tempo de subida & 3,5 ns \\
+	\hline
+	& Tensão máxima de entrada & 400 V (DC + pico AC), 1 MHz \\
+	\hline
+	& Memória por canal & 25 kByte \\
+	\hline
+	Gerador de sinais & Modelo & Rigol DG832, 2 canais, 35 MHz \\
+	\hline
+	& Canais & 2 \\
+	\hline
+	& Frequência (seno) & 1 µHz ~ 35 MHz \\
+	\hline
+	& Taxa de amostragem & até 125 MSa/s \\
+	\hline
+	& Resolução vertical & 16 bits \\
+	\hline
+	& Profundidade de memória & 2 Mpts padrão (8 Mpts opcional) \\
+	\hline
+	& Estabilidade de frequência & ±1 ppm \\
+	\hline
+	& Ruído de fase & -105 dBc/Hz \\
+	\hline
+	& Jitter de saída & tão baixo quanto 200 ps \\
+	\hline
+	& Precisão de frequência & ±(1 ppm do ajuste + 10 µHz), 18--28 °C \\
+	\hline
+	& Formas de onda arbitrárias & até 160 integradas; edição por PC \\
+	\hline
+\end{longtable}
+\endgroup
+
+\subsubsection{Matriz de ensaios e critérios de aceitação}
+A matriz de ensaios deve explorar não apenas condições nominais, mas também fronteiras que revelem diferenças de implementação:
+
+\begin{itemize}
+	\item Amplitudes próximas ao limiar e próximas à saturação;
+	
+	\item Diferentes frequências dentro da banda e próximas às frequências de corte;
+	
+	\item Durações e números de ciclos distintos; 
+	
+	\item Separações de \(N_{\mathrm{DDT}}-1\), \(N_{\mathrm{DDT}}\) e \(N_{\mathrm{DDT}}+1\) amostras;
+	
+	\item Condições comparáveis nas proximidades do RAT, quando houver comparação de cascatas; e
+	
+	\item Repetições suficientes para estimar dispersão, perdas e repetibilidade.
+\end{itemize}
+
+Para cada descritor \(x\), podem ser calculados o erro \(e_x = x_{\mathrm{prop}} - x_{\mathrm{ref}}\), e, quando \(x_{\mathrm{ref}}\) estiver suficientemente afastado de zero, o erro relativo
+\begin{equation}
+	e_{x,\mathrm{rel}} = \frac{x_{\mathrm{prop}}-x_{\mathrm{ref}}}{x_{\mathrm{ref}}}
+	\label{v2:eq:erro_relativo_descritor}
+\end{equation}
+
+O erro relativo não é usado para referências nulas ou muito pequenas; nesses casos, usa-se o erro absoluto ou o desvio em unidades de resolução (LSB ou equivalente). Em ensaios repetidos, reportam-se viés, dispersão e intervalos de incerteza, além das taxas de detecção, perda e fragmentação. A avaliação de incerteza considera gerador, instrumento independente, divisor, ganho, resolução temporal, quantização e repetibilidade, seguindo princípios compatíveis com o JCGM~100 \cite{jcgm2008}.
+
+Os limites de aceitação devem ser definidos antes da interpretação dos resultados e relacionados à resolução e à incerteza de cada descritor. Os valores iniciais de \(\tau_x\) da Tabela~\ref{v2:tab:tau_x_iniciais} partem da resolução de cada descritor e das componentes de incerteza descritas na Seção~\ref{sec:mm_delineamento}. A base do AMSY-6 provém da especificação do fabricante, e a do sistema proposto, dos componentes da cadeia. A banda do osciloscópio de referência (100 MHz) é adequada, mas sua precisão vertical de 3\,\% é a maior componente de incerteza da referência de amplitude e, como a energia é proporcional ao quadrado da tensão, da referência de energia, cuja incerteza relativa é \(2 \times 3\,\% \approx 6\,\%\). A referência de tempo do osciloscópio (\(\pm 50\) ppm) é folgada para os descritores temporais. A coluna de repetibilidade traz o desvio-padrão medido no ensaio simultâneo de 15/10/2026 como dado de entrada, e não como critério escolhido a partir do resultado.
+
+\begingroup
+\footnotesize
+\renewcommand{\arraystretch}{1.25}
+\begin{longtable}{
+		|>{\raggedright\arraybackslash}p{0.11\textwidth}
+		|>{\raggedright\arraybackslash}p{0.21\textwidth}
+		|>{\raggedright\arraybackslash}p{0.15\textwidth}
+		|>{\raggedright\arraybackslash}p{0.17\textwidth}
+		|>{\raggedright\arraybackslash}p{0.22\textwidth}|}
+	\caption{Valores iniciais propostos para as tolerâncias \(\tau_x\).}
+	\label{v2:tab:tau_x_iniciais}\\
+	\hline
+	\textbf{Descritor} & \textbf{Base no sistema proposto (componentes)} & \textbf{Base no AMSY-6 (fabricante)} & \textbf{Repetibilidade medida no sistema proposto (15/10)} & \textbf{\(\tau_x\) inicial proposto} \\
+	\hline
+	\endfirsthead
+	\hline
+	\textbf{Descritor} & \textbf{Base no sistema proposto} & \textbf{Base no AMSY-6} & \textbf{Repetibilidade} & \textbf{\(\tau_x\) inicial} \\
+	\hline
+	\endhead
+	\hline
+	\endlastfoot
+	Amplitude & 1 LSB referido à entrada (3,13--3,23\,mV no ADC) + incerteza do ganho do pré-amplificador (34,00\,dB medidos) & Não informada na especificação consultada & \(\sigma = 0{,}04\)--\(0{,}06\)\,dB & \(\pm\)(1 LSB + \(u\) do ganho); contra a referência do osciloscópio, \(\pm 3\,\%\) (\(0{,}26\)\,dB) \\
+	\hline
+	Tempo de subida & 1 amostra (100\,ns) + fase do \textit{burst} em relação à grade de 10\,MHz & Resolução de 100\,ns (ASIP-2 a 10\,MHz) & Não aplicável com envelope retangular (pico ambíguo) & \(\pm 1\) amostra + \textit{jitter} de fase; avaliado só com envelope realista \\
+	\hline
+	Duração & 1--2 amostras (100--200\,ns) + convenção de término & 100\,ns & \(\sigma = 0{,}04\)--\(0{,}06\,\mu\)s & \(\pm 2\) amostras; comparação com o AMSY-6 apenas como descritor assemelhado \\
+	\hline
+	Contagens & Discreto; depende do limiar e do sinal de decisão & Discreto & Constante (10) em 48\,197 de 48\,198 \textit{hits} & \(\pm 1\) \\
+	\hline
+	Energia & \(2\times\) a incerteza relativa da amplitude (entra ao quadrado) & Definição de eu do fabricante & 0,12--0,64\,\% (desvio relativo) & \(\pm 6\,\%\) contra a referência; comparação com o AMSY-6 apenas como descritor assemelhado \\
+\end{longtable}
+\endgroup
+
+ Uma forma geral é:
+\begin{equation}
+	\left|x_{\mathrm{prop}} - x_{\mathrm{ref}} \right| \leq \tau_x
+	\label{v2:eq:criterio_aceitacao_descritor}
+\end{equation}
+
+\noindent
+em que \(\tau_x\) é a tolerância previamente estabelecida. A comparação com o AMSY-6 avalia concordância entre implementações; a comparação com os descritores derivados da forma de onda medida fornece referência independente. Nenhuma das duas substitui a posterior validação em uma bancada de cavitação.
+% =======================================================================================================

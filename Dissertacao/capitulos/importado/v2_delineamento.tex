@@ -1,0 +1,533 @@
+% Gerado por ferramentas/importar_relatorios.py a partir de ARTIGO_V2-10.11.2026/5-Delineamento_experimental2.tex.
+% Revisado à mão na dissertação: edite este arquivo, não a fonte.
+%=======================================================================================================
+
+Esta seção descreve o procedimento empregado para verificar a detecção e a parametrização de \textit{hits} pelo sistema proposto mediante estímulos elétricos controlados. O delineamento separa três questões que não devem ser tratadas como equivalentes: a capacidade de detectar os estímulos aplicados, o erro dos descritores em relação a uma referência elétrica independente e a concordância entre o sistema proposto e o Vallen AMSY-6.
+
+O experimento constitui uma verificação instrumental da cadeia posterior ao ponto de injeção. Ele não reproduz a geração física da emissão acústica, a resposta do sensor, o acoplamento, a propagação das ondas pela estrutura nem as condições hidrodinâmicas da cavitação. Consequentemente, seus resultados não demonstram, isoladamente, a capacidade de detectar cavitação incipiente em uma máquina real. Portanto, os resultados não podem ser extrapolados para a detecção de cavitação em operação real sem uma campanha adicional de ensaios em campo.
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Objetivos, questões de avaliação e alcance}
+\label{v2:subsec:objetivos_experimento}
+
+O objetivo geral é caracterizar o comportamento dos dois sistemas quando submetidos, nas condições especificadas, a sinais elétricos transitórios repetíveis e mensuráveis. Esse objetivo é decomposto nas seguintes questões: 
+\begin{enumerate}
+	\item Qual é a probabilidade de detecção de um estímulo em função de sua amplitude, de sua relação sinal--ruído e de sua separação temporal em relação aos estímulos adjacentes;
+	
+	\item Com que frequência ocorrem falsos \textit{hits}, fragmentação de um estímulo em múltiplos \textit{hits} ou fusão de estímulos distintos em um único registro;
+	
+	\item Quais são o viés, a dispersão e o erro dos descritores de amplitude, tempo de subida, duração, contagens e energia em relação aos descritores obtidos de uma forma de onda de referência medida independentemente; e 
+	
+	\item Qual é a concordância entre os descritores fornecidos pelo sistema proposto e pelo AMSY-6, consideradas as diferenças de configuração e de arquitetura.
+\end{enumerate}
+
+O AMSY-6 é empregado como instrumento comercial de comparação, e não como referência primária. Analogamente, os valores programados no gerador não constituem, por si sós, valores exatos do sinal aplicado. Cabos, divisores, terminações, impedâncias de entrada e largura de banda modificam a forma de onda entregue a cada instrumento.
+
+O termo ``equivalência'' não é utilizado neste trabalho; em seu lugar, emprega-se ``concordância'', que é quantificada pelos limites de concordância de Bland--Altman e pelos critérios de aceitação \(\tau_x\) definidos na Subseção~\ref{v2:subsec:criterios_aceitacao_incerteza}. Na ausência desses limites, o experimento caracteriza erro e concordância, mas não demonstra equivalência metrológica ou funcional.
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Sistema comercial de comparação e hierarquia das referências}
+\label{v2:subsec:sistema_referencia_experimento}
+
+O sistema comercial utilizado na comparação é o Vallen AMSY-6, sistema multicanal de medição de EA. Cada canal é constituído por sensor, pré-amplificador e um canal de uma placa ASIP-2, responsável pelo condicionamento, pela detecção e pela extração dos descritores dos \textit{hits} \cite{vallen2022}.
+
+A especificação pública do ASIP-2/S informa conversão A/D a \(40\,\mathrm{MS/s}\) com resolução nominal de 16 bits por canal. O resultado do filtro FIR possui 18 bits; esse valor não corresponde à resolução do conversor. A extração dos descritores opera, na configuração padrão informada, a \(10\,\mathrm{MHz}\), com resolução temporal de \(100\,\mathrm{ns}\). Também são especificados filtros analógicos de entrada, um estágio FIR e filtros passa-banda digitais configuráveis. Portanto, não é correto caracterizar o AMSY-6 como uma cadeia exclusivamente digital após a conversão \cite{vallen2022}.
+
+Nos ensaios, foi usado o canal 1 do AMSY-6, com AE habilitado e gravação de transientes desabilitada; os canais 2 a 4 ficaram desabilitados. Na sessão sem pré-amplificador (06/10/2026), a entrada foi configurada como ``AC input@100k (0 dB)'' e ligada diretamente ao gerador. Na sessão com pré-amplificador (15/10/2026), foi usado o AEP5 de 34\,dB, com ganho medido de 34,22\,dB e corte superior em \(\approx 4{,}1\,\mathrm{MHz}\). O limiar foi fixo em \(80\,\mathrm{dB}_{\mathrm{AE}}\), com DDT de \(250\,\mu\mathrm{s}\) e RAT de \(2000\,\mu\mathrm{s}\).
+
+As diferenças entre os instrumentos devem ser descritas por grandezas mensuráveis, e não apenas pelo número nominal de bits. A comparação deve considerar, pelo menos, faixa de entrada, ganho efetivo, ruído referido ao plano de injeção, resolução temporal dos descritores, resposta em magnitude e fase, quantização e margem até a saturação. Para evitar uma circularidade na definição da referência, adota-se a seguinte hierarquia:
+
+\begin{enumerate}
+	\item \textbf{Programação nominal do gerador:} sequência digital, forma de onda, amplitude, frequência, duração, fase e parâmetros do ruído solicitados ao equipamento; 
+	
+	\item \textbf{Forma de onda elétrica de referência:} tensão efetivamente aplicada em um plano de referência definido, medida por um instrumento independente, com calibração, largura de banda, taxa de amostragem e incerteza documentadas;
+	
+	\item \textbf{Descritores de referência:} valores calculados \textit{off-line} a partir da forma de onda elétrica medida, empregando as definições da Seção~\ref{sec:fund_hits} e convenções explícitas de filtragem, amostragem, limiar, DDT e janela de integração; e 
+	
+	\item \textbf{Descritores dos instrumentos:} registros produzidos pelo sistema proposto e pelo AMSY-6.
+\end{enumerate}
+
+Os níveis 2 e 3 fornecem a referência independente para a avaliação dos dois instrumentos. Quando não for possível medir a forma de onda no plano de injeção com incerteza suficientemente pequena, os valores programados no gerador são identificados como nominais, e a análise fica restrita à concordância entre os sistemas.
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Configuração experimental e planos de injeção}
+\label{v2:subsec:configuracao_experimental}
+
+O sinal é produzido por um gerador de formas de onda arbitrárias e distribuído aos dois sistemas. Foi usado o gerador Rigol DG832 (2 canais, senoide até 35\,MHz, taxa de amostragem de saída de até 125\,MSa/s, resolução vertical de 16 bits, faixa de 0 a 10\,V, componente contínua programável, impedância de saída configurável em \(50\,\Omega\) ou alta impedância, estabilidade de frequência de \(\pm 1\) ppm, precisão de frequência de \(\pm\)(1\,ppm + 10\,\(\mu\)Hz), ruído de fase de \(-105\) dBc/Hz e \textit{jitter} de \(\approx 200\) ps; Tabela~\ref{v2:tab:instrumentos}). Nos ensaios, o canal CH2 operou em modo \textit{burst} de \(N\) ciclos, com disparo por \textit{software} via SCPI (USB) pelo \textit{script} \texttt{momea\_burst\_dg832.py}.
+
+O sinal é distribuído por um divisor, atenuador ou rede de terminações. O divisor e os cabos não têm marca nem especificação de fabricante; por isso foram caracterizados por medição. A resposta em frequência do conjunto (cabos coaxiais RG59 e divisor) foi levantada de 1\,kHz a 35\,MHz, com o DG832 a 1\,Vpp e leitura no osciloscópio de referência.
+
+A forma de onda no plano de referência é medida por um instrumento independente. Foi usado o osciloscópio Minipa MVB DSO: banda de 100\,MHz, até 1\,GSa/s em tempo real, 2 canais, resolução vertical de 8 bits, precisão vertical básica de \(\approx 3\,\%\) e horizontal de \(\pm 50\) ppm, com ponta de prova \(1\times/10\times\) de 100\,MHz (Tabela~\ref{v2:tab:instrumentos}). Com \(\approx 3\,\%\) de precisão vertical, o osciloscópio é a maior fonte de incerteza da referência de amplitude e, ao quadrado, da de energia (Subseção~\ref{v2:subsec:criterios_aceitacao_incerteza}).
+
+\subsubsection{Pontos de injeção}
+O ponto de injeção determina quais partes das cadeias são efetivamente avaliadas. Duas configurações de injeção foram consideradas:
+
+\begin{description}
+	\item[Injeção anterior aos pré-amplificadores:] avalia a cadeia eletrônica a partir da entrada dos pré-amplificadores, incluindo ganho, ruído, saturação e resposta em frequência dos \textit{front-ends}. A tensão aplicada foi compatível com a faixa de sinais esperada nesse ponto, e as impedâncias e alimentações eventualmente presentes na entrada devem ser consideradas.
+	
+	\item[Injeção posterior aos pré-amplificadores:] reduz a influência dos \textit{front-ends} e concentra a comparação nos estágios posteriores. Essa configuração somente é válida se o plano de injeção, as faixas de entrada e as terminações dos dois caminhos forem explicitamente compatibilizados. Ela não elimina as diferenças de filtragem, conversão, relógio, representação numérica e algoritmo.
+\end{description}
+
+Os dois planos foram executados, em sessões diferentes. \textbf{Posterior aos pré-amplificadores} (06/10/2026 no AMSY-6 e 13/10/2026 no sistema proposto): gerador ligado diretamente à entrada de cada sistema, sem pré-amplificador, a 1\,Vpp; no AMSY-6, entrada ``AC input@100k (0 dB)''; no sistema proposto, entrada da placa, cuja faixa calibrada é de \(-6{,}9\) a \(+6{,}3\,\mathrm{V}\). \textbf{Anterior aos pré-amplificadores} (15/10/2026, captura simultânea): um divisor leva o mesmo sinal ao pré-amplificador de 34\,dB de cada sistema. Se apenas uma configuração for executada, a conclusão é limitada à parte da cadeia posterior ao plano correspondente.
+
+
+\subsubsection{Distribuição, aterramento e caracterização dos ramos}
+O uso de um sinal proveniente do mesmo gerador não garante que as tensões aplicadas aos dois instrumentos sejam comparáveis. Os ramos de distribuição são caracterizados quanto a ganho, fase, largura de banda, impedância e assimetria. A caracterização prevista (Experimento A: senoide nos dois ramos, varrendo a frequência na banda de interesse, e repetição com as saídas trocadas) ainda não foi executada e é necessária para interpretar o ensaio de 15/10/2026: a diferença de amplitude de \(+0{,}47\) a \(+0{,}76\,\mathrm{dB}\) entre o sistema proposto e o AMSY-6 soma a assimetria do divisor e a diferença de ganho entre os dois pré-amplificadores (34,00 e 34,22\,dB). Repetir um bloco com os ramos trocados separa as duas parcelas. As terminações são escolhidas com base nas impedâncias efetivas do gerador e das entradas. O procedimento de aterramento definido, ainda não verificado por medição, é um ponto de terra comum em estrela para gerador, sistema proposto, AMSY-6 e osciloscópio, com cabos coaxiais curtos e de mesmo comprimento, e verificação da tensão de modo comum entre os terras dos dois sistemas com o gerador desligado.
+
+\subsubsection{Sincronização e associação dos registros}
+Cada estímulo gerado possui um identificador \(k\) e um instante de referência \(t_k\). Quando disponível, um sinal auxiliar de disparo é registrado pelo sistema de referência e utilizado para alinhar as bases de tempo. Se os instrumentos operarem com relógios independentes, são estimados o deslocamento inicial e a deriva durante cada aquisição. No sistema proposto, os relógios são gerados por MMCM a partir de uma referência única: 10\,MHz para o ADC (grade de 100\,ns), 100\,MHz para MicroBlaze/AXI, 200\,MHz de referência do controlador DDR e 25\,MHz para o PHY Ethernet. O carimbo de tempo de 64 bits está reservado no registro, mas o \textit{bitstream} ensaiado o envia zerado (Seção~\ref{sec:mm_implementacao}). Sem ele, a deriva entre as bases de tempo não pode ser medida, e a única referência temporal do sistema proposto é a hora de chegada no computador.
+
+A associação entre estímulos e \textit{hits} não depende apenas da ordem de chegada dos pacotes. O registro do sistema proposto preserva canal e indicadores, mas, na versão ensaiada, não contém carimbo de tempo nem número de sequência (Seção~\ref{sec:mm_implementacao}). Por isso, nos ensaios desta etapa, a associação foi feita por bloco: contagem de registros por bloco, \textit{hits} com ROVL e \textit{hits} fundidos (contagens múltiplas de 10). Os contadores mantidos na lógica, no \textit{firmware} e no receptor são utilizados para distinguir ausência de detecção de perda posterior no caminho de comunicação.
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Composição e caracterização dos sinais de teste}
+\label{v2:subsec:sinais_teste}
+
+O sinal aplicado pode ser representado por:
+\begin{equation}
+	v_{\mathrm{g}}(t) = v_{\mathrm{n}}(t) + \sum_{k=1}^{N_{\mathrm{evt}}} s_k\left(t-t_k\right)
+	\label{v2:eq:sinal_teste_composto}
+\end{equation}
+
+\noindent
+em que \(v_{\mathrm{n}}(t)\) é a componente de fundo, \(N_{\mathrm{evt}}\) é o número de estímulos transitórios e \(s_k(t)\) representa o \(k\)-ésimo estímulo.
+
+\subsubsection{Ruído de fundo}
+A componente de fundo é especificada quanto à distribuição, à densidade espectral, à banda, ao valor eficaz e ao mecanismo de geração. Nos ensaios executados, não foi somado ruído ao estímulo: o fundo é o ruído próprio das cadeias. Com os pré-amplificadores de 34\,dB, o AMSY-6 registrou RMS de 369 a \(414\,\mu\mathrm{V}\); com o transiente de \(\approx 58\,\mathrm{mV}\) de pico (\(41\,\mathrm{mV}\) RMS), a SNR desses ensaios, pela Equação~\eqref{v2:eq:snr_estimulo}, é de cerca de 40\,dB. Para a matriz com SNR variável, o mecanismo definido é ruído gaussiano gerado em Python (numpy, semente fixa), somado ao estímulo e carregado no gerador como forma arbitrária, com o RMS medido na mesma banda e janela da SNR. A expressão ``ruído branco'' é evitada quando o sinal estiver limitado pela banda do gerador ou por um filtro. Para uma janela e uma banda comuns, a relação sinal--ruído é definida por:
+
+\begin{equation}
+	\mathrm{SNR}_{\mathrm{dB}} = 20\log_{10} \left(\frac{V_{\mathrm{s,rms}}}{V_{\mathrm{n,rms}}}\right)
+	\label{v2:eq:snr_estimulo}
+\end{equation}
+
+\noindent
+em que \(V_{\mathrm{s,rms}}\) é o valor eficaz do transiente na janela especificada e \(V_{\mathrm{n,rms}}\) é o valor eficaz do ruído medido na mesma banda. Se for utilizada uma razão entre amplitude de pico e ruído eficaz, ela recebe outra notação e é definida explicitamente.
+
+Para estimar probabilidade de detecção, as repetições empregam realizações independentes ou controladamente variadas do ruído. A repetição da mesma sequência de ruído mede repetibilidade para uma entrada idêntica, mas não fornece, isoladamente, uma amostra da variabilidade decorrente do ruído. Os blocos executados não usam ruído nem semente: a sequência é determinística, com o \textit{burst} \(i\) do bloco de \(N\) disparado em \(t_i = (i + 0{,}5)\cdot 30\,\mathrm{s}/N\). O \textit{script} de geração grava, em arquivo \texttt{bursts\_*.csv}, o instante-alvo, o instante real de envio e o atraso de cada disparo. Os valores por bloco (média, mínimo e máximo) estão na Seção~\ref{sec:res_extrator}.
+
+\subsubsection{Transiente senoidal amortecido}
+Uma família de estímulos adequada à verificação é o seno amortecido de duração finita:
+
+\begin{equation}
+	s(t) =
+	\begin{cases} 
+		A \exp\left(-t/\tau\right) 	\sin\left(\omega_0 t\right), &
+		0\leq t\leq T_{\mathrm{b}},\\[0.2cm] 0,
+		&
+		\text{caso contrário},
+	\end{cases}
+	\qquad
+	\omega_0=2\pi f_0, 
+	\label{v2:eq:seno_amortecido}
+\end{equation}
+
+\noindent
+em que \(A\) é um fator de escala, \(f_0\) é a frequência portadora, \(\tau\) é a constante de decaimento e \(T_{\mathrm{b}}\) é a duração programada do \textit{burst}. A forma é representativa de uma oscilação amortecida, mas não é apresentada como modelo universal de uma fonte de EA ou de um sensor específico.
+
+Na ausência de ruído e de filtragem, e desde que \(T_{\mathrm{b}}\geq t_{\mathrm{p}}\), a primeira amplitude máxima ocorre em:
+\begin{equation}
+	t_{\mathrm{p}} = \frac{\arctan\left(\omega_0\tau\right)}{\omega_0}
+	\label{v2:eq:tempo_pico_seno_amortecido}
+\end{equation}
+
+\noindent
+e o módulo do pico é:
+\begin{equation}
+	V_{\mathrm{pico,s}} = A \frac{\omega_0\tau}{\sqrt{1+\left(\omega_0\tau\right)^2}}\exp \left[-\frac{\arctan\left(\omega_0\tau\right)}{\omega_0\tau}\right]
+	\label{v2:eq:pico_seno_amortecido}
+\end{equation}
+
+Portanto, \(A\) não é identificado automaticamente como amplitude de pico. Para \(a=2/\tau\) e \(b=2\omega_0\), a integral quadrática do transiente ideal é:
+\begin{equation}
+	E_{\mathrm{s}} = \frac{A^2}{2} \left[\frac{1-\exp\left(-aT_{\mathrm{b}}\right)}{a}-\frac{a+\exp\left(-aT_{\mathrm{b}}\right) \left[-a\cos\left(bT_{\mathrm{b}}\right)+ b\sin\left(bT_{\mathrm{b}}\right)
+		\right]}{a^2+b^2}\right]
+	\label{v2:eq:energia_seno_amortecido}
+\end{equation}
+
+Essa expressão possui unidade \(\mathrm{V^2s}\) quando \(A\) é expresso em volts e corresponde à integral sobre todo o suporte do transiente ideal. Ela não é necessariamente igual à energia registrada pelos instrumentos, pois a janela efetivamente integrada pode iniciar no primeiro cruzamento, permanecer aberta durante o DDT e conter ruído e resposta transitória dos filtros.
+
+Os instantes de cruzamento do seno amortecido satisfazem uma equação transcendente. Além disso, sua definição depende de o comparador operar sobre o sinal com sinal, seu módulo ou um envelope. Por essa razão, tempo de chegada, duração e contagens não possuem, em geral, expressões elementares fechadas. A determinação dos descritores de referência é feita numericamente a partir da forma de onda medida, e não pelas expressões analíticas do sinal ideal.
+
+Para uma convenção de decisão \(u_{\mathrm{ref}}(t)\), os cruzamentos ascendentes de referência podem ser representados pelo conjunto:
+\begin{equation}
+	\mathcal{C}_{\mathrm{ref}} = \left\{t: u_{\mathrm{ref}}(t)=V_{\mathrm{th}}, \quad \frac{\mathrm{d}u_{\mathrm{ref}}}{\mathrm{d}t}(t)>0 \right\}
+	\label{v2:eq:cruzamentos_referencia_continuos}
+\end{equation}
+
+ Procedimento definido: capturar no osciloscópio a forma de onda efetivamente injetada, exportá-la e processá-la no modelo Python bit-exato (Camada 1) com as mesmas convenções do sistema proposto (\(|x - z_{\mathrm{c}}|\), limiar com \(\ge\), HDT em amostras, energia até \(n_\ell\) e o mesmo tratamento de bordas), com o mesmo corte de filtro do ensaio. Situação da validação em camadas: Camada 1 (referência em Python) iniciada em 11/08/2026; Camada 2 com o \textit{front-end} do ADC bit-exato em 8 casos; extrator rev 0.08 verificado bit a bit contra a rev 0.07.
+
+\subsubsection{Famílias funcionais de ensaio}
+Além da varredura paramétrica do seno amortecido, o protocolo inclui:
+
+\begin{itemize}
+	\item Intervalos contendo somente ruído, para estimar a taxa de falsos \textit{hits};
+	
+	\item Estímulos isolados, separados por intervalo superior à duração, ao DDT e a qualquer condição de rearme relevante;
+	
+	\item Pares de estímulos com separações próximas às fronteiras do DDT, incluindo, no domínio do sistema proposto, \(N_{\mathrm{DDT}}-1\), \(N_{\mathrm{DDT}}\) e \(N_{\mathrm{DDT}}+1\) amostras;
+	
+	\item Sequências com diferentes taxas médias e padrões de rajada, para avaliar carga, filas e perda de registros; e
+	
+	\item Condições próximas à saturação, identificadas separadamente das condições utilizadas para avaliar linearidade.
+\end{itemize}
+
+Ensaios relacionados ao RAT e a cascatas somente são tratados como comparação pareada se o sistema proposto implementar função correspondente. Desde a rev 0.05 do extrator, o bloqueio pós-\textit{hit} do sistema proposto é re-armável: cada cruzamento durante o rearme reinicia a espera e marca o \textit{hit} com ROVL, equivalente ao indicador R do AMSY-6, e o \textit{hit} só é emitido ao fim do rearme. Nos ensaios, \(T_{\mathrm{HLT}} = 2000\,\mu\mathrm{s}\), igual ao RAT do AMSY-6, e a simulação de fronteira (Seção~\ref{sec:mm_implementacao}) confirma o comportamento. Os descritores de cascata não são implementados; essa parte permanece como diferença funcional declarada, sem ser classificada como erro de implementação, e é neutralizada nos ensaios pelo uso de estímulos isolados.
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Matriz experimental, randomização e replicação}
+\label{v2:subsec:matriz_experimental}
+
+A matriz experimental cobre a região nominal e as fronteiras nas quais diferenças de implementação se tornam mais prováveis. O Quadro~\ref{v2:qua:matriz_experimental_secao5} apresenta os fatores mínimos a serem especificados.
+
+\begingroup
+\renewcommand{\tablename}{Quadro}
+\footnotesize
+\renewcommand{\arraystretch}{1.22}
+\begin{longtable}{|
+		>{\raggedright\arraybackslash}p{3.2cm}|
+		>{\raggedright\arraybackslash}p{4.6cm}|
+		>{\raggedright\arraybackslash}p{6.6cm}|}
+	\caption{Estrutura mínima da matriz experimental.}
+	\label{v2:qua:matriz_experimental_secao5}\\
+	\hline
+	\textbf{Fator} & \textbf{Níveis a informar} & \textbf{Finalidade e observações} \\
+	\hline
+	\endfirsthead
+	\multicolumn{3}{c}
+	{\tablename\ \thetable{} -- continuação}\\
+	\hline
+	\textbf{Fator} & \textbf{Níveis a informar} & \textbf{Finalidade e observações} \\
+	\hline
+	\endhead
+	\hline
+	\multicolumn{3}{r}{Continua na próxima página.}\\
+	\endfoot
+	\hline
+	\endlastfoot
+	Plano de injeção & Posterior aos pré-amplificadores (06/10 e 13/10/2026); anterior, com pré-amplificadores de 34\,dB (15/10/2026). & Define o trecho da cadeia submetido à verificação. Os dois níveis somente devem constar se tiverem sido efetivamente executados. Detalhe na Subseção~\ref{v2:subsec:configuracao_experimental}. \\
+	\hline
+	Amplitude & 1\,Vpp sem pré-amplificador; \(\approx 95\)--\(96\,\mathrm{dB}_{\mathrm{AE}}\) (\(\approx 57\)--\(62\,\mathrm{mV}\) de pico na entrada do pré-amplificador) com pré-amplificador. & Incluir níveis abaixo e próximos ao limiar, região linear e proximidade da saturação. Os valores efetivamente medidos substituem os valores apenas nominais. \\
+	\hline
+	Frequência \(f_0\) & 50, 200 e 450\,kHz. & Investiga os efeitos das respostas em magnitude e fase e não apenas o comportamento em uma frequência favorável. As três frequências estão dentro da banda dos dois sistemas. \\
+	\hline
+	Decaimento e duração & Envelope retangular, 10 ciclos (\(T_{\mathrm{b}} = 200\), 50 e \(22{,}2\,\mu\mathrm{s}\)), sem decaimento. & Modifica pico, energia, número de cruzamentos, duração e interação com o DDT. \\
+	\hline
+	Relação sinal--ruído & \(\approx 40\,\mathrm{dB}\) (ruído próprio das cadeias; sem ruído somado). & Caracteriza a região de transição da probabilidade de detecção. Informar banda, janela e realizações do ruído. \\
+	\hline
+	Separação entre estímulos & Blocos de 1, 100, 1000, 5000 e 10\,000 \textit{bursts} em 30\,s (intervalos de 300\,ms a 3\,ms); fronteiras do DDT verificadas em simulação. & Permite medir separação, fusão, fragmentação, \textit{timeout} e perda sob carga. Os blocos de 5000 e 10\,000 exercitam o rearme. \\
+	\hline
+	Fase relativa aos relógios & Naturalmente variável: disparo por \textit{software}, assíncrono à grade de 10\,MHz; fase inicial do \textit{burst} de \(0^\circ\). & A fase entre o estímulo e as grades de amostragem influencia pico e descritores temporais. Ela é amostrada naturalmente pelo disparo assíncrono e deve ser controlada ou registrada em repetições futuras. \\
+	\hline
+	Ramo de distribuição & Configuração normal e ramos trocados. & Verifica viés introduzido por cabos, atenuadores e pelo distribuidor. \\
+	\hline
+	Bloco experimental & 3 sessões: 06/10/2026 (AMSY-6), 13/10/2026 (sistema proposto) e 15/10/2026 (simultânea, R1). & Separa repetição de pulsos dentro de uma aquisição da replicação de todo o procedimento. \\
+\end{longtable}
+\endgroup
+
+A ordem das condições é randomizada dentro de cada bloco ou organizada por um esquema de blocos cuja justificativa é apresentada. Se houver tempo de aquecimento, recalibração ou estabilização, esses procedimentos são aplicados de forma uniforme.
+
+\textbf{Matriz efetiva executada.} Foram executados 3 frequências \(\times\) 5 taxas = 15 blocos por sessão, em 3 sessões (Tabela~\ref{v2:tab:sessoes_executadas}). Na sessão simultânea R1, a ordem foi fixa, sem randomização: frequências em sequência e, dentro de cada uma, taxa crescente (Tabela~\ref{v2:tab:ordem_r1}). Cada bloco ocupou uma janela de 30\,s, com \(\approx 10\)\,s entre janelas; no bloco de 1 \textit{burst}, o disparo cai no meio da janela. A ordem crescente facilita localizar perdas na taxa máxima, mas deve ser justificada ou randomizada nas repetições.
+
+\begin{table}[htbp]
+	\centering
+	\footnotesize
+		\caption{Sessões executadas (\textit{bursts} registrados de 16\,101 programados por frequência, na ordem 50/200/450\,kHz).}
+	\label{v2:tab:sessoes_executadas}
+	\begin{tabular}{|p{0.13\textwidth}|p{0.30\textwidth}|p{0.18\textwidth}|p{0.27\textwidth}|}
+		\hline
+		\textbf{Sessão} & \textbf{Configuração} & \textbf{Sistemas} & \textbf{Registrados} \\
+		\hline
+		06/10/2026 & Sem pré-amplificador; gerador direto na entrada & AMSY-6 & 15\,578 / 15\,698 / 15\,749 \\
+		\hline
+		13/10/2026 & Sem pré-amplificador; 1\,Vpp & Sistema proposto & 16\,038 / 16\,083 / 16\,077 \\
+		\hline
+		15/10/2026 (R1) & Pré-amplificadores de 34\,dB; divisor comum & Ambos, simultâneos & Proposto: 16\,094 / 16\,092 / 16\,094; AMSY-6: 15\,580 / 15\,716 / 15\,710 \\
+		\hline
+	\end{tabular}
+\end{table}
+
+Na sessão de 13/10, as perdas maiores do sistema proposto vieram de \textit{bursts} mais próximos absorvidos no rearme (ROVL), porque os instantes dos disparos por USB variam de uma execução para outra.
+
+\begingroup
+\footnotesize
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{|c|c|r|c|c|>{\raggedright\arraybackslash}p{0.21\textwidth}|>{\raggedright\arraybackslash}p{0.17\textwidth}|}
+	\caption{Ordem de execução da sessão R1 (15/10/2026). Início em segundos após o bloco de 1 \textit{burst}; registrados (perda; indicadores).}
+	\label{v2:tab:ordem_r1}\\
+	\hline
+	\textbf{Ordem} & \textbf{Freq.} & \textbf{Bursts} & \textbf{Intervalo} & \textbf{Início} & \textbf{Sistema proposto} & \textbf{AMSY-6} \\
+	\hline
+	\endfirsthead
+	\hline
+	\textbf{Ordem} & \textbf{Freq.} & \textbf{Bursts} & \textbf{Intervalo} & \textbf{Início} & \textbf{Sistema proposto} & \textbf{AMSY-6} \\
+	\hline
+	\endhead
+	\hline
+	\endlastfoot
+	1 & 50\,kHz & 1 & --- & 0 (17:22) & 1 (0; ROVL 0) & 1 (0; R 0) \\
+	2 & 50\,kHz & 100 & 300\,ms & 25\,s & 100 (0; ROVL 0) & 100 (0; R 0) \\
+	3 & 50\,kHz & 1000 & 30\,ms & 65\,s & 1000 (0; ROVL 0) & 1000 (0; R 0) \\
+	4 & 50\,kHz & 5000 & 6\,ms & 105\,s & 5000 (0; ROVL 0) & 4983 (\(-17\); R 13) \\
+	5 & 50\,kHz & 10\,000 & 3\,ms & 145\,s & 9993 (\(-7\); ROVL 4; 2 fundidos) & 9496 (\(-504\); R 438) \\
+	\hline
+	6 & 200\,kHz & 1 & --- & 0 (17:27) & 1 (0; ROVL 0) & 1 (0; R 0) \\
+	7 & 200\,kHz & 100 & 300\,ms & 25\,s & 100 (0; ROVL 0) & 100 (0; R 0) \\
+	8 & 200\,kHz & 1000 & 30\,ms & 65\,s & 1000 (0; ROVL 0) & 1000 (0; R 0) \\
+	9 & 200\,kHz & 5000 & 6\,ms & 105\,s & 4997 (\(-3\); ROVL 3) & 4975 (\(-25\); R 16) \\
+	10 & 200\,kHz & 10\,000 & 3\,ms & 145\,s & 9994 (\(-6\); ROVL 6) & 9640 (\(-360\); R 299) \\
+	\hline
+	11 & 450\,kHz & 1 & --- & 0 (17:36) & 1 (0; ROVL 0) & 1 (0; R 0) \\
+	12 & 450\,kHz & 100 & 300\,ms & 25\,s & 100 (0; ROVL 0) & 100 (0; R 0) \\
+	13 & 450\,kHz & 1000 & 30\,ms & 65\,s & 1000 (0; ROVL 0) & 1000 (0; R 0) \\
+	14 & 450\,kHz & 5000 & 6\,ms & 105\,s & 4999 (\(-1\); ROVL 1) & 4985 (\(-15\); R 10) \\
+	15 & 450\,kHz & 10\,000 & 3\,ms & 145\,s & 9994 (\(-6\); ROVL 6) & 9624 (\(-376\); R 310) \\
+\end{longtable}
+\endgroup
+
+O número de estímulos por condição não é escolhido apenas por uma regra genérica de ``algumas centenas''. Ele decorre da precisão desejada para as estimativas. Para uma proporção de detecção \(p\), o erro-padrão binomial aproximado é:
+\begin{equation}
+	\operatorname{EP}\left(\widehat{p}\right) \approx \sqrt{\frac{\widehat{p}\left(1-\widehat{p}\right)}{N}}
+	\label{v2:eq:erro_padrao_deteccao}
+\end{equation}
+
+Se nenhuma falha for observada em \(N\) tentativas independentes, um limite superior unilateral \(1-\alpha\) para a probabilidade de falha é:
+\begin{equation}
+	p_{\mathrm{falha,U}} = 1-\alpha^{1/N} \approx \frac{-\ln\left(\alpha\right)}{N}
+	\label{v2:eq:limite_zero_falhas}
+\end{equation}
+
+Para \(\alpha=0{,}05\), obtém-se a aproximação conhecida \(p_{\mathrm{falha,U}}\approx 3/N\). A independência não é pressuposta para pulsos repetidos dentro do mesmo bloco; a análise considera a estrutura de agrupamento por aquisição, configuração ou sessão.
+
+Para cada condição, são informados o número de estímulos programados, o número de blocos independentes, a duração de cada aquisição, a duração total dos intervalos contendo apenas ruído e o critério utilizado para encerrar ou repetir um ensaio.
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Configuração pareada dos sistemas}
+\label{v2:subsec:configuracao_pareada}
+
+Os dois sistemas são configurados tão proximamente quanto suas arquiteturas admitem. A palavra ``equivalente'' é substituída por uma descrição quantitativa sempre que as configurações efetivas não coincidirem. O Quadro~\ref{v2:qua:configuracao_pareada_secao5} apresenta os valores utilizados em cada série experimental.
+
+\begingroup
+\renewcommand{\tablename}{Quadro}
+\scriptsize
+\renewcommand{\arraystretch}{1.22}
+\begin{longtable}{|
+		>{\raggedright\arraybackslash}p{3.0cm}|
+		>{\raggedright\arraybackslash}p{3.7cm}|
+		>{\raggedright\arraybackslash}p{3.7cm}|
+		>{\raggedright\arraybackslash}p{3.8cm}|}
+	\caption{Configuração pareada dos ensaios de outubro de 2026, com a classificação de cada parâmetro em equivalente, assemelhado ou não comparável.}
+	\label{v2:qua:configuracao_pareada_secao5}\\
+	\hline
+	\textbf{Parâmetro} & \textbf{Sistema proposto} & \textbf{AMSY-6} & \textbf{Critério de comparação} \\
+	\hline
+	\endfirsthead
+	\multicolumn{4}{c}
+	{\tablename\ \thetable{} -- continuação}\\
+	\hline
+	\textbf{Parâmetro} & \textbf{Sistema proposto} & \textbf{AMSY-6} & \textbf{Critério de comparação} \\
+	\hline
+	\endhead
+	\hline
+	\multicolumn{4}{r}{Continua na próxima página.}\\
+	\endfoot
+	\hline
+	\endlastfoot
+	Identificação & Arty A7-35T, canal A; versões na Tabela~\ref{v2:tab:reprodutibilidade}. & Canal 1 do AMSY-6. & Preservar identificadores e arquivos de configuração. Classificação: registro. \\
+	\hline
+	Plano de injeção & Entrada da placa; faixa calibrada de \(-6{,}9\) a \(+6{,}3\,\mathrm{V}\). Impedância a medir. & ``AC input@100k (0 dB)'' sem pré-amplificador; AEP5 com pré-amplificador. & Referir as tensões ao mesmo plano elétrico. Classificação: assemelhado. \\
+	\hline
+	Pré-amplificador & Próprio; 34,00\,dB medidos; \(-3\,\mathrm{dB}\) em \(\approx 2{,}5\,\mathrm{MHz}\). & AEP5; 34,22\,dB medidos; \(-3\,\mathrm{dB}\) em \(\approx 4{,}1\,\mathrm{MHz}\). & Informar magnitude e fase na banda; não usar apenas o ganho nominal. Classificação: assemelhado (mesmo ganho, bandas diferentes). \\
+	\hline
+	Conversão A/D & 12 bits; 10\,MSa/s; \textit{offset-binary}; faixa calibrada por canal. ENOB a estimar. & 16 bits a \(40\,\mathrm{MS/s}\); descritores a 10\,MHz. & Comparar LSB referido à entrada, ruído, saturação e resolução dos descritores. Classificação: assemelhado. \\
+	\hline
+	Banda de passagem & Digital: Butterworth passa-baixas de 4ª ordem, 600\,kHz. Filtro analógico não caracterizado. & Filtro analógico + FIR + passa-banda digital.  & Medir ou documentar resposta em magnitude, fase e atraso de grupo. Classificação: assemelhado. \\
+	\hline
+	Sinal de decisão & \(|\text{código} - z_{\mathrm{c}}|\) com zero calibrado por canal; contagens no limiar positivo (\texttt{pos\_only} = 1). & Contagens no limiar positivo. & Diferenças alteram cruzamentos e contagens mesmo sob o mesmo estímulo. Classificação: assemelhado (10 contra 11 contagens: o AMSY-6 conta a oscilação após o \textit{burst}). \\
+	\hline
+	Limiar & Fixo; definido em \(\mathrm{dB}_{\mathrm{AE}}\) e convertido em códigos (\(80\,\mathrm{dB}_{\mathrm{AE}}\) com 34\,dB = 155 códigos). & Fixo, \(80\,\mathrm{dB}_{\mathrm{AE}}\). & Usar base comum em volts e, quando aplicável, \(\mathrm{dB}_{\mathrm{AE}}\). Informar incerteza e quantização. Classificação: equivalente em \(\mathrm{dB}_{\mathrm{AE}}\). \\
+	\hline
+	DDT & HDT = \(250\,\mu\mathrm{s}\) = 2500 amostras; encerra na \(N\)-ésima amostra de silêncio. & DDT = \(250\,\mu\mathrm{s}\), resolução de 100\,ns. & Comparar tempos efetivamente implementados e convenções de expiração. Classificação: equivalente. \\
+	\hline
+	RAT e cascatas & HLT re-armável de \(2000\,\mu\mathrm{s}\) com indicador ROVL; sem cascatas. & RAT de \(2000\,\mu\mathrm{s}\) com indicador R; cascatas. & Não declarar equivalência se o sistema proposto não implementar agrupamento de cascatas. Classificação: rearme equivalente; cascatas não comparáveis. \\
+	\hline
+	\textit{Timeout} & Duração máxima de 100\,ms (padrão), indicador MAXDUR e contadores. & Aproximadamente \(100\,\mathrm{ms}\), segundo a especificação. & Analisar encerramentos forçados separadamente. Classificação: equivalente. \\
+	\hline
+	Energia & \(\Sigma \mathrm{mag}^2\) em 48 bits até \(n_\ell\), convertida em eu (\(10^{-14}\,\mathrm{V^2s}\)) no computador; \textit{Signal Strength} \(\Sigma|\mathrm{mag}|\) em nVs. & \textit{True Energy} em eu. & Aplicar a definição da Subseção~\ref{v2:subsec:energia_ea}; não presumir equivalência numérica. Classificação: assemelhado (razão entre sistemas de 1,28 a 1,44 em 15/10/2026). \\
+	\hline
+	Saturação e transbordos & Indicador SAT (OTR pegajoso), acumuladores saturantes, indicador MAXDUR. & Indicadores do campo MRSFXCTAEDN. & Manter separados saturação analógica, saturação do ADC e transbordos digitais. Classificação: assemelhado. \\
+	\hline
+	Base temporal & \textit{Timestamp} de 64 bits reservado, enviado zerado; apenas hora de chegada no computador. & Tempo de chegada do AMSY-6.  & Medir deslocamento e deriva ou utilizar referência compartilhada. Classificação: não comparável até a implementação do \textit{timestamp}. \\
+	\hline
+	Integridade dos registros & \texttt{HITCNT} na lógica; depuração 0x50--0x74; contadores do \textit{firmware}; numeração de pacotes e registros no computador. & Indicadores de estado e de \textit{buffer}. & Separar falha de detecção de perda posterior ao detector. Classificação: assemelhado. Sem contador de DMA na lógica. \\
+\end{longtable}
+\endgroup
+
+Quando não for possível igualar as bandas, seleciona-se uma região de interseção e caracterizam-se as duas funções de transferência. Ensaios no centro da banda avaliam o comportamento em uma região favorável; ensaios próximos às transições revelam diferenças sistemáticas e são interpretados separadamente.
+
+Para comparação de \textit{hits} isolados, a separação entre estímulos é superior ao maior intervalo relevante de duração, DDT e rearme dos dois sistemas. Os testes de fronteira do DDT e do RAT constituem séries específicas, pois não satisfazem a condição de isolamento.
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Associação de eventos e métricas de comparação}
+\label{v2:subsec:metricas_comparacao}
+
+\subsubsection{Regra de associação}
+Antes do cálculo das métricas, define-se uma regra unívoca de associação entre o estímulo \(k\), de instante de referência \(t_k\), e os \textit{hits} registrados. Para cada estímulo, estabelece-se uma janela:
+\begin{equation}
+	\mathcal{W}_k = \left[t_k-\delta_-, t_k+\delta_+ \right]
+	\label{v2:eq:janela_associacao_evento}
+\end{equation}
+
+\noindent
+em que \(\delta_-\) e \(\delta_+\) consideram a incerteza de sincronização e a latência admissível, sem tornar janelas adjacentes ambíguas. O algoritmo definido impede que o mesmo registro seja atribuído a mais de um estímulo: os estímulos e os registros são ordenados por tempo e percorridos uma única vez; para cada estímulo \(k\), associa-se o \textit{hit} cujo carimbo cai em \(\mathcal{W}_k\), que é marcado como consumido. Estímulo sem \textit{hit} é não detecção; dois \textit{hits} na mesma janela, fragmentação; um \textit{hit} em duas janelas, fusão.
+
+Uma janela sem registro caracteriza ausência de detecção, desde que os contadores confirmem não ter ocorrido perda posterior. Dois ou mais registros associados ao mesmo estímulo caracterizam fragmentação. Um registro que englobe ou seja associado a dois ou mais estímulos caracteriza fusão. Registros fora das janelas, após excluídos \textit{timeouts}, pulsos de calibração e outros casos identificáveis, constituem falsos \textit{hits}.
+
+\subsubsection{Concordância de detecção}
+Denotando por \(N_{\geq 1}\) o número de estímulos com ao menos um registro associado e por \(N_{\mathrm{evt}}\) o número de estímulos aplicados, a proporção de estímulos detectados é:
+\begin{equation}
+	\widehat{P}_{\mathrm{D}} = \frac{N_{\geq 1}}{N_{\mathrm{evt}}}
+	\label{v2:eq:probabilidade_deteccao}
+\end{equation}
+
+Essa métrica é acompanhada pela proporção de associação unívoca:
+\begin{equation}
+	\widehat{P}_{1:1} = \frac{N_{1:1}}{N_{\mathrm{evt}}}
+	\label{v2:eq:proporcao_associacao_univoca}
+\end{equation}
+
+\noindent
+em que \(N_{1:1}\) é o número de estímulos associados a exatamente um \textit{hit} que não esteja simultaneamente associado a outro estímulo. Fragmentações e fusões são reportadas em métricas próprias, e não ocultadas em uma contagem total de registros.
+
+Como o tempo contínuo não fornece naturalmente um número finito de ``eventos negativos'', a ocorrência espúria em intervalos contendo apenas ruído é expressa preferencialmente como taxa:
+\begin{equation}
+	\widehat{\lambda}_{\mathrm{FP}} = \frac{N_{\mathrm{FP}}}{T_{\mathrm{ruido}}}
+	\label{v2:eq:taxa_falsos_hits}
+\end{equation}
+
+\noindent
+em \textit{hits} por unidade de tempo. Se forem definidas janelas de fundo discretas, a proporção de janelas com falso \textit{hit} também pode ser reportada, desde que a duração da janela seja informada.
+
+As proporções são acompanhadas por intervalos de confiança binomiais. Na região próxima ao limiar, a probabilidade de detecção é apresentada em função da amplitude medida ou da SNR. Havendo número suficiente de níveis e repetições, um modelo binomial pode ser utilizado para estimar amplitudes associadas, por exemplo, a 50\% e 90\% de probabilidade de detecção, com intervalos de confiança.
+
+\subsubsection{Erro em relação à referência elétrica}
+Para um descritor \(x\), um instrumento \(j\in\{\mathrm{P},\mathrm{A}\}\), em que \(\mathrm{P}\) representa o sistema proposto e \(\mathrm{A}\) o AMSY-6, e um estímulo associado \(i\), define-se:
+
+\begin{equation}
+	e_{x,i}^{(j)} = x_i^{(j)} - x_{i,\mathrm{ref}}
+	\label{v2:eq:erro_referencia_secao5}
+\end{equation}
+
+Quando \(x_{i,\mathrm{ref}}\) estiver suficientemente afastado de zero, calcula-se:
+
+\begin{equation}
+	e_{x,i,\mathrm{rel}}^{(j)} = \frac{x_i^{(j)} - x_{i,\mathrm{ref}}}{x_{i,\mathrm{ref}}}
+	\label{v2:eq:erro_relativo_referencia_secao5}
+\end{equation}
+
+O erro relativo não é utilizado para valores nulos ou próximos de zero. Para cada condição, são reportados, no mínimo, viés, desvio-padrão, erro absoluto médio e raiz do erro quadrático médio:
+
+\begin{equation}
+	\overline{e}_x^{(j)} = \frac{1}{N} \sum_{i=1}^{N} e_{x,i}^{(j)}, \qquad \mathrm{MAE}_x^{(j)} = \frac{1}{N} \sum_{i=1}^{N} \left| e_{x,i}^{(j)} \right|
+	\label{v2:eq:vies_mae_secao5}
+\end{equation}
+
+\begin{equation}
+	\mathrm{RMSE}_x^{(j)} = \sqrt{\frac{1}{N} \sum_{i=1}^{N} \left(e_{x,i}^{(j)}\right)^2}
+	\label{v2:eq:rmse_secao5}
+\end{equation}
+
+Os erros temporais são apresentados tanto em unidades de tempo quanto em unidades da grade de processamento de cada sistema. Contagens são tratadas como variáveis discretas. Registros saturados, com \textit{timeout}, transbordo, fragmentação ou fusão são identificados e analisados em estratos próprios; amplitude e energia de sinais recortados não integram uma análise de linearidade como medidas não censuradas.
+
+\subsubsection{Concordância entre os instrumentos}
+Para os estímulos com associação válida nos dois sistemas, definem-se a diferença e a média pareadas:
+
+\begin{equation}
+	d_{x,i} = x_i^{(\mathrm{P})} - x_i^{(\mathrm{A})}, \qquad m_{x,i} = \frac{x_i^{(\mathrm{P})} + x_i^{(\mathrm{A})}}{2}
+	\label{v2:eq:bland_altman_diferenca_media}
+\end{equation}
+
+O gráfico de \(d_{x,i}\) em função de \(m_{x,i}\) é empregado para investigar viés, heteroscedasticidade e dependência da diferença em relação à magnitude \cite{bland1986}. Sob diferenças aproximadamente independentes, com variância constante e distribuição adequadamente representada por um modelo normal, os limites de concordância de 95\% são estimados por:
+\begin{equation}
+	\overline{d}_x \pm 1{,}96s_{d_x}
+	\label{v2:eq:limites_concordancia_bland_altman}
+\end{equation}
+
+\noindent
+em que \(\overline{d}_x\) e \(s_{d_x}\) são a média e o desvio-padrão das diferenças.
+
+As repetições desta pesquisa são agrupadas por condição e por aquisição. Portanto, a Equação~\eqref{v2:eq:limites_concordancia_bland_altman} não é aplicada de modo ingênuo a todos os pulsos como se fossem observações independentes. Os limites de concordância são calculados por condição experimental, ou por uma extensão para medidas repetidas, com intervalos de confiança para o viés e para os limites \cite{bland1999}, e aplicados somente aos descritores classificados como equivalentes ou assemelhados no Quadro~\ref{v2:qua:configuracao_pareada_secao5}, sem agregar pulsos como observações independentes.
+
+Se a dispersão crescer proporcionalmente à magnitude, avalia-se uma transformação logarítmica e reportam-se razões entre instrumentos, desde que todos os valores sejam positivos. Para descritores discretos, como contagens, as diferenças exatas, a distribuição das discordâncias e modelos próprios para contagens são mais informativos do que a aplicação automática do gráfico de Bland--Altman.
+
+O coeficiente de correlação pode ser apresentado apenas como informação complementar. Correlação elevada não demonstra concordância, pois permanece elevada mesmo diante de viés constante ou proporcional.
+
+\subsubsection{Critérios de aceitação e incerteza}
+\label{v2:subsec:criterios_aceitacao_incerteza}
+
+Para sustentar uma afirmação de concordância, são definidos limites \(\tau_x\) coerentes com a aplicação, a resolução e a incerteza de cada descritor. Os valores iniciais de \(\tau_x\) estão na Tabela~\ref{v2:tab:tau_x_iniciais} (Seção~\ref{sec:mm_decisoes}) e são congelados antes da análise final. Uma condição elementar de aceitação em relação à referência é:
+\begin{equation}
+	\left|x_i^{(j)} - x_{i,\mathrm{ref}} \right| \leq \tau_x
+	\label{v2:eq:criterio_aceitacao_secao5}
+\end{equation}
+
+\noindent
+mas a conclusão não é baseada apenas na fração observada dentro dos limites. São considerados os intervalos de confiança, os limites de concordância e a proporção mínima de resultados aceitáveis previamente estabelecida.
+
+ A estrutura do orçamento está na Tabela~\ref{v2:tab:orcamento_incerteza}. Como a energia é proporcional ao quadrado da tensão, sua incerteza relativa é o dobro da incerteza relativa da amplitude: \(2 \times 3\,\% \approx 6\,\%\). O valor de \(\approx 9\,\%\) informado em versão anterior estava errado. A contribuição de tempo do osciloscópio (\(\pm 50\) ppm) é desprezível na energia.
+
+\begin{table}[htbp]
+	\centering
+	\footnotesize
+		\caption{Estrutura do orçamento de incerteza.}
+	\label{v2:tab:orcamento_incerteza}
+	\begin{tabular}{|p{0.22\textwidth}|p{0.33\textwidth}|p{0.35\textwidth}|}
+		\hline
+		\textbf{Componente} & \textbf{Origem} & \textbf{Ordem de grandeza} \\
+		\hline
+		Osciloscópio & Precisão vertical de \(\approx 3\,\%\) & Dominante em amplitude e energia \\
+		\hline
+		Gerador DG832 & Exatidão de amplitude; \(\pm 1\) ppm em frequência & Pequena em frequência; amplitude a verificar \\
+		\hline
+		Divisor e assimetria & Experimento A & A medir \\
+		\hline
+		Cabos & Atenuação na banda & Levantada de 1\,kHz a 35\,MHz \\
+		\hline
+		Ganho da cadeia & Calibração do pré-amplificador e do ADC & 34,00\,dB medidos; ADC calibrado por senoide (ajuste IEEE 1057) \\
+		\hline
+		Quantização & 12 bits & 1 LSB \(\approx 3{,}1\)--\(3{,}2\,\mathrm{mV}\) no ADC \\
+		\hline
+		Resolução temporal & 10\,MHz & 100\,ns \\
+		\hline
+		Sincronização & Deriva entre bases & Não mensurável sem \textit{timestamp} \\
+		\hline
+		Repetibilidade & Dentro e entre blocos & Dentro do bloco: \(\sigma = 0{,}04\)--\(0{,}06\,\mathrm{dB}\) em amplitude; entre sessões: a medir \\
+		\hline
+	\end{tabular}
+\end{table}
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Integridade dos dados e reprodutibilidade}
+\label{v2:subsec:integridade_dados_experimento}
+
+Para cada estímulo, o conjunto de dados de análise preserva:
+\begin{itemize}
+	\item Identificador do ensaio, bloco, condição e estímulo;
+	
+	\item Parâmetros nominais e sequência digital programada no gerador;
+	
+	\item Forma de onda de referência ou referência inequívoca ao arquivo que a contém;
+	
+	\item Canal, \textit{timestamp}, sequência e indicadores produzidos por cada sistema;
+	
+	\item Configuração completa dos instrumentos;
+	
+	\item Indicadores de saturação, \textit{timeout}, transbordo, fragmentação, fusão, perda e reinicialização; e
+	
+	\item Decisão de inclusão ou exclusão na análise, acompanhada de seu motivo.
+\end{itemize}
+
+No sistema proposto, são comparados os números de registros gerados pela máquina de estados, entregues ao DMA, encapsulados, transmitidos e recebidos. Essa rastreabilidade impede que uma perda na comunicação UDP seja classificada como falha do detector. Na versão ensaiada, os contadores da lógica (\texttt{HITCNT}: \textit{hits}, ROVL e MAXDUR por canal), os do \textit{firmware} (transferências e falhas de envio) e os do computador (registros recebidos e gravados) separam falha de detecção de perda na comunicação, e o \textit{software} de aquisição grava o \texttt{HITCNT} e o compara com o total recebido ao parar cada captura. As perdas são reportadas como \(N_{\mathrm{perdidos}}/N_{\mathrm{transmitidos}}\) por camada. No ensaio de 15/10/2026, todas as diferenças entre estímulos e registros do sistema proposto foram explicadas no detector (ROVL e fusões), com 0 perdas de comunicação em 48\,280 registros. Para o AMSY-6, preservam-se os indicadores de saturação, \textit{timeout}, enchimento de \textit{buffer} e modo de longa duração disponíveis na aquisição.
+
+As versões dos componentes estão na Tabela~\ref{v2:tab:reprodutibilidade} (Seção~\ref{sec:mm_implementacao}); o tratamento de dados ausentes, duplicados ou fora de ordem está descrito na Subseção~\ref{v2:subsec:software_apoio}; e a matriz efetiva está nas Tabelas~\ref{v2:tab:sessoes_executadas} e~\ref{v2:tab:ordem_r1}.
+
+% -------------------------------------------------------------------------------------------------------

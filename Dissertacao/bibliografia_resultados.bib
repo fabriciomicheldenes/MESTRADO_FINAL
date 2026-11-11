@@ -1,0 +1,502 @@
+% =======================================================================================================
+% Referências incorporadas na dissertação a partir dos relatórios e artigos do projeto
+% (RELATORIO_FPGA / ARTIGO_V2, MLP_EA_bomba, ARTIGO_SIM_EMBARCADO, RELATORIO_CWRU) e referências
+% clássicas acrescentadas para atender às observações da banca de qualificação.
+% DOIs conferidos no Crossref em 10/11/2026.
+% =======================================================================================================
+
+% ---------------- Emissão acústica, cavitação e detecção de hits ----------------
+@book{brennen1995,
+  author    = {Brennen, Christopher E.},
+  title     = {Cavitation and Bubble Dynamics},
+  publisher = {Oxford University Press},
+  address   = {New York},
+  year      = {1995}
+}
+
+@incollection{derakhshan1991,
+  author    = {Derakhshan, O. and Houghton, J. R. and Jones, R. K. and March, P. A.},
+  title     = {Cavitation monitoring of hydroturbines with {RMS} acoustic emission measurement},
+  booktitle = {Acoustic Emission: Current Practice and Future Directions},
+  series    = {ASTM Special Technical Publication},
+  number    = {1077},
+  publisher = {ASTM},
+  address   = {Philadelphia},
+  year      = {1991},
+  pages     = {305--315},
+  doi       = {10.1520/STP19102S}
+}
+
+@incollection{unnthorsson2013,
+  author    = {Unn{\th}{\'o}rsson, R{\'u}nar},
+  title     = {Hit detection and determination in {AE} bursts},
+  booktitle = {Acoustic Emission: Research and Applications},
+  editor    = {Sikorski, Wojciech},
+  publisher = {IntechOpen},
+  address   = {Rijeka},
+  year      = {2013},
+  doi       = {10.5772/54754}
+}
+
+@article{pinal2019,
+  author  = {Piñal-Moctezuma, Fernando and Delgado-Prieto, Miguel and Romeral-Martínez, Luis},
+  title   = {Performance analysis of acoustic emission hit detection methods using time features},
+  journal = {IEEE Access},
+  volume  = {7},
+  pages   = {71119--71130},
+  year    = {2019},
+  doi     = {10.1109/ACCESS.2019.2919224}
+}
+
+@manual{vallen2022,
+  author       = {{Vallen Systeme GmbH}},
+  title        = {{AMSY-6}: System Specification},
+  organization = {Vallen Systeme GmbH},
+  address      = {Wolfratshausen},
+  year         = {2022},
+  note         = {Disponível em: \url{https://www.vallen.de/zdownload/pdf/AMSY-6_Spec.pdf}. Acesso em: 24 jul. 2026}
+}
+
+@manual{iso12716_2026,
+  author       = {{International Organization for Standardization}},
+  title        = {{ISO} 12716:2026: Non-destructive testing -- Acoustic emission testing -- Vocabulary},
+  edition      = {2},
+  organization = {ISO},
+  address      = {Geneva},
+  year         = {2026}
+}
+
+@book{grosse2008acoustic,
+  editor    = {Grosse, Christian U. and Ohtsu, Masayasu},
+  title     = {Acoustic Emission Testing: Basics for Research -- Applications in Civil Engineering},
+  publisher = {Springer},
+  address   = {Berlin},
+  year      = {2008},
+  doi       = {10.1007/978-3-540-69972-9}
+}
+
+@article{mba2006development,
+  author  = {Mba, David and Rao, Raj B. K. N.},
+  title   = {Development of acoustic emission technology for condition monitoring and diagnosis of rotating machines; bearings, pumps, gearboxes, engines and rotating structures},
+  journal = {The Shock and Vibration Digest},
+  volume  = {38},
+  number  = {1},
+  pages   = {3--16},
+  year    = {2006},
+  doi     = {10.1177/0583102405059054}
+}
+
+@article{ohno2010,
+  author  = {Ohno, Kentaro and Ohtsu, Masayasu},
+  title   = {Crack classification in concrete based on acoustic emission},
+  journal = {Construction and Building Materials},
+  volume  = {24},
+  number  = {12},
+  pages   = {2339--2346},
+  year    = {2010},
+  doi     = {10.1016/j.conbuildmat.2010.05.004}
+}
+
+% ---------------- Sistemas embarcados de EA e FPGA ----------------
+@article{kang2015,
+  author  = {Kang, Myeongsu and Kim, Jaeyoung and Kim, Jong-Myon},
+  title   = {An {FPGA}-based multicore system for real-time bearing fault diagnosis using ultrasampling rate {AE} signals},
+  journal = {IEEE Transactions on Industrial Electronics},
+  volume  = {62},
+  number  = {4},
+  pages   = {2319--2329},
+  year    = {2015},
+  doi     = {10.1109/TIE.2014.2361317}
+}
+
+@article{wirtz2018,
+  author  = {Wirtz, Sebastian Felix and Cunha, Adauto P. A. and Labusch, Marc and Marzun, Galina and Barcikowski, Stephan and Söffker, Dirk},
+  title   = {Development of a low-cost {FPGA}-based measurement system for real-time processing of acoustic emission data: proof of concept using control of pulsed laser ablation in liquids},
+  journal = {Sensors},
+  volume  = {18},
+  number  = {6},
+  pages   = {1775},
+  year    = {2018},
+  doi     = {10.3390/s18061775}
+}
+
+@manual{xilinx2020ds180,
+  author       = {{Xilinx, Inc.}},
+  title        = {7 Series {FPGAs} Data Sheet: Overview ({DS180}, v2.6.1)},
+  organization = {Xilinx},
+  year         = {2020},
+  note         = {Disponível em: \url{https://docs.amd.com/v/u/en-US/ds180_7Series_Overview}. Acesso em: 24 jul. 2026}
+}
+
+@manual{xilinx2018ds190,
+  author       = {{Xilinx, Inc.}},
+  title        = {Zynq-7000 {SoC} Data Sheet: Overview ({DS190}, v1.11.1)},
+  organization = {Xilinx},
+  year         = {2018},
+  note         = {Disponível em: \url{https://docs.amd.com/v/u/en-US/ds190-Zynq-7000-Overview}. Acesso em: 24 jul. 2026}
+}
+
+@manual{analogdevicesad8065,
+  author       = {{Analog Devices}},
+  title        = {{AD8065/AD8066}: High Performance, 145 {MHz} FastFET Op Amps (Data sheet, rev. L)},
+  organization = {Analog Devices},
+  year         = {2012}
+}
+
+@manual{postel1980udp,
+  author       = {Postel, Jon},
+  title        = {User Datagram Protocol ({RFC} 768)},
+  organization = {Information Sciences Institute},
+  address      = {Marina del Rey},
+  year         = {1980},
+  note         = {Disponível em: \url{https://www.rfc-editor.org/rfc/rfc768.html}}
+}
+
+@manual{amd_ug1399,
+  author       = {{AMD}},
+  title        = {Vitis High-Level Synthesis User Guide ({UG1399}), v2022.2},
+  organization = {Advanced Micro Devices},
+  address      = {San Jose},
+  year         = {2022}
+}
+
+@manual{amd_ug984,
+  author       = {{AMD}},
+  title        = {{MicroBlaze} Processor Reference Guide ({UG984}), v2022.2},
+  organization = {Advanced Micro Devices},
+  address      = {San Jose},
+  year         = {2022}
+}
+
+@manual{amd_ug900,
+  author       = {{AMD}},
+  title        = {Vivado Design Suite User Guide: Logic Simulation ({UG900}), v2022.2},
+  organization = {Advanced Micro Devices},
+  address      = {San Jose},
+  year         = {2022}
+}
+
+@article{duarte2018,
+  author  = {Duarte, Javier and others},
+  title   = {Fast inference of deep neural networks in {FPGAs} for particle physics},
+  journal = {Journal of Instrumentation},
+  volume  = {13},
+  number  = {7},
+  pages   = {P07027},
+  year    = {2018},
+  doi     = {10.1088/1748-0221/13/07/P07027}
+}
+
+@article{trimberger2015three,
+  author  = {Trimberger, Stephen M.},
+  title   = {Three ages of {FPGAs}: a retrospective on the first thirty years of {FPGA} technology},
+  journal = {Proceedings of the IEEE},
+  volume  = {103},
+  number  = {3},
+  pages   = {318--331},
+  year    = {2015},
+  doi     = {10.1109/JPROC.2015.2392104}
+}
+
+@article{kuon2008fpga,
+  author  = {Kuon, Ian and Tessier, Russell and Rose, Jonathan},
+  title   = {{FPGA} architecture: survey and challenges},
+  journal = {Foundations and Trends in Electronic Design Automation},
+  volume  = {2},
+  number  = {2},
+  pages   = {135--253},
+  year    = {2008},
+  doi     = {10.1561/1000000005}
+}
+
+@article{cong2011hls,
+  author  = {Cong, Jason and Liu, Bin and Neuendorffer, Stephen and Noguera, Juanjo and Vissers, Kees and Zhang, Zhiru},
+  title   = {High-level synthesis for {FPGAs}: from prototyping to deployment},
+  journal = {IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems},
+  volume  = {30},
+  number  = {4},
+  pages   = {473--491},
+  year    = {2011},
+  doi     = {10.1109/TCAD.2011.2110592}
+}
+
+% ---------------- Quantização e aritmética ----------------
+@inproceedings{jacob2018,
+  author    = {Jacob, Benoit and Kligys, Skirmantas and Chen, Bo and Zhu, Menglong and Tang, Matthew and Howard, Andrew and Adam, Hartwig and Kalenichenko, Dmitry},
+  title     = {Quantization and training of neural networks for efficient integer-arithmetic-only inference},
+  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  year      = {2018},
+  pages     = {2704--2713},
+  doi       = {10.1109/CVPR.2018.00286}
+}
+
+@misc{krishnamoorthi2018,
+  author = {Krishnamoorthi, Raghuraman},
+  title  = {Quantizing deep convolutional networks for efficient inference: a whitepaper},
+  year   = {2018},
+  note   = {arXiv:1806.08342}
+}
+
+@misc{nagel2021,
+  author = {Nagel, Markus and Fournarakis, Marios and Amjad, Rana Ali and Bondarenko, Yelysei and van Baalen, Mart and Blankevoort, Tijmen},
+  title  = {A white paper on neural network quantization},
+  year   = {2021},
+  note   = {arXiv:2106.08295}
+}
+
+@article{goldberg1991,
+  author  = {Goldberg, David},
+  title   = {What every computer scientist should know about floating-point arithmetic},
+  journal = {ACM Computing Surveys},
+  volume  = {23},
+  number  = {1},
+  pages   = {5--48},
+  year    = {1991},
+  doi     = {10.1145/103162.103163}
+}
+
+@manual{ieee754,
+  author       = {{IEEE}},
+  title        = {{IEEE} Standard for Floating-Point Arithmetic ({IEEE} Std 754-2019)},
+  organization = {IEEE},
+  address      = {New York},
+  year         = {2019},
+  doi          = {10.1109/IEEESTD.2019.8766229}
+}
+
+% ---------------- Aprendizado de máquina e validação ----------------
+@article{pedregosa2011,
+  author  = {Pedregosa, Fabian and others},
+  title   = {Scikit-learn: machine learning in {Python}},
+  journal = {Journal of Machine Learning Research},
+  volume  = {12},
+  pages   = {2825--2830},
+  year    = {2011}
+}
+
+@article{breiman2001,
+  author  = {Breiman, Leo},
+  title   = {Random forests},
+  journal = {Machine Learning},
+  volume  = {45},
+  number  = {1},
+  pages   = {5--32},
+  year    = {2001},
+  doi     = {10.1023/A:1010933404324}
+}
+
+@article{friedman2001,
+  author  = {Friedman, Jerome H.},
+  title   = {Greedy function approximation: a gradient boosting machine},
+  journal = {The Annals of Statistics},
+  volume  = {29},
+  number  = {5},
+  pages   = {1189--1232},
+  year    = {2001},
+  doi     = {10.1214/aos/1013203451}
+}
+
+@incollection{prechelt1998,
+  author    = {Prechelt, Lutz},
+  title     = {Early stopping -- but when?},
+  booktitle = {Neural Networks: Tricks of the Trade},
+  editor    = {Orr, Genevieve B. and Müller, Klaus-Robert},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {1524},
+  publisher = {Springer},
+  address   = {Berlin},
+  year      = {1998},
+  pages     = {55--69},
+  doi       = {10.1007/3-540-49430-8_3}
+}
+
+@article{hubert1985,
+  author  = {Hubert, Lawrence and Arabie, Phipps},
+  title   = {Comparing partitions},
+  journal = {Journal of Classification},
+  volume  = {2},
+  number  = {1},
+  pages   = {193--218},
+  year    = {1985},
+  doi     = {10.1007/BF01908075}
+}
+
+@article{kaufman2012,
+  author  = {Kaufman, Shachar and Rosset, Saharon and Perlich, Claudia and Stitelman, Ori},
+  title   = {Leakage in data mining: formulation, detection, and avoidance},
+  journal = {ACM Transactions on Knowledge Discovery from Data},
+  volume  = {6},
+  number  = {4},
+  pages   = {15},
+  year    = {2012},
+  doi     = {10.1145/2382577.2382579}
+}
+
+@article{roberts2017,
+  author  = {Roberts, David R. and others},
+  title   = {Cross-validation strategies for data with temporal, spatial, hierarchical, or phylogenetic structure},
+  journal = {Ecography},
+  volume  = {40},
+  number  = {8},
+  pages   = {913--929},
+  year    = {2017},
+  doi     = {10.1111/ecog.02881}
+}
+
+@article{varma2006,
+  author  = {Varma, Sudhir and Simon, Richard},
+  title   = {Bias in error estimation when using cross-validation for model selection},
+  journal = {BMC Bioinformatics},
+  volume  = {7},
+  pages   = {91},
+  year    = {2006},
+  doi     = {10.1186/1471-2105-7-91}
+}
+
+@article{hyndman1996,
+  author  = {Hyndman, Rob J. and Fan, Yanan},
+  title   = {Sample quantiles in statistical packages},
+  journal = {The American Statistician},
+  volume  = {50},
+  number  = {4},
+  pages   = {361--365},
+  year    = {1996},
+  doi     = {10.1080/00031305.1996.10473566}
+}
+
+@book{goodfellow2016deep,
+  author    = {Goodfellow, Ian and Bengio, Yoshua and Courville, Aaron},
+  title     = {Deep Learning},
+  publisher = {MIT Press},
+  address   = {Cambridge, MA},
+  year      = {2016}
+}
+
+@article{lecun2015deep,
+  author  = {LeCun, Yann and Bengio, Yoshua and Hinton, Geoffrey},
+  title   = {Deep learning},
+  journal = {Nature},
+  volume  = {521},
+  number  = {7553},
+  pages   = {436--444},
+  year    = {2015},
+  doi     = {10.1038/nature14539}
+}
+
+@book{bishop2006pattern,
+  author    = {Bishop, Christopher M.},
+  title     = {Pattern Recognition and Machine Learning},
+  publisher = {Springer},
+  address   = {New York},
+  year      = {2006}
+}
+
+@article{rumelhart1986learning,
+  author  = {Rumelhart, David E. and Hinton, Geoffrey E. and Williams, Ronald J.},
+  title   = {Learning representations by back-propagating errors},
+  journal = {Nature},
+  volume  = {323},
+  number  = {6088},
+  pages   = {533--536},
+  year    = {1986},
+  doi     = {10.1038/323533a0}
+}
+
+@misc{kingma2015adam,
+  author = {Kingma, Diederik P. and Ba, Jimmy},
+  title  = {Adam: a method for stochastic optimization},
+  year   = {2015},
+  note   = {International Conference on Learning Representations (ICLR). arXiv:1412.6980}
+}
+
+@article{jolliffe2016,
+  author  = {Jolliffe, Ian T. and Cadima, Jorge},
+  title   = {Principal component analysis: a review and recent developments},
+  journal = {Philosophical Transactions of the Royal Society A},
+  volume  = {374},
+  number  = {2065},
+  pages   = {20150202},
+  year    = {2016},
+  doi     = {10.1098/rsta.2015.0202}
+}
+
+% ---------------- Metrologia e concordância ----------------
+@manual{jcgm2008,
+  author       = {{Joint Committee for Guides in Metrology}},
+  title        = {Evaluation of Measurement Data -- Guide to the Expression of Uncertainty in Measurement ({JCGM} 100:2008)},
+  organization = {BIPM},
+  address      = {Sèvres},
+  year         = {2008},
+  doi          = {10.59161/JCGM100-2008E}
+}
+
+@article{bland1986,
+  author  = {Bland, J. Martin and Altman, Douglas G.},
+  title   = {Statistical methods for assessing agreement between two methods of clinical measurement},
+  journal = {The Lancet},
+  volume  = {327},
+  number  = {8476},
+  pages   = {307--310},
+  year    = {1986},
+  doi     = {10.1016/S0140-6736(86)90837-8}
+}
+
+@article{bland1999,
+  author  = {Bland, J. Martin and Altman, Douglas G.},
+  title   = {Measuring agreement in method comparison studies},
+  journal = {Statistical Methods in Medical Research},
+  volume  = {8},
+  number  = {2},
+  pages   = {135--160},
+  year    = {1999},
+  doi     = {10.1177/096228029900800204}
+}
+
+% ---------------- Rolamentos (base CWRU) ----------------
+@misc{cwru,
+  author = {{Case Western Reserve University}},
+  title  = {Bearing Data Center: 48k Drive End Bearing Fault Data; Normal Baseline Data},
+  year   = {2026},
+  note   = {Disponível em: \url{https://engineering.case.edu/bearingdatacenter}. Acesso em: 10 nov. 2026}
+}
+
+@article{smith2015,
+  author  = {Smith, Wade A. and Randall, Robert B.},
+  title   = {Rolling element bearing diagnostics using the {Case Western Reserve University} data: a benchmark study},
+  journal = {Mechanical Systems and Signal Processing},
+  volume  = {64--65},
+  pages   = {100--131},
+  year    = {2015},
+  doi     = {10.1016/j.ymssp.2015.04.021}
+}
+
+@article{randall2011,
+  author  = {Randall, Robert B. and Antoni, Jérôme},
+  title   = {Rolling element bearing diagnostics -- a tutorial},
+  journal = {Mechanical Systems and Signal Processing},
+  volume  = {25},
+  number  = {2},
+  pages   = {485--520},
+  year    = {2011},
+  doi     = {10.1016/j.ymssp.2010.07.017}
+}
+
+@article{hendriks2022,
+  author  = {Hendriks, Joshua and Dumond, Patrick and Knox, D. A.},
+  title   = {Towards better benchmarking using the {CWRU} bearing fault dataset},
+  journal = {Mechanical Systems and Signal Processing},
+  volume  = {169},
+  pages   = {108732},
+  year    = {2022},
+  doi     = {10.1016/j.ymssp.2021.108732}
+}
+
+@article{rauber2021,
+  author  = {Rauber, Thomas W. and Loca, Antonio L. S. and Boldt, Francisco A. and Rodrigues, Alexandre L. and Varejão, Flávio M.},
+  title   = {An experimental methodology to evaluate machine learning methods for fault diagnosis based on vibration signals},
+  journal = {Expert Systems with Applications},
+  volume  = {167},
+  pages   = {114022},
+  year    = {2021},
+  doi     = {10.1016/j.eswa.2020.114022}
+}

@@ -1,0 +1,604 @@
+\section{Sistema MOMEA: Captura continua de dados}
+
+No escopo do Projeto \textbf{MOMEA — Monitoramento Online de Rotores de Turbinas pelo Método de Emissão Acústica}, desenvolvido pelo grupo de pesquisa da Itaipu ParqueTec em parceria com a Itaipu Binacional, foram implementadas aplicações experimentais voltadas à análise de sinais acústicos obtidos de motobombas submetidas a diferentes condições de operação. Esses desenvolvimentos resultaram em uma infraestrutura própria de aquisição e processamento de dados, concebida para investigar fenômenos como cavitação e microfalhas estruturais em regime de monitoramento contínuo.
+
+O sistema MOMEA é composto de dois módulos, \textbf{MomeaProbe/MomeaCapture}, que atuam como plataforma central dessa infraestrutura. O MomeaProbe corresponde ao hardware de aquisição, composto por dois conversores ADC de 12 bits operando a 8~MSps, com transmissão de dados via interface USB~3.0, capaz de realizar a captura simultânea de sinais de Emissão Acústica (EA), vibração e/ou pressão em alta taxa de amostragem; a placa é ilustrada na Figura~\ref{fig:MomeaProbe12USB}.
+
+Os dados são recebidos e gerenciados pelo ambiente MomeaCapture (Figura~\ref{fig:MomeaCapture}), uma aplicação desenvolvida em C++/Qt, responsável pela transferência, compressão, armazenamento (em banco de dados) e visualização dos sinais. Essa arquitetura permite o registro contínuo de longas séries temporais, com resolução temporal adequada à análise espectral detalhada de fenômenos de cavitação e de degradação estrutural incipiente.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.5\linewidth, angle=90]{figs/PlacasADC_AD9226.jpeg}
+	\caption{Placas de captura de sinais MomeaProbe12USB. Fonte: O autor}
+	\label{fig:MomeaProbe12USB}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\linewidth]{figs/MomeaCapture.png}
+	\caption{Software de captura MomeaCapture. Fonte: O autor.}
+	\label{fig:MomeaCapture}
+\end{figure}
+
+Os trabalhos desenvolvidos com o MomeaProbe/MomeaCapture constituem, assim, a base de \textit{know-how} técnico que sustenta a pesquisa aqui proposta. A partir de sucessivas iterações de projeto e experimentação, foi possível construir e validar uma cadeia completa de aquisição e processamento de sinais de EA, desde o sensor até o armazenamento e a análise em alto nível. Essa cadeia pode ser organizada em três frentes principais de desenvolvimento: \textit{hardware}, \textit{firmware} e \textit{software}, fortemente acopladas. Cada uma desta camadas apresentou um desafio em função tanto da alta sensibilidade dos conversores ADC utilizados quanto do grande volume de dados gerado durante os ensaios.
+
+\subsection{Hardware}
+Na camada de \textit{hardware}, os esforços estiveram voltados ao projeto e à validação da placa de captura (MomeaProbe), incluindo condicionamento analógico, acoplamento dos sensores de EA, proteção contra ruído e integração com um conversor ADC de alta taxa de amostragem e elevada resolução. A alta sensibilidade do ADC, necessária para registrar eventos de baixa amplitude associados à cavitação incipiente, torna o sistema particularmente suscetível a interferências eletromagnéticas, vibrações espúrias e imperfeições de aterramento e blindagem, o que impõe restrições adicionais ao projeto do front-end analógico e do layout de PCB.
+
+%Um dos pontos que se mostrou mais desafiador foi justamente a \textbf{escolha e a integração do conversor ADC}. A opção inicial recaiu sobre o ADC \textbf{MAX1421}, em grande medida motivada pela combinação entre disponibilidade no mercado e custo relativamente acessível frente a outros dispositivos de desempenho semelhante. Foram desenvolvidas duas versões de placa com esse conversor: a primeira seguindo de forma bastante fiel as recomendações de aplicação do próprio datasheet, ilustrada nas Figuras \ref{fig:placaV01_top} e \ref{fig:placaV01_bottom}, e a segunda, Figuras  inspirada diretamente no layout da placa de referência do fabricante, conforme ilustrado nas Figuras~\ref{fig:placaMAX1421_TopBottom} e \ref{fig:placaMAX1421_Inner}. 
+%
+%\begin{figure}
+%	\centering
+%	\begin{subfigure}{.5\textwidth}
+%		\centering
+%		\includegraphics[width=0.7\linewidth]{figs/top}
+%		\caption{Vista superior}
+%		\label{fig:placaV01_top}
+%	\end{subfigure}%
+%	\begin{subfigure}{.5\textwidth}
+%		\centering
+%		\includegraphics[width=0.7\linewidth]{figs/bottom}
+%		\caption{Vista inferior}
+%		\label{fig:placaV01_bottom}
+%	\end{subfigure}
+%	\caption{Primeira versão da placa Momea Capture. Fonte: O autor.}
+%	\label{fig:placaV01}
+%\end{figure}
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\begin{subfigure}{.5\textwidth}
+%		\centering
+%		\includegraphics[width=0.7\linewidth]{figs/placa12bits_front}
+%		\caption{Vista superior}
+%		\label{fig:placaV02_top}
+%	\end{subfigure}%
+%	\begin{subfigure}{.5\textwidth}
+%		\centering
+%		\includegraphics[width=0.7\linewidth]{figs/placa12bits_back}
+%		\caption{Vista inferior}
+%		\label{fig:placaV02_bottom}
+%	\end{subfigure}
+%	\caption{Segunda versão da placa Momea Capture. Fonte: O autor.}
+%	\label{fig:placaV02}
+%\end{figure}
+%
+%\begin{figure}[H]
+%	\centering
+%	\begin{subfigure}{.5\textwidth}
+%		\centering
+%		\includegraphics[width=0.7\linewidth]{figs/Max1421BoardTop}
+%		\caption{ superior}
+%		\label{fig:placaMAX1421_Top}
+%	\end{subfigure}%
+%	\begin{subfigure}{.5\textwidth}
+%		\centering
+%		\includegraphics[width=0.7\linewidth]{figs/Max1421BoardBotton}
+%		\caption{Vista inferior}
+%		\label{fig:placaMAX1421_bottom}
+%	\end{subfigure}
+%	\caption{Layout da placa de referência do ADC MAX1421. Fonte: \cite{MAX1420EVKIT}}
+%	\label{fig:placaMAX1421_TopBottom}
+%\end{figure}
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\begin{subfigure}{.5\textwidth}
+%		\centering
+%		\includegraphics[width=0.7\linewidth]{figs/Max1421BoardInnerVCC}
+%		\caption{Vista superior}
+%		\label{fig:placaMAX1421_InnerVCC}
+%	\end{subfigure}%
+%	\begin{subfigure}{.5\textwidth}
+%		\centering
+%		\includegraphics[width=0.7\linewidth]{figs/Max1421BoardInnerGND}
+%		\caption{Vista inferior}
+%		\label{fig:placaMAX1421_InnerGND}
+%	\end{subfigure}
+%	\caption{Layout da placa de referência do ADC MAX1421. Fonte: \cite{MAX1420EVKIT}}
+%	\label{fig:placaMAX1421_Inner}
+%\end{figure}
+%
+%Apesar dessas revisões, ambas as versões apresentaram instabilidades e artefatos de ruído que comprometiam a qualidade dos sinais de Emissão Acústica adquiridos, especialmente quando se buscava operar próximo aos limites de resolução e de largura de banda do conversor.
+%
+%Diante dessas dificuldades, optou-se por substituir o MAX1421 por um conversor ADC \textbf{AD9226}, também de 12 bits, cujo circuito de aplicação de referência é estruturalmente mais simples, demanda um número menor de capacitores de desacoplamento e oferece melhores recursos internos de condicionamento de \textit{\textit{clock}}. 
+%
+%Essa mudança resultou em um projeto de hardware mais enxuto e menos sensível a detalhes finos de layout, sem abrir mão da taxa de amostragem necessária para a análise de sinais de EA. Na prática, a adoção do AD9226 contribuiu para reduzir problemas de instabilidade e facilitar o processo de depuração das demais partes da cadeia de aquisição.
+%
+%A experiência com esses dispositivos reforçou a importância de cumprir rigorosamente os \textbf{requisitos de projeto estabelecidos nos \textit{datasheets}} de conversores de alta velocidade. Entre esses requisitos, destacam-se:
+%
+%\begin{itemize}
+%	\item O uso de \textbf{capacitores de desacoplamento} com valores e encapsulamentos específicos (tipicamente combinações de capacitores de filme ou cerâmicos de 100~nF, 10~nF e 1~nF), posicionados o mais próximo possível dos pinos de alimentação do ADC, com trilhas curtas e laços de corrente minimizados;
+%	
+%	\item A implementação de \textbf{planos de terra e alimentação} contínuos, com cuidado na separação (e posterior conexão em ponto único) entre terras analógico e digital, de modo a evitar que correntes de comutação digital retornem pelo plano de referência dos sinais analógicos;
+%	
+%	\item O roteamento de trilhas críticas com \textbf{impedância controlada}, em especial as linhas de \textit{\textit{clock}} e as saídas digitais de alta frequência, de forma a reduzir reflexões, \textit{ringing} e acoplamento indesejado entre sinais;
+%	
+%	\item O uso de \textbf{resistores em série} (terminação em série) nos \textit{drivers} de saída digital, posicionados próximos ao ADC, para amortecer transições rápidas e melhorar a integridade de sinal nas linhas que conectam o conversor ao FPGA ou à \mbox{interface de aquisição;}
+%	
+%	\item A adoção de uma \textbf{fonte de \textit{clock} de baixo \textit{jitter}}, uma vez que o ruído de fase do \textit{clock} converte-se diretamente em incerteza na amostragem do sinal, degradando o SNR efetivo do conversor. Isso implica selecionar osciladores ou PLLs adequados e tratar o traço de \textit{clock} como sinal de alta integridade, com retorno de terra bem definido e acoplamento minimizado;
+%	
+%	\item A disposição cuidadosa dos \textbf{pontos de entrada do sinal analógico}, evitando laços grandes, minimizando o acoplamento com trilhas digitais e, sempre que possível, empregando blindagem, filtros \textit{anti-aliasing} e estágios de \textit{buffer} \mbox{ou condicionamento dedicados.}
+%\end{itemize}
+%
+%Em conjunto, esses aspectos evidenciam que o desempenho do sistema de aquisição não depende apenas da escolha nominal do ADC, mas da aderência estrita às boas práticas de layout e às restrições indicadas em seu \textit{datasheet}. No contexto do Projeto MOMEA, as iterações entre os projetos com o MAX1421 e o AD9226 permitiram consolidar um \textit{know-how} importante sobre o impacto dessas decisões no ruído, na estabilidade e na fidelidade dos sinais de Emissão Acústica utilizados posteriormente nas \mbox{etapas de processamento e análise.} 
+%
+%Ao mesmo tempo, essa experiência mostrou que projetar um circuito eletrônico e uma placa de captura plenamente compatíveis, em termos de integridade de sinal e requisitos de alta velocidade, com uma placa FPGA comercial voltada à aceleração de redes quantizadas (por exemplo, plataformas suportadas pelo FINN para execução de CNN-1D) constituiria um desafio adicional significativo. Tal esforço, envolvendo novas iterações de hardware, validação de integridade de sinal e integração física com o FPGA, poderia comprometer o cronograma e a entrega dos resultados dentro do horizonte temporal desta pesquisa, justificando a opção por concentrar-se, nesta etapa, em estudos de viabilidade baseados em simulação.
+
+\subsection{Firmware}
+
+Na camada de \textit{firmware}, o foco recaiu sobre a implementação dos mecanismos de aquisição contínua e transferência de dados em alta velocidade, incluindo configuração do ADC, gerenciamento de \textit{buffers} e uso de interfaces de comunicação USB~3.0 para envio dos dados ao computador hospedeiro. A elevada taxa de amostragem combinada à resolução do conversor resulta em fluxos de dados da ordem de dezenas de megabytes por segundo, exigindo estratégias cuidadosas de \textit{buffering}, controle de fluxo e tratamento de \textit{overruns}, sob pena de perda de amostras ou interrupções na captura.
+
+%Um desafio adicional relevante reside na própria \textbf{pilha de \textit{firmware} do controlador USB~3.0}, cuja documentação, embora extensa, mostrou-se ao mesmo tempo um apoio e uma fonte de complexidade. Os exemplos oficiais fornecem múltiplas variações de projetos com funções de nomes distintos mas comportamento essencialmente semelhante, o que dificulta a identificação de um caminho de referência claro para aplicações de aquisição contínua em alta taxa. 
+%
+%Soma-se a isso a escassez de relatos detalhados em fóruns e na comunidade técnica, em grande parte porque o uso de controladores USB~3.0 dedicados exige requisitos específicos de projeto de hardware e de integridade de sinal, o que restringe sua adoção a nichos bem especializados.
+%
+%No contexto do Projeto MOMEA, essas dificuldades foram agravadas pela necessidade de \textbf{ajustar precisamente as temporizações de \textit{clock} e os sinais de controle para cada ADC utilizado}, garantindo alinhamento entre o domínio de amostragem do conversor e o domínio de transferência de dados do barramento USB~3.0. Pequenas inconsistências de temporização ou configuração, por exemplo, em parâmetros de \textit{endpoints}, tamanhos de pacotes, intervalos de requisição ou relações entre \textit{clocks} internos, podem resultar em \textit{stalls}, perda de pacotes ou comportamento intermitente difícil de diagnosticar. Assim, a etapa de firmware revelou-se não apenas uma ponte entre hardware e software, mas um componente crítico para a viabilidade prática da \mbox{captura contínua em alta velocidade.}
+
+\subsection{Software}
+Na camada de \textit{software}, as atividades concentraram-se no desenvolvimento e na sucessiva reestruturação da aplicação MomeaCapture, responsável por receber os pacotes provenientes da USB~3.0, realizar a compactação (inicialmente com o algoritmo LZMA), armazenar os dados em disco (arquivos binários ou banco SQLite) e disponibilizar recursos de visualização e análise, como geração de espectros por FFT janelada e experimentos com classificadores baseados em CNN. 
+
+%Desde as primeiras versões, o principal desafio consistiu em conciliar a alta taxa de chegada dos dados com o tempo de processamento e gravação, uma vez que ensaios longos produzem arquivos de grande porte e podem acumular filas de processamento (\textit{backlog}) quando o pipeline não está suficientemente otimizado.
+%
+%A primeira arquitetura adotada baseou-se em um modelo relativamente simples de \textit{multithreading}, com quatro componentes principais: uma \textit{thread} para a interface gráfica (GUI), uma \textit{thread} dedicada à captura USB e outra responsável pela gravação em arquivos binários, conectadas por \textit{buffers} circulares. 
+%
+%Embora funcional, essa solução se mostrou insuficiente tanto em termos de vazão de dados quanto de eficiência no uso de disco: o acoplamento entre captura, escrita em arquivo e GUI gerava contenções frequentes, saturação de I/O e dificuldade em manter taxas de aquisição elevadas de forma contínua.
+%
+%Na tentativa de desacoplar ainda mais as etapas do pipeline, foi introduzido o uso do \textbf{Redis} como camada intermediária de armazenamento em memória. A ideia inicial era utilizar o Redis como uma espécie de ``\textit{buffer} de alta velocidade'' entre a captura USB e as etapas de compactação e persistência em disco, partindo-se da interpretação, posteriormente revista, de que o mecanismo de persistência do Redis seria adequado para retenção confiável de grandes volumes de dados. 
+%
+%Na prática, contudo, a combinação entre o modelo de chave–valor em memória, os limites de \textit{maxmemory} e a política de descarte resultou em uma persistência essencialmente temporária: ao atingir o limite configurado, o Redis passava a descartar registros antigos, o que inviabiliza seu uso como repositório primário de dados brutos. Além disso, mesmo após ajustes cuidadosos, a vazão prática estabilizava em torno de $\approx22MiB/s$, aquém da taxa necessária para experimentos mais agressivos. Como solução de contorno, foi então implementada uma arquitetura mais complexa, composta por:
+%\begin{itemize}
+%	\item Uma \textit{thread} consumidora dos dados armazenados no Redis; 
+%	\item Um conjunto de \textit{threads} de compactação LZMA;
+%	\item Uma \textit{thread} de persistência em banco de dados \textbf{SQLite}.
+%\end{itemize}
+%
+%Essa estrutura, embora tecnicamente viável, aumentou a complexidade global do sistema e tornou a depuração mais difícil, uma vez que gargalos podiam surgir em múltimos pontos: na captura, na fila do Redis, na compactação ou na escrita em disco.
+%
+%A experiência acumulada com essas abordagens levou ao projeto de uma solução mais enxuta e alinhada às necessidades de alta vazão: um \textbf{\textit{buffer} circular \textit{lock-free}} implementado diretamente em C++ com \texttt{std::atomic}, gerenciando cuidadosamente ponteiros de início/fim e contadores de geração para lidar com situações de \textit{wrap-around} sem uso de \textit{mutex}. Nessa arquitetura, o dado flui da captura USB para um grande \textit{buffer} residente em memória, de onde é consumido por \textit{threads} de compactação e escrita, sem intermediários externos. 
+%
+%Ensaios preliminares indicam a possibilidade de sustentar taxas da ordem de $\approx520MiB/s$ (equivalente, por exemplo, a quatro canais de ADC operando a $65MS/s$, deslocando o gargalo para o algoritmo de compactação LZMA. Nesse contexto, outros esquemas de compressão estão sendo estudados, buscando um compromisso melhor entre taxa de compressão e custo computacional.
+
+\subsection{Fluxo de Operação do Sistema Momea USB}
+
+O fluxo geral de funcionamento do sistema Momea USB — desde a aquisição dos sinais brutos até sua utilização em tarefas de análise e predição — é sintetizado na Figura \ref{fig:MomeaUSB}. Esse diagrama ilustra, de forma integrada, como os módulos de software e aplicação interagem para viabilizar a captura contínua de dados, sua compactação, armazenamento e posterior uso em modelos de aprendizado de máquina e aprendizado profundo.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.95\linewidth]{figs/FluxoOperacaoMOMEAUSB}
+	\caption[Fluxo de operação do sistema Momea USB]{Fluxo de operação do sistema Momea USB. Fonte: O autor}
+	\label{fig:MomeaUSB}
+\end{figure}
+
+A arquitetura de dados ilustrada na Figura \ref{fig:MomeaUSB} é segregada em dois domínios lógicos distintos: o domínio de Software (focado em \textit{throughput} e integridade da aquisição) e o domínio de Aplicação (focado em processamento analítico e persistência estruturada). Essa separação é fundamental para garantir que o custo computacional dos algoritmos de inteligência artificial não interfira na latência crítica da captura de dados via USB 3.0.O fluxo de operação detalhado pode ser descrito da seguinte forma:
+
+\noindent \textbf{1. Domínio de Software: Aquisição e Bufferização}
+
+Nesta primeira etapa, ilustrada à esquerda da figura, o sistema prioriza a velocidade de transferência para evitar perda de pacotes (\textit{packet loss}) provenientes dos sensores. O fluxo compreende:
+
+\begin{itemize} \item \textbf{Captura e \textit{Streaming} via USB 3.0:} Os sinais analógicos convertidos pelos sensores são transmitidos ao sistema hospedeiro através de um barramento de alta velocidade. O \textbf{Sistema de Aquisição} gerencia os \textit{endpoints} USB, garantindo a leitura contínua dos dados brutos sem bloqueios.
+	
+	\item \textbf{Compactação em Tempo Real:} Antes do armazenamento, os dados sofrem uma etapa de compressão (utilizando algoritmos como LZMA) para reduzir a largura de banda de disco necessária e otimizar o uso de armazenamento.
+	
+	\item \textbf{Persistência em \textit{Buffer} Temporário (SQLite):} Diferentemente de abordagens que processam o dado imediatamente, esta arquitetura grava os dados compactados em um banco de dados SQLite intermediário (``Banco de dados SQLite Compactado temporário''). Este banco atua como um \textit{buffer} assíncrono robusto, desacoplando a velocidade de chegada dos dados (aquisição) da velocidade de consumo (aplicação).
+\end{itemize}
+
+\noindent \textbf{2. Domínio de Aplicação: Processamento, ETL e Inferência}
+
+No lado direito da figura, a \textit{Aplicação} consome os dados do \textit{buffer} temporário em seu próprio ritmo, realizando as tarefas pesadas de transformação e análise inteligente. O processo envolve:
+
+\begin{itemize} 
+	\item \textbf{Pipeline de ETL (Extração, Transformação e Carga):} Os dados são lidos do banco temporário e submetidos a: \begin{itemize} 
+		
+	\item \textit{Descompactação:} Restauração do sinal bruto para seu formato original.
+	
+	\item \textit{Controle de Granularidade e Transformação:} Segmentação dos sinais em janelas temporais de tamanho fixo e aplicação de pré-processamentos (como normalização ou filtros digitais), preparando os tensores para a rede neural. 
+	
+	\item \textit{Persistência Final:} Gravação dos dados estruturados no ``Banco de dados SQLite Aplicação'', que serve como repositório definitivo para consultas e análises históricas. \end{itemize}
+	
+	\item \textbf{Inferência com Modelos ML-DL:} O bloco de ``Modelos de ML/DL'' (\textit{Machine Learning} e \textit{Deep Learning}) consome os dados já tratados do banco final. É nesta etapa que ocorrem a classificação de padrões (ex: detecção de cavitação) \mbox{e a predição de anomalias.}
+	
+	\item \textbf{\textit{Feedback} de Resultados:} Conforme indicado pelas setas de retorno na figura, os resultados das inferências (diagnósticos, probabilidades de falha) são gravados de volta no banco de dados da aplicação. Isso cria um registro histórico auditável, permitindo correlacionar os sinais brutos com os diagnósticos gerados pelo modelo ao longo do tempo.
+\end{itemize}
+
+Essa topologia em dois estágios evidencia que o pipeline foi concebido para lidar com cargas contínuas de dados, preservando a coerência temporal e a integridade dos sinais mesmo quando o processamento inteligente demanda alto custo computacional.
+
+%A Figura \ref{fig:MomeaUSB} apresenta dois blocos principais:
+%
+%Camada de Software — Aquisição e Armazenamento Temporário, nesta primeira etapa, os sinais provenientes dos sensores (como transdutores de Emissão Acústica) são encaminhados para o Sistema de Aquisição, responsável por realizar:
+%\begin{itemize}
+%	\item Captura contínua dos sinais,
+%	
+%	\item Gravação prévia em memória,
+%	
+%	\item Preparação dos pacotes para envio via USB 3.0.
+%\end{itemize}
+%
+%O módulo de software realiza então a compactação dos dados (originalmente com LZMA) e armazena os blocos resultantes em um banco de dados SQLite compactado temporário.Esse banco atua como um buffer persistente, possibilitando a continuidade da aquisição mesmo durante picos de processamento.
+%
+%Camada de Aplicação — Processamento, Transformação e Inferência, após a gravação no banco temporário, os dados seguem para o ambiente de aplicação, onde passam por várias etapas de processamento:
+%
+%\begin{itemize}
+%	\item Controle de granularidade dos blocos,
+%	
+%	\item Descompactação,
+%	
+%	\item Transformações necessárias (por exemplo, escala, normalização, janelamento FFT),
+%	
+%	\item Armazenamento no banco de dados SQLite final da aplicação.
+%\end{itemize}
+%
+%Essa base de dados organizada serve como entrada para os módulos de Aprendizado de Máquina e Aprendizado Profundo (AM–DL), os quais realizam:
+%
+%\begin{itemize}
+%	\item Classificação de padrões,
+%	
+%	\item Predição de eventos,
+%	
+%	\item Geração de resultados, que podem ser armazenados ou incorporados em sistemas de suporte à decisão.
+%\end{itemize}
+%
+%O diagrama evidencia que todo o pipeline — desde a amostragem em alta velocidade até a utilização de modelos inteligentes — foi concebido para lidar com cargas contínuas de dados, preservando coerência temporal e integridade dos sinais.
+
+
+%\subsection{Comparação com Sistemas em Hardware Dedicado}
+%Para contextualizar esse desafio, é útil compará-lo a outras áreas de processamento de dados em alta taxa. É instrutivo observar que, em vídeo 4K@60 (2160p a 60~fps), um fluxo não comprimido pode demandar algo em torno de \( \approx 12~\text{Gb/s} \) de largura de banda. 
+%
+%Em aplicações multimídia, essa taxa é viabilizada por uma cadeia de \textit{hardware dedicado}: \textit{codecs} modernos como H.265/HEVC e AV1 são implementados em unidades especializadas de codificação/decodificação (por exemplo, NVENC/NVDEC em GPUs NVIDIA ou Intel Quick Sync Video em CPUs), capazes de comprimir e descomprimir fluxos 4K em tempo real com alta eficiência energética. De forma análoga, \textit{switches} de rede empregam ASICs de comutação e memórias especializadas (como TCAM) para encaminhar bilhões de pacotes por segundo com latências de poucos microssegundos, enquanto \textit{smart TVs} integram SoCs dedicados com \textit{engines} de vídeo e unidades de IA embarcadas para decodificação, pós-processamento e aprimoramento de imagem em tempo real.
+%
+%No caso do \textbf{MomeaCapture}, porém, toda a compactação dos sinais de Emissão Acústica é realizada em CPU generalista, sem o apoio de codificadores dedicados nem de ASICs de transporte, o que torna o desafio de sustentar fluxos contínuos de dezenas ou centenas de~\(\text{MiB/s}\) substancialmente mais crítico e reforça a motivação para investigar arquiteturas baseadas em FPGA e processamento embarcado (\citeonline{Nvidia_VideoCodecSDK, Intel_HEVC_Support, MediaTek_DigitalTV, Cloudflare_ASICs_Edge}).
+%
+%O sistema MomeaCapture depende exclusivamente de processamento genérico em CPU para compactação de sinais de EA. Isso torna a gestão do fluxo de dados significativamente mais desafiadora: não há “silício dedicado” para compressão em tempo real, de modo que o projeto do software precisa explorar ao máximo técnicas de paralelismo, estruturas \textit{lock-free} e balanceamento de pipeline para evitar perdas de amostras e manter a integridade dos experimentos. Essa trajetória de tentativas, reengenharia e otimização de \textit{software} compõe uma parte importante do \textit{know-how} que fundamenta a proposta desta dissertação e justifica a busca por arquiteturas mais eficientes de processamento em FPGA.
+%
+%Em conjunto, essas três camadas evidenciam que a alta sensibilidade do ADC e a grande quantidade de dados gerados, embora desejáveis do ponto de vista de fidelidade de medição, introduzem uma série de dificuldades práticas em termos de projeto eletrônico, \textit{firmware} de aquisição e infraestrutura de software. Os principais desafios identificados em cada uma dessas frentes são detalhados a seguir.
+
+%\subsection{Analise posterior dos dados}
+%
+%Para a análise no domínio da frequência, foi implementado um módulo de processamento baseado na \textbf{Transformada Rápida de Fourier (FFT)} com janelamento móvel (\textit{short-time FFT}). Essa abordagem permite gerar imagens do espectro de frequência em função do tempo, produzindo mapas espectro-temporais semelhantes a espectrogramas. As imagens resultantes evidenciam o comportamento dinâmico dos componentes de alta frequência associados a eventos de cavitação, facilitando sua visualização e posterior interpretação automática.
+%
+%A partir desses espectrogramas, foram treinadas redes neurais convolucionais bidimensionais, tradicionalmente empregadas em processamento de imagens, para identificar padrões característicos de cavitação em bombas centrífugas. O uso de MLP 2D mostrou-se eficaz para distinguir condições normais, de cavitação incipiente e cavitação plenamente desenvolvida, aproveitando as propriedades espaciais e frequenciais extraídas das janelas espectrais.
+%
+%Apesar dos resultados promissores, essa abordagem apresenta limitações inerentes ao grande volume de dados gerado e armazenado. O sistema MomeaProbe pode produzir dezenas de gigabytes por hora de operação contínua, o que é vantajoso durante a fase de treinamento dos modelos, mas inviável para o monitoramento em tempo real devido ao alto custo computacional e à latência de processamento. A geração de espectrogramas e a inferência em MLP 2D exigem processamento intensivo, tornando o sistema dependente de GPU ou CPU de alto desempenho para alcançar taxas adequadas de atualização.
+%
+%Diante dessas restrições, está em desenvolvimento uma solução baseada em \textbf{arquitetura FPGA-HIT (\textit{Hardware-in-the-Loop} com Inferência Temporal)}, voltada à execução direta de inferência em tempo real no hardware reconfigurável. Essa nova abordagem, que será detalhada na próxima subseção, visa reduzir drasticamente a latência e o consumo de energia, mantendo a precisão do modelo por meio da quantização e otimização do pipeline de inferência embarcado.
+%
+%\subsection{Análise comparativa de algoritmos de compressão}
+%
+%Com o objetivo de reduzir o volume de dados gerado pelos ensaios de Emissão Acústica, foi realizada uma análise comparativa de diferentes algoritmos de compressão aplicados a um arquivo representativo de experimento, denominado \texttt{ch1\_0000.momea12}, com tamanho original de 67.108.864~bytes (cerca de 64~MiB). O teste considerou variações de nível de compressão, número de \textit{threads} e plataforma de execução (CPU e GPU), permitindo avaliar o compromisso entre taxa de compressão e tempo de processamento.
+%
+%No caso do \textbf{LZMA} em CPU, observou-se que o nível de compressão 6 oferece uma redução significativa do tamanho dos dados, atingindo aproximadamente $90{,}7\%$ de compressão (arquivo final em torno de 6{,}2~MiB) quando executado com uma única \textit{thread}, à custa de um tempo de processamento da ordem de 28{,}7~s. A utilização de múltiplas \textit{threads} melhora substancialmente o desempenho: com quatro \textit{threads}, o tempo cai para cerca de 11{,}4~s, mantendo compressão muito próxima ($\approx 90{,}6\%$). Em níveis mais baixos (como nível 2), o LZMA reduz o tempo (para poucos segundos) mas também a taxa de compressão (cerca de $83{,}8\%$), evidenciando um claro compromisso entre profundidade da compressão e custo computacional.
+%
+%Para o \textbf{Zstandard (Zstd)} em CPU, os resultados indicam um comportamento mais equilibrado entre compressão e desempenho. No nível 8, obtém-se cerca de $84{,}1\%$ de compressão, com tempos da ordem de 13{,}7~s em execução monothread, reduzidos para aproximadamente 6{,}9~s com duas \textit{threads}. No nível 16, a compressão melhora para cerca de $88{,}4\%$ (arquivo final em torno de 7{,}8~MiB), porém com aumento expressivo do tempo de processamento (cerca de 79{,}5~s em uma \textit{thread}), parcialmente mitigado pelo uso de paralelismo (aproximadamente 25{,}4~s com quatro \textit{threads}). Em termos de eficiência prática, o Zstd em CPU mostra-se mais rápido que o LZMA em configurações de compressão similares, ainda que com uma taxa de compressão ligeiramente inferior no cenário de máxima compactação.
+%
+%Já os testes com algoritmos acelerados em \textbf{GPU} evidenciam um perfil distinto. O \textbf{LZ4 em GPU} apresentou compressão bastante modesta (cerca de $34{,}8\%$, isto é, o arquivo reduzido para aproximadamente 43{,}8~MiB), porém com tempos muito baixos, na faixa de 269 a 385~ms, praticamente constantes entre execuções. Trata-se, portanto, de uma opção orientada a \textit{tempo real}, adequada quando a prioridade é throughput máximo e a redução de dados pode ser limitada. O \textbf{Zstd em GPU}, por sua vez, alcançou aproximadamente $73{,}5\%$ de compressão (arquivo final em torno de 17{,}8~MiB), com tempo médio em torno de 95~ms, praticamente independente do nível de compressão configurado. Essa combinação de compressão moderada e latência extremamente baixa torna o Zstd em GPU o melhor compromisso entre redução de volume e desempenho bruto entre os algoritmos avaliados.
+%
+%De forma sintética, os resultados permitem destacar três regimes de operação: (i) \textit{máxima compressão}, em que o LZMA nível~6 em CPU atinge a melhor taxa (cerca de $90{,}7\%$), mas com tempo de processamento elevado; (ii) \textit{equilíbrio geral} em CPU, no qual o Zstd nível~16 com múltiplas \textit{threads} oferece boa compressão (cerca de $88{,}4\%$) a um custo temporal ainda significativo, porém menor que o LZMA em configuração equivalente; e (iii) \textit{baixa latência}, dominado pelos algoritmos em GPU, com destaque para o Zstd em GPU, que combina compressão intermediária (cerca de $73{,}5\%$) com tempos sub-100~ms. 
+%
+%Do ponto de vista do Projeto MOMEA, esses resultados reforçam que, embora algoritmos como LZMA sejam extremamente eficientes em termos de compactação, seu custo computacional em CPU generalista é incompatível com requisitos de monitoramento contínuo de longo prazo, evidenciando a necessidade de arquiteturas dedicadas (GPU, FPGA ou híbridas) que aliem compressão eficiente, baixa latência e capacidade de processamento sustentado.
+%
+%Os principais resultados da análise comparativa dos algoritmos de compressão são sintetizados na Tabela~\ref{tab:comp_resumo}, que resume, para cada combinação representativa de algoritmo e plataforma, o tamanho final do arquivo, a taxa de compressão obtida e o tempo médio de processamento. A tabela destaca não apenas os casos de máxima compactação, mas também aqueles em que o compromisso entre velocidade e redução de dados é mais favorável para uso em cenários de monitoramento contínuo.
+%
+%\begin{table}[H]
+%	\centering
+%	\small
+%	\caption{Resumo comparativo dos algoritmos de compressão aplicados ao arquivo \texttt{ch1\_0000.momea12} (tamanho original $\approx 67{,}1$~MB). Fonte: O autor}
+%	\label{tab:comp_resumo}
+%	\renewcommand{\arraystretch}{1.3}
+%	\resizebox{\textwidth}{!}{%
+%		\begin{tabular}{p{1.8cm} p{1.8cm} p{3.2cm} p{2.8cm} p{2.2cm} p{2.2cm} p{6cm}}
+%			\hline
+%			\textbf{Algoritmo} & \textbf{Plataforma} & \textbf{Configuração} & \textbf{Tamanho compactado (MB)} & \textbf{Taxa de compressão} & \textbf{Tempo} & \textbf{Comentário} \\ \toprule
+%			
+%			LZMA &
+%			CPU &
+%			Nível 2, 2 threads &
+%			$10{,}37 \text{ MB}$&
+%			$\approx 83{,}8\%$ &
+%			$\approx 1.891$ ms &
+%			Boa compressão com tempo moderado; ainda pesado para uso em fluxo contínuo. \\ %\hline
+%			
+%			LZMA &
+%			CPU &
+%			Nível 6, 4 threads &
+%			$6{,}01 \text{ MB}$&
+%			$\approx 90{,}6\%$ &
+%			$\approx 11.383$ ms &
+%			Melhor taxa de compressão entre os métodos testados, à custa de latência elevada. \\ %\hline
+%			
+%			Zstd &
+%			CPU &
+%			Nível 8, 2 threads &
+%			$10{,}16 \text{ MB}$&
+%			$\approx 84{,}1\%$ &
+%			$\approx 6.936$ ms &
+%			Mais rápido que LZMA em compressão semelhante; opção intermediária em CPU. \\ %\hline
+%			
+%			Zstd &
+%			CPU &
+%			Nível 16, 4 threads &
+%			$7{,}40 \text{ MB}$&
+%			$\approx 88{,}4\%$ &
+%			$\approx 25.382$ ms &
+%			Bom compromisso entre alta compressão e flexibilidade, porém ainda com custo temporal significativo. \\ %\hline
+%			
+%			LZ4 &
+%			GPU &
+%			Compressão padrão &
+%			$41{,}73 \text{ MB}$&
+%			$\approx 34{,}8\%$ &
+%			$\approx 269$–$385$ ms &
+%			Compressão modesta, mas com latência muito baixa; adequado quando a prioridade é throughput. \\ %\hline
+%			
+%			Zstd &
+%			GPU &
+%			Nível 8/16, execução única &
+%			$16{,}93 \text{ MB}$&
+%			$\approx 73{,}5\%$ &
+%			$\approx 95$ ms &
+%			Equilíbrio destacado: boa compressão com tempo sub-100 ms; melhor custo-benefício geral. \\ \bottomrule
+%			
+%	\end{tabular}}
+%\end{table}
+
+%Como síntese, os resultados apresentados indicam que a escolha do algoritmo de compressão ainda permanece em fase de estudo e refinamento, uma vez que o método adotado precisa conciliar, simultaneamente, boa taxa de compactação e desempenho compatível com o regime de aquisição contínua. Em termos práticos, isso significa que, se o sistema produz dados a uma taxa da ordem de $\approx22MiB/s$ (na configuração atual) ou até $\approx520MiB/s$ (no cenário de quatro ADCs operando em alta taxa).
+%
+%O algoritmo de compressão deve ser capaz de processar esse mesmo volume de dados em menos de um segundo por bloco equivalente, mantendo uma folga de desempenho que evite a formação de fila (\textit{backlog}) ao longo de longos experimentos. Dessa forma, a seleção final do esquema de compressão (e, eventualmente, de aceleração via GPU ou FPGA) permanece como parte ativa do trabalho em andamento, buscando um equilíbrio robusto entre compactação eficiente, viabilidade computacional e requisitos de monitoramento quase em tempo real.
+
+\section{FPGA e Técnica de HIT}
+
+Baseado na metodologia de detecção por \textbf{HIT (Hit Detection)}, descrita anteriormente na Seção~\ref{sec:UsoEA}, está em desenvolvimento uma implementação dedicada em \textbf{FPGA}, com o objetivo de realizar o pré-processamento e a filtragem dos sinais de Emissão Acústica (EA) diretamente no hardware, reduzindo significativamente o volume de dados a serem transmitidos e processados posteriormente no sistema de monitoramento.
+
+\subsection{Fluxo de Operação do Sistema Momea FPGA}
+
+O fluxo de operação do sistema Momea FPGA é sintetizado na Figura \ref{fig:MomeaFPGA}, que organiza visualmente as etapas de aquisição, pré-processamento, armazenamento e aplicação de modelos de aprendizado de máquina no novo arranjo baseado em filtragem embarcada. A representação destaca como a inserção do FPGA altera significativamente o pipeline original ao deslocar parte do processamento crítico para o próprio dispositivo embarcado, reduzindo o volume de dados transferido e simplificando as etapas subsequentes no software.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\linewidth]{figs/FluxoOperacaoMOMEAFPGA}
+	\caption[Fluxo de operação do sistema Momea FPGA]{Fluxo de operação do sistema Momea FPGA. Fonte: O autor}
+	\label{fig:MomeaFPGA}
+\end{figure}
+
+A Figura \ref{fig:MomeaFPGA} mostra que os sinais provenientes dos sensores são inicialmente encaminhados ao Sistema de Aquisição, que agora opera em conjunto com o módulo FPGA. Diferentemente da arquitetura USB original, onde os dados brutos eram transmitidos integralmente à aplicação, no modelo FPGA ocorre uma etapa adicional de filtragem e compactação prévia diretamente no hardware reconfigurável. Essa filtragem reduz a granularidade dos dados, eliminando trechos irrelevantes e retendo apenas segmentos significativos para análise, o que torna viável o envio das informações por meio de uma interface Ethernet de 100 Mb/s.
+
+Após o processamento no FPGA, os dados filtrados são gravados em um banco de dados SQLite temporário, responsável por armazenar o fluxo contínuo de amostras de forma compactada. Em seguida, o sistema de aplicação realiza operações de descompactação, transformação, ajuste de granularidade e persistência final no banco de dados SQLite da aplicação, etapa em que os dados são organizados no formato apropriado para inferência e análises posteriores.
+
+A Figura \ref{fig:MomeaFPGA} também ilustra o fluxo de processamento que alimenta os modelos de aprendizado de máquina e \textit{deep learning}. Os dados provenientes do banco de aplicação podem ser submetidos a algoritmos de classificação ou predição, cujo resultado é reintegrado ao pipeline para fins de diagnóstico, geração de relatórios ou \mbox{monitoramento em tempo real.}
+
+Assim, o diagrama enfatiza como a introdução do FPGA redistribui o esforço computacional ao longo da cadeia: parte significativa do pré-processamento passa a ocorrer no hardware embarcado, diminuindo a carga do software e permitindo que a etapa de aplicação opere com dados mais compactos, relevantes e de menor volume. Isso contribui para maior eficiência, menor uso de disco e maior previsibilidade temporal — aspectos críticos em sistemas de monitoramento contínuo de alta taxa.
+
+\subsection{Hardware}
+A plataforma selecionada para essa implementação é a \textbf{Arty A7-35T}, da Digilent, mostrada na Figura \ref{fig:Arty} equipada com o \textbf{FPGA Xilinx Artix-7 XC7A35T}. Esse dispositivo conta com aproximadamente 33.280 células lógicas, 1.800~kB de memória interna distribuída (Block RAM), 90 blocos DSP~(Digital Signal Processing) e interfaces externas configuráveis. O Artix-7 oferece excelente equilíbrio entre custo, consumo energético e capacidade de processamento paralelo, sendo ideal para aplicações de prototipagem de sistemas embarcados de processamento em tempo real.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figs/Arty_top.png}
+    \caption{Placa de desenvolvimento Arty A7 35T. Fonte: O autor.}
+    \label{fig:Arty}
+\end{figure}
+
+Na arquitetura proposta, o FPGA executa o processamento de eventos de Emissão Acústica a partir da técnica de \textbf{detecção de HIT}, a qual identifica e caracteriza apenas os trechos do sinal que ultrapassam limiares definidos de amplitude ou energia. Esse método, conforme discutido na fundamentação teórica, permite registrar parâmetros essenciais de cada evento — como amplitude máxima, duração, energia e tempo de ocorrência — em vez de armazenar o sinal completo. Dessa forma, o volume de dados é reduzido em várias ordens de magnitude, o que viabiliza o monitoramento contínuo de longo prazo sem sobrecarregar a comunicação nem o armazenamento.
+
+\subsection{Firmware}
+A implementação faz uso de uma \textbf{Soft CPU MicroBlaze}, processador configurável integrado ao FPGA e responsável pelo controle das tarefas de comunicação e gerenciamento do sistema. Sobre essa CPU, é executado o sistema operacional \textbf{FreeRTOS}, que permite o agendamento de múltiplas tarefas de forma determinística e de baixa latência, garantindo sincronismo entre a lógica de detecção de eventos e as rotinas de transmissão de dados.
+
+A comunicação entre o módulo FPGA e o sistema de supervisão é realizada por meio de uma interface \textbf{Ethernet 10/100~Mbps}, implementada via controlador MAC interno e pilha TCP/IP embarcada. Esse canal é utilizado tanto para o envio dos eventos detectados quanto para o recebimento de comandos de configuração, como atualização de limiares, modos de operação e parâmetros de calibração.
+
+Devido à natureza esparsa dos sinais de Emissão Acústica — em que longos períodos de silêncio são interrompidos por breves eventos de alta energia —, a técnica de HIT proporciona uma drástica redução no volume de dados transmitidos. Durante o regime normal de operação, em que não há eventos significativos, o tráfego de dados é mínimo. Mesmo durante a ocorrência de múltiplos eventos, a quantidade de informação permanece controlada, uma vez que apenas os descritores compactos de cada HIT são enviados.
+
+Essa abordagem híbrida, combinando \textbf{processamento distribuído em hardware} e \textbf{controle multitarefa em software embarcado}, representa um avanço significativo rumo à \textbf{plataforma MOMEA-FPGA-HIT}, cuja meta é realizar a detecção de falhas em tempo real, com baixo consumo, alta confiabilidade e escalabilidade para integração em sistemas industriais. Os resultados preliminares indicam que essa arquitetura é capaz de reduzir substancialmente a latência de detecção e o volume de dados, mantendo a sensibilidade necessária para identificar fenômenos de cavitação e \mbox{microtrincas em rotores de motobombas.}
+
+\subsection{Software}
+
+Na camada de \textbf{software} do sistema \textbf{MomeaFPGA}, o foco desloca-se significativamente em relação ao ambiente MomeaCapture baseado em USB~3.0. Enquanto a captura contínua via USB exigia arquiteturas complexas de \textit{multithreading}, mecanismos de compactação imediata (LZMA) e estratégias de escrita em disco de alta vazão, o uso de uma \textbf{interface Ethernet de 100~Mb/s} associado ao \textbf{pré-processamento no próprio FPGA} resulta em uma redução substancial da taxa de dados que chega ao computador hospedeiro. Essa mudança de paradigma simplifica o pipeline de software e diminui a necessidade de estruturas de sincronização e buffers extensos.
+
+%No MomeaFPGA, a lógica embarcada realiza operações de \textit{hit detection}, filtragem temporal e descarte de trechos irrelevantes do sinal — funcionalidades inviáveis no modelo anterior devido à limitação de processamento em CPU frente ao enorme fluxo bruto de dados. Como consequência, apenas segmentos de interesse (hits) ou pequenas janelas de sinal pré-selecionadas são transmitidas via Ethernet, reduzindo a taxa de dados para valores compatíveis com o limite teórico da interface de 100~Mb/s. Esse pré-processamento embarcado torna o fluxo mais previsível, reduz a redundância e minimiza gargalos tradicionalmente associados a gravação em disco e compactação em tempo real.
+%
+%Do ponto de vista arquitetural, a camada de software do MomeaFPGA torna-se substancialmente mais simples e leve, pois o pré-processamento realizado no hardware elimina o fluxo massivo de dados contínuos característico da versão USB. Assim, o software passa a exigir apenas três componentes essenciais:
+%
+%\begin{enumerate}
+%	\item  Um módulo leve de recepção UDP/TCP, responsável por receber pacotes contendo apenas eventos HIT ou pequenas janelas de sinal. Como o volume de dados é reduzido, essa camada pode ser implementada com uma API de rede simples, sem mecanismos sofisticados de controle de fluxo ou buffers profundos;
+%	
+%	\item um gerenciador de filas minimalista, encarregado de organizar a chegada dos eventos e disponibilizá-los para os módulos de armazenamento e visualização. A baixa taxa de dados permite utilizar filas FIFO de pequena profundidade, com sincronização reduzida e sem necessidade de estruturas lock-free complexas;
+%	
+%	\item Rotinas de armazenamento e visualização de baixo custo computacional, voltadas a registrar apenas os descritores de cada HIT (como amplitude, duração e energia) e apresentar visualizações simples e responsivas. Como não há mais necessidade de compactação pesada ou gravação de longos sinais contínuos, essas rotinas operam com alta estabilidade e mínimo consumo de CPU.
+%\end{enumerate}
+%
+%Diferentemente das versões iniciais do MomeaCapture, que empregavam múltiplas \textit{threads} (GUI, captura USB, escrita em disco), \textit{buffers} circulares, Redis como camada intermediária e diversos estágios de compactação — o ambiente de software do MomeaFPGA opera com uma complexidade muito menor. A filtragem no FPGA elimina a necessidade de compactação imediata, reduz o risco de \textit{backlog} e remove completamente a dependência de soluções externas de memória intermediária, como o Redis, cuja persistência temporária e limitação prática de vazão (\(\approx22\,\text{MiB/s}\)) se mostraram insuficientes para cenários de alta taxa.
+%
+%A adoção do fluxo Ethernet 100~Mb/s pré-filtrado, portanto, redefine o papel do software: ao invés de funcionar como um pipeline de alta performance responsável por absorver um volume massivo de dados brutos, ele passa a atuar como uma camada de coleta, organização e visualização dos eventos já processados no hardware. Isso reduz a carga computacional, simplifica a arquitetura interna e aumenta a robustez geral do sistema, tornando-o mais adequado para aplicações reais de monitoramento contínuo.
+
+
+\subsection{Comparação entre os fluxos Momea USB e Momea FPGA}
+
+A comparação entre os fluxos de operação do \textbf{Momea USB} e do \textbf{Momea FPGA} evidencia uma mudança estrutural profunda no modo como os dados de Emissão Acústica (EA) são adquiridos, processados e entregues à aplicação de análise. Embora ambos os sistemas tenham a mesma finalidade, possibilitar o registro contínuo de sinais de alta taxa e sua posterior análise por modelos de aprendizado de máquina, eles diferem significativamente na forma como distribuem o esforço computacional ao longo do pipeline.
+
+\begin{enumerate}
+	\item \textbf{Aquisição e volume de dados}
+	\begin{itemize}
+		\item \textbf{Momea USB:} 
+		Todo o sinal bruto adquirido pelo ADC é transferido via USB~3.0, frequentemente atingindo taxas de dezenas a centenas de~MiB/s. Essa estratégia garante máxima fidelidade ao sinal, mas impõe grande pressão sobre o software, que precisa lidar com picos elevados de taxa, exigindo arquiteturas \textit{multithread} complexas, bufferização agressiva e algoritmos de compressão de alto desempenho.
+		
+		\item \textbf{Momea FPGA:}
+		Antes do envio, o FPGA executa filtragem, redução de granularidade e compactação preliminar, reduzindo drasticamente o volume de dados transmitidos. Isso possibilita o uso de uma interface Ethernet de 100~Mb/s, mais simples e robusta, deslocando o gargalo computacional do software para o hardware.
+	\end{itemize}
+	
+	\item \textbf{Papel do software de captura}
+	\begin{itemize}
+		\item \textbf{USB:}
+		O software MomeaCapture assume praticamente todo o esforço computacional: captura, compactação, escrita em disco, sincronização, controle de \textit{backlog} e pré-processamento. Isso levou ao desenvolvimento de arquiteturas complexas com Redis, múltiplas \textit{threads} e \textit{buffers} \textit{lock-free}.
+		
+		\item \textbf{FPGA:}
+		Como o sinal já chega pré-filtrado e reduzido, o software torna-se mais simples e previsível. Sua responsabilidade passa a ser apenas registrar os pacotes no banco SQLite temporário e encaminhá-los à camada de aplicação, eliminando dependências como Redis.
+	\end{itemize}
+	
+	\item \textbf{Granularidade e preparação dos dados}
+	\begin{itemize}
+		\item \textbf{USB:} 
+		Toda a transformação, segmentação, detecção de eventos, janelamento, normalização, é executada no PC, aumentando a carga de pré-processamento antes da etapa de aprendizado de máquina.
+		
+		\item \textbf{FPGA:}
+		Parte dessas operações é realizada no próprio hardware, reduzindo a complexidade do software e acelerando o caminho até a inferência.
+	\end{itemize}
+	
+	\item \textbf{Integração com modelos de ML/DL}
+	\begin{itemize}
+		\item \textbf{USB:}
+		Os modelos recebem dados totalmente brutos, o que exige etapas adicionais de limpeza e recomposição dos blocos de amostragem.
+		
+		\item \textbf{FPGA:}
+		Os dados chegam mais estruturados e segmentados, facilitando sua utilização por classificadores CNN. Além disso, o uso de FPGA abre caminho para futura inferência embarcada, alinhada às arquiteturas FINN e QNN.
+	\end{itemize}
+	
+	\item \textbf{Confiabilidade e escalabilidade}
+	\begin{itemize}
+		\item \textbf{USB:}
+		A elevada taxa de dados torna o sistema sensível a gargalos de CPU, limites de disco e \textit{overhead} do sistema operacional. Pequenas perdas de desempenho podem resultar em descarte de amostras.
+		
+		\item \textbf{FPGA:}
+		A filtragem prévia cria um fluxo de dados mais estável e menos dependente de picos de processamento, aumentando a escalabilidade e resiliência do sistema.
+	\end{itemize}
+\end{enumerate}
+
+A análise conjunta dos dois fluxos evidencia que o MomeaUSB e o MomeaFPGA representam paradigmas distintos de aquisição e tratamento de dados de Emissão Acústica. Enquanto o primeiro adota um modelo centrado no PC, em que todo o sinal bruto é encaminhado para processamento posterior, o segundo distribui parte significativa do esforço computacional para a borda, reduzindo o volume de dados e simplificando o software de captura.
+
+A Tabela \ref{tab:ComparacaoMomeaUSB_FPGA} seguir sintetiza as principais diferenças estruturais entre as duas arquiteturas, destacando como o pré-processamento embarcado no FPGA altera de maneira profunda o equilíbrio entre carga computacional, latência e escalabilidade do sistema.
+
+\begin{table}[H]
+	\caption{Comparação entre MomeaUSB e MomeaFPGA, Fonte: O autor}
+	\label{tab:ComparacaoMomeaUSB_FPGA}
+	\centering
+	\footnotesize
+	\renewcommand{\arraystretch}{1.35}
+	\begin{tabular}{p{4cm} p{5.5cm} p{5.5cm}}
+		\toprule
+		\textbf{Aspecto} & \textbf{Momea USB} & \textbf{Momea FPGA} \\
+		\midrule
+		
+		Volume de dados & Muito alto (sinal bruto, dezenas--centenas de MiB/s) 
+		& Baixo (eventos ou janelas filtradas, poucos KiB/s a MiB/s) \\
+		
+		Interface de comunicação & USB 3.0 de alta vazão (instável sob carga) 
+		& Ethernet 100~Mb/s (fluxo estável e previsível) \\
+		
+		Carga no PC & Muito elevada (captura + compressão + escrita + pré-processamento)
+		& Moderada (armazenamento e visualização) \\
+		
+		Complexidade do software & Alta, com múltiplas threads, Redis, buffers profundos e compactação 
+		& Baixa/média, com módulos simples para recepção e registro de eventos \\
+		
+		Latência do pipeline & Maior e variável (sensível a I/O, CPU e sistema operacional)
+		& Menor e mais estável, com pré-filtragem no hardware \\
+		
+		Risco de \textit{backlog} & Elevado, especialmente durante longos experimentos 
+		& Fortemente reduzido devido à diminuição da taxa de dados \\
+		
+		Preparação para ML & Totalmente executada no PC (segmentação, normalização, janelamento)
+		& Parcialmente antecipada no FPGA (granularidade e filtragem) \\
+		
+		Possibilidades futuras & Dependência de otimizações por software e hardware externo 
+		& Suporte natural a inferência embarcada com rede MLP. \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+
+\subsection{Limitações do Método de HIT}
+
+Embora a técnica de detecção de eventos por \textbf{HIT} apresente vantagens significativas em termos de simplicidade, baixo custo computacional e eficiência no uso de memória, ela também possui limitações importantes quando comparada a abordagens baseadas em \textbf{aprendizado de máquina}, especialmente redes MLP.
+
+A principal limitação do método de HIT reside no fato de que sua operação depende fortemente da definição de \textbf{limiares de detecção} (thresholds). Esses limiares são utilizados para identificar o instante em que a amplitude do sinal de Emissão Acústica (EA) ultrapassa um valor pré-determinado, indicando a ocorrência de um evento. No entanto, limiares mal ajustados podem levar a dois problemas críticos:
+
+\begin{itemize}
+    \item \textbf{Perda de eventos relevantes:}  
+    Eventos de baixa amplitude, frequentemente associados a fenômenos incipientes, como o início da cavitação ou a formação de microtrincas, podem não ultrapassar o limiar definido e, portanto, não ser registrados. Essa limitação compromete a sensibilidade do sistema em detectar falhas em estágios iniciais.
+
+    \item \textbf{Falsos negativos e dependência de calibração:}  
+    O desempenho do método depende fortemente da calibração experimental, que pode variar conforme o tipo de sensor, o acoplamento mecânico, o ruído estrutural e as condições de operação da máquina. Pequenas variações nessas condições podem alterar significativamente a amplitude dos sinais, exigindo reconfigurações frequentes dos parâmetros de detecção.
+\end{itemize}
+
+Além disso, o método de HIT não considera a \textbf{estrutura temporal e
+	espectral completa} do sinal, pois registra apenas parâmetros estatísticos
+resumidos, como amplitude máxima, duração, energia e número de contagens, sem
+preservar a forma de onda original. Isso limita a capacidade do sistema de
+capturar padrões complexos ou sutis que poderiam ser indicativos de processos
+físicos distintos, como cavitação transitória, impactos mecânicos ou ruídos
+estruturais.
+
+Em contraste, modelos de aprendizado profundo, como as redes MLP, analisam
+diretamente os sinais brutos ou suas representações espectro-temporais,
+aprendendo automaticamente características discriminativas que podem não ser
+evidentes a partir de parâmetros manuais. Essas redes são capazes de capturar
+relações não lineares e variações espectrais de pequena magnitude, o que as torna
+particularmente eficazes para a identificação de estágios iniciais de cavitação
+ou falhas de natureza intermitente.
+
+É importante destacar que, quando comparadas a arquiteturas mais complexas,
+como redes convolucionais (CNN) ou recorrentes (RNN, LSTM), as MLPs apresentam
+limitações quanto à exploração explícita de estruturas espaciais ou temporais
+de longo alcance. No entanto, essa simplicidade estrutural representa uma
+vantagem significativa no contexto de implementação em hardware
+reconfigurável. A organização baseada essencialmente em operações de
+multiplicação e acumulação favorece o mapeamento eficiente em FPGA, resultando
+em menor consumo de blocos lógicos, uso reduzido de memória e maior
+previsibilidade de latência, características fundamentais para sistemas
+embarcados de monitoramento contínuo.
+
+Por fim, embora o método de HIT seja extremamente eficiente para
+\textbf{monitoramento contínuo embarcado}, ele se mostra limitado em cenários que
+demandam \textbf{diagnóstico detalhado ou classificação precisa de eventos}.
+Nesse sentido, uma solução híbrida, na qual a detecção inicial por HIT seja
+complementada por um módulo de inferência baseado em MLP embarcado em FPGA,
+surge como uma alternativa promissora, combinando a eficiência do
+pré-processamento em hardware com o poder discriminativo do aprendizado
+profundo.
+
+
+%\section{Proposta de Trabalho}
+%
+%\textcolor{red}{Tenho que conversar com o Prof. Márcio para definir se essa pode ser a pode ser a proposta de trabalho ou se preciso alterar/refinar}
+%
+%Os resultados obtidos até o momento demonstram a viabilidade da detecção de cavitação em bombas centrífugas por meio da análise espectro-temporal de sinais acústicos, utilizando redes neurais convolucionais aplicadas a imagens de espectrogramas geradas a partir da Transformada Rápida de Fourier janelada. Essa abordagem, implementada no ambiente de software MomeaCapture, tem se mostrado eficaz para classificar diferentes estágios de cavitação e distinguir condições de operação normais, incipientes e severas. No entanto, sua principal limitação reside no elevado volume de dados processados e na latência associada ao fluxo contínuo de aquisição via USB~3.0, o que restringe sua aplicação em monitoramento em tempo real.
+%
+%Para superar essas limitações, propõe-se o estudo e a simulação de uma arquitetura embarcada de \textbf{inferência em FPGA}, baseada em uma rede CNN-1D otimizada e quantizada. Essa proposta busca unir o poder discriminativo das redes neurais convolucionais — capazes de identificar padrões sutis e não lineares mesmo em sinais compactados — com a eficiência e o paralelismo inerentes ao hardware reconfigurável. O objetivo é possibilitar o \textbf{processamento em tempo quase real} (\textit{near real-time}) diretamente no dispositivo, reduzindo significativamente a latência e o volume de dados transmitidos, de modo que apenas alertas de falhas ou eventos relevantes sejam enviados ao sistema de monitoramento superior.
+
+\section{Proposta de Trabalho}
+
+Os estudos realizados até o momento demonstram que a detecção de cavitação por meio da análise espectro–temporal de sinais de Emissão Acústica (EA) é tecnicamente viável. A abordagem atualmente utilizada no ambiente MomeaCapture, baseada na geração de espectrogramas via STFT e na aplicação de modelos CNN-2D, apresentou resultados promissores na identificação de diferentes estágios de cavitação em bombas centrífugas. Contudo, essa solução enfrenta limitações práticas importantes: o elevado volume de dados transferidos continuamente via USB~3.0, a necessidade de processamento intensivo em CPU/GPU e a latência acumulada ao longo do pipeline dificultam sua aplicação em monitoramento contínuo de campo.
+
+Diante dessas restrições, este trabalho propõe a investigação e a simulação de uma arquitetura embarcada de \textbf{inferência em FPGA}, na qual uma rede MLP quantizada opere diretamente sobre segmentos filtrados do sinal. O objetivo é deslocar parte relevante do pré-processamento para o hardware — por meio da técnica de \textit{hit detection} (HIT) — e explorar o paralelismo intrínseco dos FPGAs para reduzir o volume de dados transmitido e diminuir a latência de análise, conforme a \ref{fig:MomeaMLP}. Essa mudança possibilita um \textbf{processamento em tempo quase real} (\textit{near real-time}) no próprio dispositivo, permitindo que o sistema envie apenas eventos relevantes ao nível superior de monitoramento. 
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\linewidth]{figs/FluxoOperacaoMOMEAMLP}
+	\caption[Fluxo de operação do sistema Momea MLP]{Fluxo de operação do sistema Momea FPGA. Fonte: O autor}
+	\label{fig:MomeaMLP}
+\end{figure}
+
+A Tabela \ref{tab:comparacao_usb_fpga}, apresenta uma comparação sintética entre a abordagem atual (baseada em espectrogramas e CNN-2D) e a arquitetura proposta (MLP em FPGA), destacando suas diferenças estruturais e operacionais.
+
+\begin{table}[H]
+ \centering
+ \footnotesize
+ \caption{Comparação entre os métodos contínuo (USB + CNN-2D) e embarcado (FPGA + MLP). Fonte: O autor}
+ \label{tab:comparacao_usb_fpga}
+ \renewcommand{\arraystretch}{1.3}
+ \resizebox{\textwidth}{!}{
+ \begin{tabular}{p{3.2cm} p{5.8cm} p{5.8cm}}
+	 \toprule
+	 \textbf{Aspecto} & \textbf{Método Contínuo (USB + CNN-2D)} & \textbf{Método Embarcado (FPGA + MLP)} \\ %\hline
+	 \textbf{Aquisição de Dados} & Fluxo contínuo via USB~3.0 (40~Msps por canal) & Aquisição seletiva por eventos (HITs) \\ %\hline
+	 \textbf{Pré-processamento} & FFT janelada e geração de espectrogramas & Detecção de HIT e extração de parâmetros compactos \\ %\hline
+	 \textbf{Modelo de IA} & CNN-2D aplicada a imagens espectro-temporais & MLP aplicada a trechos de sinal compactado \\ %\hline
+	 \textbf{Volume de Dados} & Elevado — dezenas de GB/hora & Reduzido — apenas eventos relevantes \\ %\hline
+	 \textbf{Latência de Processamento} & Alta — dependente de GPU/CPU & Baixa — inferência em hardware dedicada \\ %\hline
+	 \textbf{Consumo de Energia} & Alto (processamento contínuo) & Baixo (ativação sob demanda) \\ %\hline
+	 \textbf{Aplicação Ideal} & Treinamento e análise \textit{off-line} & Monitoramento contínuo embarcado em campo \\ %\hline
+	 \bottomrule
+ \end{tabular}}
+\end{table}
+
+ Com base nesses resultados e na análise comparativa apresentada, o desenvolvimento do sistema \textbf{FPGA + MLP} representa o próximo passo natural do projeto MOMEA. Essa solução busca aliar a precisão do aprendizado profundo à eficiência da computação reconfigurável, estabelecendo as bases para uma plataforma de \textbf{monitoramento inteligente em tempo real} capaz de detectar cavitação e falhas incipientes com alta sensibilidade e confiabilidade, diretamente no ambiente industrial.

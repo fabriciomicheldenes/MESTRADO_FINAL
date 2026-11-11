@@ -1,0 +1,448 @@
+\section{Aprendizado de Máquina}
+\label{sec:AM}
+
+
+A Inteligência Artificial constitui um campo interdisciplinar dedicado ao desenvolvimento de sistemas computacionais capazes de executar tarefas tradicionalmente associadas à cognição humana, tais como percepção, reconhecimento de padrões, tomada de decisão e raciocínio adaptativo. Seu objetivo central é reproduzir (e, em algumas situações, superar) aspectos do comportamento inteligente por meio de modelos matemáticos, estruturas algorítmicas e processamento de grandes volumes de dados \cite{goodfellow2016deep}.
+
+Dentro desse panorama, o AM é a subárea que estuda algoritmos que aprendem a partir de exemplos \cite{bishop2006pattern}. Em vez de depender de regras fixas programadas manualmente, esses algoritmos ajustam seus parâmetros internos de forma automática quando expostos a novos dados, aprimorando progressivamente seu desempenho em tarefas específicas. Essa característica torna o AM particularmente adequado a problemas complexos, não lineares ou de natureza estocástica, nos quais abordagens analíticas \mbox{tradicionais apresentam limitações.}
+
+Entre os métodos mais influentes de AM destacam-se as Redes Neurais Artificiais (RNA), inicialmente inspiradas em princípios do processamento neural biológico, desde o modelo formal de neurônio proposto por \citeonline{mcculloch1943logical} até as formulações consolidadas em obras clássicas como \citeonline{haykin2001redes}. Embora tais modelos tenham se tornado a base das arquiteturas modernas de aprendizado profundo, eles representam abstrações significativamente simplificadas do funcionamento do sistema nervoso real, empregando ativações contínuas e sincronizadas que não refletem diretamente a natureza pulsada e esparsa da comunicação neuronal biológica.
+
+%Estudos recentes, como o de \citeonline{zheng2022introductory}, ampliam essa discussão ao comparar as Redes Neurais Artificiais convencionais (\textit{Artificial Neural Networks, ANNs}) com as Redes Neurais Pulsadas (\textit{Spiking Neural Networks, SNNs)}, modelos que buscam aproximar de forma mais fidedigna a dinâmica eletrofisiológica observada em neurônios reais. Enquanto as ANNs utilizam funções de ativação contínuas e densas, as SNNs operam com eventos discretos de disparo, \textit{spikes}, permitindo codificação temporal, maior esparsidade e potencial redução significativa no consumo energético. Além disso, diferem quanto aos mecanismos de aprendizagem: ao passo que as ANNs dependem tipicamente do \textit{backpropagation} e de gradientes contínuos, as SNNs investigam regras de aprendizado local inspiradas na biologia, como o \mbox{\textit{Spike-Timing-Dependent Plasticity, STDP.}}
+%
+%Assim, a literatura contemporânea evidencia uma evolução no entendimento da relação entre modelos computacionais e sistemas biológicos: as ANNs permanecem essenciais para aplicações práticas em larga escala devido à maturidade de suas técnicas de otimização, enquanto as SNNs representam uma fronteira promissora rumo a arquiteturas mais eficientes, esparsas e biologicamente plausíveis, conectando de modo mais direto os princípios da inteligência natural aos mecanismos da inteligência artificial.
+%
+%Nas redes naturais, cada neurônio, Figura \ref{fig:neuronio} é constituído por dendritos (responsáveis pela recepção dos estímulos provenientes de outras células), pelo corpo celular (que integra e processa os sinais recebidos) e pelo axônio (que transmite a saída para outras células). A comunicação ocorre por meio de impulsos elétricos, cuja frequência determina o nível de ativação do neurônio \citeonline{haykin2001redes}. Ainda que as redes biológicas não transmitam sinais negativos e apresentem organização morfológica extremamente heterogênea, constituem o modelo conceitual que fundamenta a criação das RNAs.
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[width=0.65\linewidth]{figs/AprendizadoDeMaquina/Neuronio}
+%	\caption{Ilustração de um Neurônio. Adaptado de \citeonline{zheng2022introductory}.}
+%	\label{fig:neuronio}
+%\end{figure}
+%
+%O neurônio artificial, por sua vez, é uma abstração computacional que captura os elementos essenciais do processo biológico:
+%\begin{enumerate}[label=(\roman*)]
+%	\item entradas provenientes do meio ou de outros neurônios;
+%	\item sinapses simuladas por pesos, $w_1, w_2, w_3, ... w_n$ que modulam a influência de cada entrada;
+%	\item um termo de viés (bias), que desloca a função de ativação e permite maior flexibilidade ao modelo;
+%	\item um somador, responsável por combinar as entradas ponderadas;
+%	\item uma função de ativação, que limita ou transforma a amplitude do sinal gerado; e
+%	\item uma saída, transmitida à próxima camada da rede.
+%\end{enumerate}
+%
+%Em conjunto, múltiplos neurônios artificiais organizados em camadas interconectadas formam arquiteturas capazes de aproximar funções complexas, detectar regularidades em dados ruidosos e extrair características relevantes de sinais multidimensionais. Essa capacidade emergente explica o amplo uso das RNAs em visão computacional, processamento de sinais, reconhecimento de fala, análise temporal e, particularmente neste trabalho, detecção de padrões em sinais de Emissão Acústica.
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[width=0.85\linewidth]{figs/AprendizadoDeMaquina/NeuronioArtificial}
+%	\caption{Neurônio artificial. Fonte: O autor.}
+%	\label{fig:artificialneuronmodelenglish}
+%\end{figure}
+%
+%O processo de aprendizado pode ocorrer de diferentes formas, dependendo da disponibilidade e do tipo de informação fornecida ao modelo. De modo geral, o ML é classificado em três categorias principais: aprendizado supervisionado, em que o modelo é treinado com exemplos rotulados; aprendizado não supervisionado, no qual se busca identificar padrões e agrupamentos ocultos em dados não rotulados; e aprendizado por reforço, baseado na interação contínua de um agente com um ambiente para maximizar recompensas acumuladas. Cada uma dessas abordagens apresenta características próprias e é adequada a contextos específicos de aplicação, como classificação, regressão, agrupamento e controle adaptativo.
+
+Um subconjunto do AM é o DL, que emprega arquiteturas compostas por múltiplas camadas de processamento, as chamadas redes neurais profundas. Essas estruturas são inspiradas no funcionamento do cérebro humano e são capazes de extrair representações hierárquicas e abstratas dos dados, capturando padrões complexos e não lineares. O DL tem se destacado em aplicações de alto impacto, como reconhecimento de voz e imagem, tradução automática, diagnóstico médico assistido e análise de sinais dinâmicos, devido à sua capacidade de generalização quando há grandes volumes de dados \cite{lecun2015deep,goodfellow2016deep}.
+
+Nos últimos anos, a combinação entre o DL e dispositivos de alto desempenho, como GPUs e FPGAs, tem ampliado significativamente o escopo de aplicação dessas técnicas, tornando viável a análise em tempo real de dados de alta taxa de amostragem, como os provenientes de sensores acústicos e vibrométricos empregados no monitoramento de máquinas rotativas. Essa integração entre IA e instrumentação digital representa um dos pilares do paradigma da manutenção preditiva inteligente, na qual modelos treinados são utilizados para detectar anomalias, prever falhas e otimizar a operação de sistemas industriais complexos \cite{Shawahna2019,liu2023review}.
+
+%
+%O campo do aprendizado de máquina abrange diferentes abordagens de treinamento, cada uma fundamentada na forma como o modelo interage com os dados e aprende a partir deles. De maneira geral, essas abordagens são organizadas em três grandes paradigmas: o aprendizado supervisionado, o aprendizado não supervisionado e o aprendizado por reforço. Cada paradigma apresenta características próprias, vantagens e limitações, sendo aplicável a diferentes tipos de problemas de modelagem, classificação e \mbox{controle em sistemas complexos.}
+
+Quanto à forma de aprender, os algoritmos de AM costumam ser agrupados em três paradigmas: supervisionado, não supervisionado e por reforço \cite{bishop2006pattern,goodfellow2016deep}. A Figura~\ref{fig:AprendizadoDeMaquinaConceitos} compara esses paradigmas e suas aplicações típicas em contextos industriais. Cada paradigma difere quanto à forma de aprendizado, à disponibilidade de rótulos nos dados e ao tipo de \textit{feedback} recebido durante o processo de treinamento.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{figs/AprendizadoDeMaquina/AprendizadoDeMaquinaConceitos.pdf}
+    \caption{Paradigmas do AM e exemplos de aplicação industrial; em destaque, o paradigma utilizado neste trabalho. Fonte: o autor.}
+    \label{fig:AprendizadoDeMaquinaConceitos}
+\end{figure}
+
+\begin{itemize}
+    \item \textbf{Aprendizado Supervisionado:} Baseia-se na utilização de conjuntos de dados rotulados, nos quais cada amostra possui uma resposta conhecida. O modelo é treinado para aprender a relação entre entradas e saídas, generalizando o comportamento para novos dados. É amplamente empregado em tarefas de classificação e regressão, como a \textbf{detecção de falhas em sensores} ou a previsão de desgaste de componentes em bombas e turbinas.
+
+    \item \textbf{Aprendizado Não Supervisionado:} Opera sobre dados não rotulados, buscando identificar padrões e estruturas ocultas. Utiliza técnicas como o \textit{k-means} ou análise de componentes principais (\textit{Principal Component Analysis}, PCA) \cite{jolliffe2016} para agrupar dados semelhantes ou reduzir dimensionalidade. Essa abordagem é especialmente útil para \textbf{agrupamento de modos de operação}, detecção de anomalias e análise exploratória de sinais industriais.
+
+    \item \textbf{Aprendizado por Reforço:} Difere dos paradigmas anteriores por envolver a interação contínua entre um agente e um ambiente. A cada ação, o agente recebe uma recompensa ou penalidade, aprendendo a maximizar seu desempenho ao longo do tempo. Esse método é aplicado em \textbf{controle adaptativo de processos industriais}, robótica e otimização de sistemas dinâmicos sob condições variáveis.
+\end{itemize}
+
+A Figura~\ref{fig:AprendizadoDeMaquinaConceitos} sintetiza graficamente essa classificação, destacando a complementaridade entre os paradigmas de Aprendizado Supervisionado, Não Supervisionado e por Reforço. Essa taxonomia ressalta a relevância das técnicas de AM para a construção de sistemas inteligentes que não apenas identificam falhas, mas extraem conhecimento útil para otimizar processos. Em última análise, o diagrama ilustra o arcabouço conceitual para o desenvolvimento de soluções voltadas à manutenção preditiva, à análise de falhas em componentes mecânicos e ao monitoramento com baixa latência de inferência, promovendo a detecção precoce de anomalias e garantindo a maior robustez de decisão no ambiente industrial.
+
+%O aprendizado de máquina engloba uma ampla variedade de algoritmos, cada um com princípios matemáticos e áreas de aplicação específicas. A escolha do modelo mais adequado depende diretamente da natureza dos dados, do objetivo da análise e das restrições computacionais do sistema. De forma geral, entre os principais algoritmos utilizados em ML, são:
+%
+% \begin{itemize}
+%     \item \textbf{Redes Neurais Artificiais (ANNs):} inspiradas no funcionamento biológico do cérebro, compostas por camadas de neurônios interconectados capazes de aprender relações complexas entre variáveis.
+%     \item \textbf{Árvores de Decisão e Random Forest:} modelos baseados em regras hierárquicas que realizam divisões sucessivas do espaço de dados, amplamente empregados em classificação e regressão devido à sua interpretabilidade.
+%     \item \textbf{Máquinas de Vetores de Suporte (SVMs):} algoritmos que buscam maximizar a margem entre classes, eficazes em conjuntos de dados de alta dimensionalidade e com fronteiras não lineares.
+%     \item \textbf{Modelos de Mistura Gaussiana (GMMs):} utilizados para modelar distribuições probabilísticas complexas e realizar agrupamento (clustering) de dados de natureza heterogênea.
+%     \item \textbf{Métodos de Ensemble, como Gradient Boosting:} combinam múltiplos modelos fracos (geralmente árvores de decisão) para formar um modelo forte, otimizando o desempenho preditivo e reduzindo o erro de generalização.
+%     \item \textbf{Redes Neurais Multicamada (MLP):} arquiteturas profundas projetadas para extrair automaticamente padrões espaciais ou temporais, amplamente empregadas em visão computacional, processamento de áudio e diagnóstico industrial.
+% \end{itemize}
+
+%\begin{table}[H]
+%\centering
+%\caption{Principais algoritmos de aprendizado de máquina e suas características gerais.}
+%\label{tab:algoritmos_ml}
+%\renewcommand{\arraystretch}{1.3}
+%\resizebox{\textwidth}{!}{%
+%\begin{tabular}{p{4cm} p{11cm}}
+%\hline
+%\textbf{Algoritmo} & \textbf{Descrição Geral} \\ \hline
+%
+%\textbf{Redes Neurais Artificiais (ANNs)} &
+%Inspiradas no funcionamento biológico do cérebro, são compostas por camadas de neurônios interconectados capazes de aprender relações complexas entre variáveis, sendo adequadas para modelar fenômenos não lineares. \\ \hline
+%
+%\textbf{Árvores de Decisão e Random Forest} &
+%Modelos baseados em regras hierárquicas que realizam divisões sucessivas do espaço de dados. São amplamente empregados em tarefas de classificação e regressão, destacando-se pela interpretabilidade e robustez a ruído. \\ \hline
+%
+%\textbf{Máquinas de Vetores de Suporte (SVMs)} &
+%Algoritmos que buscam maximizar a margem entre classes, sendo eficazes em conjuntos de dados de alta dimensionalidade e com fronteiras não lineares, especialmente em classificações binárias. \\ \hline
+%
+%\textbf{Modelos de Mistura Gaussiana (GMMs)} &
+%Utilizados para modelar distribuições probabilísticas complexas, permitindo identificar grupos latentes de dados (\textit{clustering}) em aplicações de natureza heterogênea e não supervisionada. \\ \hline
+%
+%\textbf{Métodos de Ensemble (ex.: Gradient Boosting)} &
+%Combinam múltiplos modelos fracos (geralmente árvores de decisão) para formar um modelo mais robusto, otimizando o desempenho preditivo e reduzindo o erro de generalização. \\ \hline
+%
+%\textbf{Redes Neurais Multicamada (MLP)} &
+%Arquiteturas profundas projetadas para extrair automaticamente padrões espaciais ou temporais por meio de filtros convolucionais, amplamente aplicadas em visão computacional, processamento de sinais acústicos e diagnóstico industrial. \\ \hline
+%\end{tabular}}
+%\end{table}
+%
+%Entre esses métodos, as \textbf{Redes Neurais Multicamada (MLP)} merecem destaque por sua capacidade de extrair representações hierárquicas de dados brutos, reduzindo a necessidade de pré-processamento manual. Embora originalmente concebidas para o reconhecimento de imagens, as MLP têm-se mostrado extremamente eficazes na análise de sinais acústicos e séries temporais, como os provenientes de sensores de emissão acústica, devido à sua habilidade em capturar correlações locais \mbox{e padrões de alta frequência.}
+%
+%A arquitetura típica de uma CNN é composta por diferentes tipos de camadas, cada uma com função específica no processo de aprendizado:
+%
+%\begin{itemize}
+%    \item \textbf{Camadas Multicamada:} realizam a operação de convolução, extraindo padrões locais (por exemplo, bordas em imagens ou picos em sinais de emissão acústica).
+%    \item \textbf{Camadas de Pooling:} reduzem a dimensionalidade dos mapas de ativação, preservando as informações mais relevantes e diminuindo o custo computacional.
+%    \item \textbf{Camadas Totalmente Conectadas (Fully Connected):} integram as características extraídas nas etapas anteriores para a tomada de decisão final, como a classificação do tipo de falha.
+%    \item \textbf{Funções de Ativação (ex., ReLU, sigmoid, softmax):} introduzem não linearidade ao modelo, permitindo capturar relações complexas entre as variáveis e melhorar a capacidade de generalização.
+%\end{itemize}
+%
+%Esses elementos, combinados em múltiplos níveis, formam uma estrutura profunda e adaptável, capaz de aprender automaticamente as representações mais relevantes dos dados — característica essencial para aplicações em manutenção preditiva, diagnóstico de falhas e monitoramento inteligente de sistemas industriais.
+
+
+
+%A literatura recente tem demonstrado um crescimento expressivo no interesse por métodos de aprendizado profundo, com diversas arquiteturas, como Redes Neurais Profundas (\textit{Deep Neural Network, DNNs}), Redes de Crença Profunda (\textit{Deep Belief Networks, DBNs}), Redes Neurais Recorrentes (\textit{Recurrent Neural Networks, RNN}), Redes Neurais Multicamada (\textit{Convolutional Neural Networks, MLP}) e Transformers, aplicadas a domínios variados, incluindo visão computacional, reconhecimento de fala, processamento de linguagem natural, bioinformática, análise de imagens médicas, ciências climáticas, inspeção de materiais e outras áreas emergentes. Conforme discutido por \citeonline{cacciari2024hands}, embora múltiplas arquiteturas tenham sido propostas para lidar com problemas unidimensionais, as MLP de uma dimensão, continuam sendo amplamente utilizadas e ainda aparecem com maior frequência na literatura indexada entre 2018 e 2023 do que alternativas mais recentes.
+%
+%O uso de rede MLP permanece menos difundido quando comparado a CNN-2D e CNN-3D, refletindo uma lacuna de pesquisa que inclui tanto menor volume de publicações quanto menor quantidade de revisões sistemáticas dedicadas exclusivamente ao tema. Ainda assim, \citeonline{cacciari2024hands} destacam que as rede MLP constituem uma tecnologia particularmente adequada para aplicações em tempo real, em virtude de sua menor complexidade computacional e capacidade de lidar diretamente com sinais brutos. Exemplos incluem detecção em espectroscopia Raman, linearização de amplificadores em sistemas 5G, monitoramento de interferência eletromagnética em sistemas de potência, classificação de sinais acústicos cardíacos, análise de áudio ambiental, \mbox{modelagem de fala e classificação de música.}
+%
+%As Redes Neurais Multicamada Unidimensionais representam uma extensão natural das MLP originalmente aplicadas a imagens, adaptadas para o processamento de sinais temporais. Diferentemente das MLP bidimensionais, nas quais os filtros convolucionais percorrem duas dimensões espaciais (altura e largura da imagem), as rede MLP operam exclusivamente sobre a dimensão temporal dos dados, tornando-as especialmente adequadas para o tratamento de séries temporais, \mbox{vibrações e sinais de emissão acústica (EA)}.
+%
+%\subsection{Fundamentos da Convolução Unidimensional e Análise Comparativa}
+%
+%As Redes Neurais Multicamada, embora popularizadas pelo sucesso massivo em tarefas de visão computacional, possuem uma formulação matemática generalizável para dados de diferentes dimensionalidades. Conforme discutido por \citeonline{kiranyaz20211d}, enquanto as CNN-2D se tornaram o padrão de fato para processamento de imagens, a adaptação dessa arquitetura para sinais unidimensionais oferece vantagens estruturais decisivas para o processamento de séries temporais, especialmente em cenários com restrições de hardware e latência.
+%
+%A operação fundamental de uma rede MLP assemelha-se à filtragem digital clássica (FIR), porém com a distinção crucial de que os coeficientes do filtro (pesos do \textit{kernel}) são parâmetros aprendidos através do algoritmo de \textit{Backpropagation}.
+%
+%Matematicamente, considere um sinal de entrada $x \in \mathbb{R}^{N}$ e um filtro (kernel) $w \in \mathbb{R}^{K}$, onde $K$ representa o tamanho do kernel (campo receptivo local). A convolução linear direta, \textit{valid padding},  para a $k$-ésima camada e o $j$-ésimo neurônio resulta em um mapa de ativação $y$, definido por \ref{eq:conv1d}:
+%
+%\begin{equation}
+%	y_j[i] = f\left( b_j + \sum_{m=1}^{K} w_j[m] \cdot x[i + m - 1] \right)
+%	\label{eq:conv1d}
+%\end{equation}
+%
+%\noindent em que:
+%
+%\begin{itemize}
+%	\item $b_j$ é o viés (\textit{bias}) do $j$-ésimo neurônio;
+%	\item $f(\cdot)$ é a função de ativação não linear (tipicamente ReLU, Leaky ReLU ou TanH);
+%	\item $i$ denota o índice temporal da sequência de saída.
+%\end{itemize}
+%
+%Diferentemente da convolução 2D, que exige varredura em eixos horizontal e vertical, a operação em Eq. \ref{eq:conv1d} ocorre estritamente ao longo do eixo temporal. Segundo \citeonline{kiranyaz20211d}, essa redução de dimensionalidade implica que tanto a \textit{Forward Propagation} quanto a \textit{Backpropagation} podem ser implementadas como operações vetoriais simples, em oposição às operações matriciais complexas exigidas pelas MLP-2D.
+%
+%
+%Para fins de implementação computacional e futura síntese em hardware, o procedimento de inferência de uma única camada MLP pode ser descrito estruturalmente pelo Algoritmo \ref{alg:conv1d_fwd}.
+%
+%\begin{algorithm}[H]
+%	\caption{Processo de Inferência de uma Camada Convolucional 1D (Forward Propagation)}
+%	\label{alg:conv1d_fwd}
+%	\begin{algorithmic}[1]
+%		\Require Vetor de entrada $x$ de tamanho $N$
+%		\Require Kernel (filtro) $w$ de tamanho $K$
+%		\Require Viés $b$
+%		\Require Função de ativação $f(\cdot)$
+%		\Require Passo de deslocamento (\textit{stride}) $S$
+%		\Ensure Mapa de características de saída $y$
+%		
+%		\State $L_{out} \gets \lfloor (N - K)/S \rfloor + 1$ \Comment{Calcula dimensão da saída}
+%		\State Inicializar vetor $y$ com zeros de tamanho $L_{out}$
+%		
+%		\For{$i \gets 0$ \textbf{to} $L_{out} - 1$} \Comment{Loop sobre a posição da janela}
+%		\State $soma \gets 0$
+%		\For{$k \gets 0$ \textbf{to} $K - 1$} \Comment{Loop sobre o kernel (MAC)}
+%		\State $soma \gets soma + w[k] \times x[i \cdot S + k]$
+%		\EndFor
+%		\State $y[i] \gets f(soma + b)$ \Comment{Aplica viés e não-linearidade}
+%		\EndFor
+%		
+%		\State \Return $y$
+%	\end{algorithmic}
+%\end{algorithm}
+%
+%A análise do Algoritmo \ref{alg:conv1d_fwd} evidencia a natureza sequencial e determinística da operação. Os laços aninhados (linhas 3 e 5) representam a operação de \textit{Multiply-Accumulate}, MAC, que é o bloco fundamental de processamento em DSPs e FPGAs. Note-se que, em uma implementação de hardware paralela, o laço interno (linhas 5-7) pode ser desenrolado (\textit{unrolled}), permitindo que todas as multiplicações do kernel ocorram em um único ciclo de \textit{clock}, característica explorada para atingir baixa latência.
+%
+%A topologia de uma rede MLP típica, conforme proposta por \citeonline{kiranyaz20211d}, divide-se em dois blocos funcionais principais:
+%
+%\begin{enumerate}
+%	\item \textbf{Extração de Características (\textit{Feature Extraction}):} Composta por camadas alternadas de convolução 1D e subamostragem (\textit{pooling}). Nesta etapa, a rede aprende a identificar padrões morfológicos no sinal, como picos, oscilações transientes e variações de frequência, gerando tensores de baixa dimensão que resumem o conteúdo informacional da entrada.
+%	\item \textbf{Classificação \textit{(MLP Backend}):} Os mapas de características resultantes são achatados (\textit{flattened}) ou processados via \textit{Global Average Pooling} para alimentar camadas densas, \textit{Fully Connected}, que realizam o mapeamento final para as classes de interesse (ex: ``Normal'' vs. ``Cavitação'').
+%\end{enumerate}
+%
+%Uma vantagem arquitetural apontada por \citeonline{kiranyaz20211d} é a capacidade das MLP-1D de atingirem alta performance com arquiteturas ``rasas'' (\textit{shallow architectures}), frequentemente com apenas duas ou três camadas convolucionais ocultas. Isso contrasta com modelos de visão computacional (como ResNet ou VGG), que demandam dezenas de camadas para capturar hierarquias espaciais complexas.
+%
+%A distinção entre as abordagens não é apenas uma questão de formato de entrada, mas de eficiência computacional e adequação ao domínio do problema. Em aplicações de monitoramento de máquinas, a prática comum de converter sinais 1D em imagens 2D (via Espectrogramas ou Transformada \textit{Wavelet}) para utilizar as CNN-2D pré-treinadas introduz redundância e custo computacional desnecessário.A Tabela \ref{tab:comp_cnn} sumariza as diferenças estruturais destacadas na literatura.
+%
+%\begin{table}[H]
+%	\centering
+%	\footnotesize
+%	\caption{Comparativo estrutural entre rede MLP e CNN-2D. Adaptado de \citeonline{kiranyaz20211d}.}
+%	\label{tab:comp_cnn}
+%	\resizebox{\textwidth}{!}{
+%	\begin{tabular}{lll}
+%		\toprule
+%		\textbf{Critério} & \textbf{rede MLP} & \textbf{CNN-2D} \\
+%		\midrule 
+%		\textbf{Natureza da Entrada} & Vetor ou Série Temporal & Matriz (Imagem, Espectrograma) \\
+%		\textbf{Movimento do Kernel} & Unidimensional (apenas tempo) & Bidimensional (altura e largura) \\
+%		\textbf{Complexidade Computacional} & $O(N_k \cdot L)$ & $O(N_k \cdot H \cdot W)$ \\ \textbf{Parâmetros Treináveis} & Baixo (kernels vetoriais) & Alto (kernels matriciais)\\
+%		\textbf{Requisito de Hardware} & Baixo (viável em CPU/FPGA simples) & Alto (geralmente requer GPU) \\
+%		\textbf{Profundidade da Rede} & Tipicamente Rasa (Compacta) & Profunda\\ \textbf{Tratamento de Dados} & Processa sinal bruto (\textit{raw data}) & Exige conversão tempo-frequência \\
+%		\bottomrule
+%	\end{tabular}}
+%\end{table}
+%
+%A escolha pela rede MLP neste trabalho é fundamentada nas propriedades de ``Compacidade'' e ``Eficiência Adaptativa'' definidas por \citeonline{kiranyaz20211d}.Primeiramente, a convolução 1D preserva a topologia temporal original do sinal de Emissão Acústica, permitindo que a rede explore correlações de fase e eventos transientes que poderiam ser suavizados ou perdidos em uma conversão para espectrograma.Em segundo lugar, a redução drástica no número de Operações de Multiplicação e Acumulação, MACs, torna a rede MLP inerentemente adequada para implementação em FPGA. Enquanto uma CNN-2D exigiria \textit{buffers} de linha complexos e intenso acesso à memória externa para armazenar mapas bidimensionais intermediários, a rede MLP permite um fluxo de dados simplificado e menor latência de inferência, requisitos mandatórios para o sistema de monitoramento em tempo real proposto.
+
+
+\section{Redes Neurais MLP}
+\label{sec:MLP}
+
+%As Redes Neurais Multicamadas (Multilayer Perceptron, MLP) constituem um dos modelos mais difundidos de redes neurais artificiais empregadas em tarefas de classificação e regressão em aprendizado supervisionado.
+%
+%Uma MLP é uma forma de rede feedforward totalmente conectada, organizada em camadas hierárquicas de neurônios artificiais, como exemplifica a Figura \ref{fig:mlp}, nas quais cada unidade de processamento recebe entradas, processa informação e transmite um sinal adiante até a camada de saída.
+%  
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[width=0.9\linewidth]{figs/MLP/MLP}
+%	\caption{Exemplo de Perceptron Multicamadas. Fonte: O autor.}
+%	\label{fig:mlp}
+%\end{figure}
+%
+%O fluxo de informação em uma Rede Neural Multicamadas (MLP) ocorre de forma
+%\textit{unidirecional}, da camada de entrada em direção à camada de saída, sem a
+%presença de ciclos de realimentação, caracterizando-a como uma rede do tipo
+%\textit{feedforward}. Estruturalmente, a MLP é composta por uma camada de entrada,
+%uma ou mais camadas ocultas (\textit{hidden layers}) e uma camada de saída, conforme
+%descrito por \citeonline{haykin2009neural}.
+%
+%A camada de entrada possui um número de neurônios equivalente à quantidade de
+%variáveis explicativas utilizadas no modelo. Esses neurônios são usualmente
+%indexados por \( l \), com \( l = \{1, \ldots, p\} \), onde \( p \) representa o número
+%total de atributos da amostra de treinamento. Essa camada não apresenta parâmetros
+%ajustáveis, uma vez que sua função é simplesmente repassar os valores de entrada
+%para a camada subsequente, operando como uma função identidade.
+%
+%As camadas ocultas são responsáveis pela extração de representações intermediárias
+%dos dados, permitindo à rede modelar relações não lineares. A quantidade de
+%neurônios em cada camada oculta está diretamente relacionada à capacidade de
+%representação do modelo, sendo frequentemente associada à construção de múltiplos
+%hiperplanos no espaço de características. Os neurônios dessas camadas são
+%indexados por \( j = \{1, \ldots, h\} \), onde \( h \) indica o número de neurônios na
+%respectiva camada. É possível empregar mais de uma camada oculta, o que amplia a
+%capacidade expressiva da rede, ainda que ao custo de maior complexidade
+%computacional.
+%
+%A camada de saída, em problemas de classificação, é configurada de acordo com o
+%número de classes do problema. Frequentemente, utiliza-se uma codificação
+%semelhante a variáveis indicadoras (\textit{dummies}), na qual cada neurônio
+%representa uma classe ou uma combinação de classes. No contexto da detecção de
+%falhas em motobombas por meio de sinais de Emissão Acústica, por exemplo, as
+%classes podem representar diferentes condições operacionais do equipamento,
+%tais como \textit{operação normal}, \textit{cavitação incipiente},
+%\textit{cavitação severa} e \textit{falha em rolamento}. Nessa configuração, a
+%camada de saída pode ser composta por múltiplos neurônios, cada um associado à
+%ativação de uma dessas condições, produzindo saídas compatíveis com decisões de
+%classificação multiclasse.
+%
+%Do ponto de vista funcional, o comportamento de um neurônio \( k \), pertencente a
+%uma camada oculta ou à camada de saída, é descrito pela combinação linear
+%ponderada de suas entradas, seguida da aplicação de uma função de ativação. Se
+%\( x_j \) representa o sinal proveniente do neurônio \( j \) da camada anterior,
+%\( w_{kj} \) o peso sináptico associado a essa conexão e \( b_k \) o termo de viés
+%(\textit{bias}), o potencial interno do neurônio é dado por
+%\begin{equation}
+%	v_k = \sum_{j=1}^{m} w_{kj} x_j + b_k,
+%\end{equation}
+%sendo a saída do neurônio obtida pela aplicação da função de ativação
+%\( \varphi(\cdot) \),
+%\begin{equation}
+%	y_k = \varphi(v_k).
+%\end{equation}
+%
+%A capacidade da MLP de resolver problemas não linearmente separáveis está
+%diretamente associada ao uso de funções de ativação não lineares, como a função
+%sigmoidal, a tangente hiperbólica e a ReLU (\textit{Rectified Linear Unit}). Nesse
+%contexto, destaca-se o Teorema da Aproximação Universal, que estabelece que uma
+%MLP com apenas uma camada oculta e um número suficiente de neurônios é capaz de
+%aproximar qualquer função contínua com precisão arbitrária, desde que a função de
+%ativação seja não linear e limitada \cite{cybenko1989approximation,hornik1991approximation}. Esse resultado
+%fundamenta teoricamente o amplo uso das MLPs em tarefas de aproximação funcional,
+%classificação e regressão.
+%
+%
+%Essa arquitetura permite à MLP aprender relações não lineares complexas entre as variáveis de entrada e saída, função essa que redes simples (como perceptrons de camada única) não conseguem realizar. A capacidade de modelar tais relações deriva do uso de funções de ativação não lineares nas camadas ocultas, que introduzem não linearidade no processamento \cite{jaiswal2024multilayer}. 
+%
+%
+%O processo de construção e treinamento de uma MLP baseia-se em um aprendizado supervisionado, no qual o modelo ajusta seus parâmetros (pesos de conexão) a partir de exemplos rotulados, de modo a minimizar a discrepância entre as saídas previstas e as saídas desejadas. Essa configuração a torna apropriada para problemas onde existe um conjunto de dados com rótulos conhecidos, como acontece nas tarefas de detecção e classificação de padrões, . 
+%
+%%Na literatura, as MLPs são descritas como redes feedforward amplamente empregadas em uma diversidade de aplicações, dada sua versatilidade e capacidade de generalização. Elas têm sido utilizadas em domínios tão diversos quanto previsão de séries temporais, reconhecimento de padrões, classificação de sinais e problemas de predição em engenharia e ciências aplicadas. 
+%
+%Além disso, estudos comparativos ressaltam que apesar de modelos mais complexos (como redes com camadas convolucionais) poderem superar MLPs em tarefas que envolvem estruturas espaciais ou sequenciais explícitas, as MLPs continuam sendo uma abordagem robusta e eficaz em problemas clássicos de classificação quando corretamente treinadas e combinadas com técnicas de pré-processamento e extração de características \cite{abd2023multi}.
+%
+%No contexto de sistemas embarcados e de inferência em hardware reconfigurável (como FPGAs), a simplicidade estrutural das MLPs — em comparação com arquiteturas mais profundas ou especializadas — favorece seu mapeamento em lógica programável, reduzindo custos de implementação e facilitando o controle dos compromissos entre precisão, consumo de recursos e latência de inferência \cite{Shawahna2019}.
+
+As redes MLP constituem um dos
+modelos mais difundidos de RNA empregadas em tarefas de
+classificação ou regressão no contexto do aprendizado supervisionado. Uma MLP pode
+ser compreendida como um modelo funcional que relaciona vetores de entrada e
+saída por meio da composição sucessiva de transformações afins e não lineares,
+cujos parâmetros são estimados a partir de dados rotulados \cite{rumelhart1986learning,haykin2009neural}.
+
+Dependendo da natureza do problema, a camada de saída e a função de ativação são
+definidas de modo a atender aos requisitos da tarefa. Em problemas de
+\textit{regressão}, a MLP é usualmente configurada com funções de ativação lineares
+na camada de saída, permitindo a estimação de variáveis contínuas. Já em tarefas
+de \textit{classificação}, empregam-se funções de ativação não lineares, como a
+sigmoide ou a \textit{softmax}, de forma a produzir saídas associadas a
+probabilidades de pertencimento a classes, possibilitando decisões binárias ou
+multiclasse.
+
+Uma MLP é uma rede do tipo \emph{feedforward} totalmente conectada, organizada em
+camadas hierárquicas de neurônios artificiais, conforme ilustrado na
+Figura~\ref{fig:mlp}. O fluxo de informação ocorre de forma unidirecional, da
+camada de entrada em direção à camada de saída, sem a presença de ciclos de
+realimentação, característica que distingue esse modelo de arquiteturas
+recorrentes \cite{haykin2009neural}.
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\linewidth]{figs/MLP/MLP}
+	\caption{Exemplo de Perceptron Multicamadas. Fonte: O autor.}
+	\label{fig:mlp}
+\end{figure}
+
+A camada de entrada possui um número de neurônios equivalente à quantidade de
+variáveis explicativas utilizadas no modelo. Esses neurônios são usualmente
+indexados por \( l \), com \( l = \{1,\ldots,p\} \), onde \( p \) representa o número
+total de atributos da amostra de treinamento. Essa camada não possui parâmetros
+ajustáveis, uma vez que sua função é simplesmente propagar os valores de entrada
+para a camada subsequente, operando como uma função identidade.
+
+As camadas ocultas são responsáveis pela extração de representações intermediárias
+dos dados, permitindo à rede modelar relações não lineares entre as variáveis de
+entrada e saída. A quantidade de neurônios em cada camada oculta está diretamente
+associada à capacidade de representação do modelo, podendo ser interpretada como
+a construção de múltiplos hiperplanos no espaço de características. Os neurônios
+dessas camadas são indexados por \( j = \{1,\ldots,h\} \), onde \( h \) indica o
+número de neurônios na respectiva camada. É possível empregar mais de uma camada
+oculta, ampliando a expressividade do modelo, ainda que ao custo de maior
+complexidade computacional.
+
+A camada de saída, em problemas de classificação, é configurada de acordo com o
+número de classes do problema. Frequentemente, utiliza-se uma codificação
+semelhante a variáveis indicadoras (\emph{dummies}), na qual cada neurônio está
+associado a uma classe ou condição. No contexto da detecção de falhas em
+motobombas por meio de sinais de EA, por exemplo, as classes podem
+representar diferentes estados operacionais do equipamento, tais como
+\emph{operação normal}, \emph{cavitação incipiente}, \emph{cavitação severa} e
+\emph{falha em rolamento}, possibilitando decisões de classificação multiclasse.
+
+Do ponto de vista funcional, o comportamento de um neurônio em uma camada oculta
+ou de saída é descrito por uma combinação linear ponderada de suas entradas,
+seguida da aplicação de uma função de ativação não linear. Formalmente, dado um
+vetor de entrada \(x \in \mathbb{R}^{d}\), a MLP produz uma saída estimada
+\(\hat{y}\) por meio de sucessivas transformações:
+\[
+a^{(0)} = x,\qquad
+z^{(\ell)} = W^{(\ell)} a^{(\ell-1)} + b^{(\ell)},\qquad
+a^{(\ell)} = \phi^{(\ell)}\!\big(z^{(\ell)}\big), \quad \ell = 1,\ldots,L,
+\]
+em que \(W^{(\ell)}\) e \(b^{(\ell)}\) representam, respectivamente, os pesos e
+vieses da camada \(\ell\), e \(\phi^{(\ell)}\) a função de ativação associada. O
+termo \(z^{(\ell)}\) corresponde à combinação linear das ativações da camada
+anterior, enquanto \(a^{(\ell)}\) representa a saída não linear propagada à
+camada subsequente.
+
+A capacidade da MLP de resolver problemas não linearmente separáveis decorre do
+uso de funções de ativação não lineares, como a função sigmoidal, a tangente
+hiperbólica e a ReLU (\emph{Rectified Linear Unit}). Nesse contexto, destaca-se o
+Teorema da Aproximação Universal, segundo o qual uma MLP com apenas uma camada
+oculta e um número suficiente de neurônios é capaz de aproximar qualquer função
+contínua com precisão arbitrária, desde que a função de ativação seja não linear
+e limitada \citeonline{cybenko1989approximation,hornik1991approximation}. Esse
+resultado fundamenta teoricamente o amplo uso das MLPs em tarefas de aproximação
+funcional, classificação e regressão.
+
+O processo de treinamento de uma MLP baseia-se em aprendizado supervisionado, no
+qual os parâmetros do modelo são ajustados a partir de exemplos rotulados, de
+modo a minimizar uma função de perda empírica, possivelmente acrescida de termos
+de regularização, isto é o treinamento da MLP consiste em ajustar \(\theta=\{(W^{(\ell)},b^{(\ell)})\}_{\ell=1}^{L}\) minimizando uma função de perda empírica com possível regularização:
+\[
+\min_{\theta}\;\; \frac{1}{N}\sum_{i=1}^{N}\mathcal{L}\big(f_{\theta}(x_i),y_i\big)\;+\;\lambda\,\Omega(\theta),
+\]
+em que \(\mathcal{L}\) pode ser a entropia cruzada no caso da classificação, e em que \(\Omega(\theta)\) pode ser o regularizador \(\ell_2\) (``weight decay''). 
+
+O gradiente \(\nabla_{\theta}\) da função  de custo é calculado de forma eficiente
+por meio do algoritmo de retropropagação (\emph{backpropagation}), que aplica a
+regra da cadeia ao grafo computacional definido pelas camadas da rede \cite{rumelhart1986learning}. Métodos de
+otimização baseados em gradiente descendente estocástico (SGD), bem como suas
+variações, são amplamente utilizados por apresentarem boa eficiência
+computacional e propriedades favoráveis de generalização \cite{goodfellow2016deep}.
+
+O Algoritmo~\ref{alg:mlp_sgd_minibatch} descreve o treinamento de uma MLP por gradiente descendente estocástico em mini-lotes (\textit{mini-batches}), sem detalhes de bibliotecas específicas. Nele, \(J_{\mathcal{B}}(\theta)\) é a função custo restrita ao mini-lote \(\mathcal{B}\), isto é, a perda média \(\frac{1}{|\mathcal{B}|}\sum_{i\in\mathcal{B}}\mathcal{L}(f_\theta(x_i),y_i)\) acrescida do termo de regularização \(\lambda\,\Omega(\theta)\). Os pesos são inicializados aleatoriamente, com variância ajustada ao número de entradas de cada camada (esquemas de Xavier ou de He), o que evita que as ativações saturem ou se anulem no início do treinamento \cite{goodfellow2016deep}. Variantes populares substituem a etapa de atualização por regras com momento (\textit{momentum} ou Nesterov) ou estimativas adaptativas, como o Adam \cite{kingma2015adam}, e podem incluir \textit{dropout}, normalização por camadas e o termo \(\ell_2\) acoplado à atualização (\textit{weight decay}).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{algorithm}[H]
+	\caption{\textbf{Treinamento de uma MLP via SGD com mini-batches}}
+	\label{alg:mlp_sgd_minibatch}
+	\begin{algorithmic}[1]
+		\Require
+		Conjunto de treino \(\mathcal{D}=\{(x_i,y_i)\}_{i=1}^{N}\);
+		arquitetura (camadas, ativações) de \(f_{\theta}\);
+		perda \(\mathcal{L}(\hat{y},y)\);
+		regularização \(\Omega(\theta)\) (opcional);
+		taxa de aprendizado \(\eta>0\);
+		tamanho do mini-batch \(B\);
+		número de épocas \(E\).
+		\Ensure
+		Parâmetros treinados \(\theta\).
+		
+		\State \textbf{Inicializar} parâmetros \(\theta=\{W^{(\ell)},b^{(\ell)}\}_{\ell=1}^{L}\) (ex.: Xavier ou He).
+		
+		\For{\(e = 1,2,\dots,E\)}
+		\State \textbf{Embaralhar} os índices de \(\mathcal{D}\).
+		\For{cada mini-batch \(\mathcal{B}\subset\mathcal{D}\) com \(|\mathcal{B}|=B\)}
+		\State \textbf{(Forward)} Computar \(\hat{y}=f_{\theta}(x)\) e armazenar ativações intermediárias.
+		\State \textbf{(Perda)} Calcular \(J_{\mathcal{B}}(\theta)\).
+		\State \textbf{(Backprop)} Computar \(g \gets \nabla_{\theta} J_{\mathcal{B}}(\theta)\).
+		\State \textbf{(Atualização)} \(\theta \gets \theta - \eta g\).
+		\EndFor
+		\EndFor
+		
+		\State \Return \(\theta\).
+	\end{algorithmic}
+\end{algorithm}
+
+
+Essa arquitetura permite ao MLP aprender relações não lineares complexas entre as variáveis de entrada e saída, função essa que redes simples (como perceptrons de camada única) não conseguem realizar. A capacidade de modelar tais relações deriva do uso de funções de ativação não lineares nas camadas ocultas, que introduzem não linearidade no processamento de sinais, \cite{jaiswal2024multilayer}. 
+
+
+Além disso, estudos comparativos ressaltam que apesar de modelos mais complexos (como redes com camadas convolucionais) poderem superar MLPs em tarefas que envolvem estruturas espaciais ou sequenciais explícitas, as MLPs continuam sendo uma abordagem robusta e eficaz em problemas clássicos de classificação quando corretamente treinadas e combinadas com técnicas de pré-processamento e extração de características, \cite{abd2023multi}.
+
+No contexto de sistemas embarcados e de inferência em hardware reconfigurável (como FPGAs), a simplicidade estrutural das MLPs (em comparação com arquiteturas mais profundas ou especializadas) favorece seu mapeamento em lógica programável, reduzindo custos de implementação e facilitando o controle de trade-offs entre precisão, consumo de recursos e latência de inferência.

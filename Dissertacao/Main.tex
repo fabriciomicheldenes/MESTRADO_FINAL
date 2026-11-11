@@ -1,0 +1,790 @@
+%% abtex2-modelo-trabalho-academico.tex, v-1.9.7 laurocesar
+%% Copyright 2012-2018 by abnTeX2 group at http://www.abntex.net.br/ 
+%%
+%% This work may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License, either version 1.3
+%% of this license or (at your option) any later version.
+%% The latest version of this license is in
+%%   http://www.latex-project.org/lppl.txt
+%% and version 1.3 or later is part of all distributions of LaTeX
+%% version 2005/12/01 or later.
+%%
+%% This work has the LPPL maintenance status `maintained'.
+%% 
+%% The Current Maintainer of this work is the abnTeX2 team, led
+%% by Lauro César Araujo. Further information are available on 
+%% http://www.abntex.net.br/
+%%
+%% This work consists of the files abntex2-modelo-trabalho-academico.tex,
+%% abntex2-modelo-include-comandos and abntex2-modelo-references.bib
+%%
+
+% ------------------------------------------------------------------------
+% ------------------------------------------------------------------------
+% abnTeX2: Modelo de Trabalho Academico (tese de doutorado, dissertacao de
+% mestrado e trabalhos monograficos em geral) em conformidade com 
+% ABNT NBR 14724:2011: Informacao e documentacao - Trabalhos academicos -
+% Apresentacao
+% ------------------------------------------------------------------------
+% ------------------------------------------------------------------------
+
+\documentclass[
+	% -- opções da classe memoir --
+	12pt,				% tamanho da fonte
+	%openright,			% capítulos começam em pág ímpar (insere página vazia caso preciso)
+	oneside,
+	%twoside,			% para impressão em recto e verso. Oposto a oneside
+	a4paper,			% tamanho do papel. 
+	% -- opções da classe abntex2 --
+	%chapter=TITLE,		% títulos de capítulos convertidos em letras maiúsculas
+	%section=TITLE,		% títulos de seções convertidos em letras maiúsculas
+	%subsection=TITLE,	% títulos de subseções convertidos em letras maiúsculas
+	%subsubsection=TITLE,% títulos de subsubseções convertidos em letras maiúsculas
+	% -- opções do pacote babel --
+	english,			% idioma adicional para hifenização
+	french,				% idioma adicional para hifenização
+	spanish,			% idioma adicional para hifenização
+	brazil				% o último idioma é o principal do documento
+	]{abntex2}
+
+% ---
+% Pacotes básicos 
+% ---
+\usepackage{lmodern}			% Usa a fonte Latin Modern			
+\usepackage[T1]{fontenc}		% Selecao de codigos de fonte.
+\usepackage[utf8]{inputenc}		% Codificacao do documento (conversão automática dos acentos)
+\usepackage{indentfirst}		% Indenta o primeiro parágrafo de cada seção.
+\usepackage{color}				% Controle das cores
+\usepackage{graphicx}			% Inclusão de gráficos
+\usepackage{microtype} 			% para melhorias de justificação
+\usepackage{rotating}
+\usepackage{here}
+\usepackage{amsmath}
+\usepackage{amssymb} 
+\usepackage{amsfonts}
+%\usepackage[demo]{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{enumitem}
+% ---
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, calc, fit}
+\usepackage{algorithm}
+%\usepackage{algorithmic}
+\usepackage{algpseudocode}
+% --- pacotes e macros do texto incorporado dos relatórios do projeto ---
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcommand{\completar}[1]{\textcolor{red}{[#1]}}   % informação a completar pelo autor
+\input{numeros_mb}                                  % números medidos na simulação RTL da MicroBlaze
+% Opcional: definir comando \Return
+%\newcommand{\Return}{\State \textbf{return} }
+% ---
+% Pacotes adicionais, usados apenas no âmbito do Modelo Canônico do abnteX2
+% ---
+\usepackage{lipsum} % para geração de dummy text
+
+%Ajustes no texto
+%\usepackage[final,expansion=true,protrusion=true]{microtype}
+\usepackage{microtype}
+\linepenalty=50        % você usou 100; 50–100 é razoável, teste valores
+\emergencystretch=1em  % permite “espichar” um pouco mais os parágrafos
+\tolerance=2000
+
+%\raggedbottom          % evita o LaTeX tentar “forçar” altura de página igual
+
+\clubpenalty=10000		%frases orfãs	
+\widowpenalty=10000		%frases viuvas	
+\displaywidowpenalty=5000
+\usepackage[all]{nowidow}
+%\tolerance=1				%sem hifenização
+%\emergencystretch=\maxdimen
+\hyphenpenalty=10000
+\hbadness=10000
+
+% ---
+% Pacotes de citações
+% ---
+\usepackage[brazilian,hyperpageref]{backref}	 % Paginas com as citações na bibl
+\usepackage[alf]{abntex2cite}	% Citações padrão ABNT
+
+% --- 
+% CONFIGURAÇÕES DE PACOTES
+% --- 
+
+% ---
+% Configurações do pacote backref
+% Usado sem a opção hyperpageref de backref
+\renewcommand{\backrefpagesname}{Citado na(s) página(s):~}
+% Texto padrão antes do número das páginas
+\renewcommand{\backref}{}
+% Define os textos da citação
+\renewcommand*{\backrefalt}[4]{
+	\ifcase #1 %
+		Nenhuma citação no texto.%
+	\or
+		Citado na página #2.%
+	\else
+		Citado #1 vezes nas páginas #2.%
+	\fi}%
+% ---
+
+% ---
+% Informações de dados para CAPA e FOLHA DE ROSTO
+% ---
+\titulo{Uma Arquitetura de Processamento em FPGA para Detecção de Falhas em Motobombas}
+\autor{Fabricio Michel Denes}
+\newcommand{\tituloen}{An FPGA-Based Processing Architecture for Fault Detection in Motor Pumps}
+\local{Cascavel-PR}
+\data{2026}
+\orientador[Orientador(a):]{Dr. Marcio Seiji Oyamada }
+\coorientador[Coorientador(a):]{}
+\instituicao{%
+  Universidade Estadual do Oeste do Paraná -- Unioeste -- Cascavel
+  \par
+  Centro de Ciências Exatas e Tecnológicas -- CCET
+  \par
+  Programa de Pós-Graduação em Ciência da Computação -- PPGComp}
+\tipotrabalho{Dissertação (Mestrado)}
+% O preambulo deve conter o tipo do trabalho, o objetivo, 
+% o nome da instituição e a área de concentração 
+\preambulo{Dissertação apresentada ao Programa de Pós-Graduação em Ciência da Computação (PPGComp) da Universidade Estadual do Oeste do Paraná \\ Unioeste, campus de Cascavel, como requisito parcial para a obtenção do título de Mestre em Ciência da Computação.}
+% ---
+
+
+% ---
+% Configurações de aparência do PDF final
+
+% alterando o aspecto da cor azul
+\definecolor{blue}{RGB}{41,5,195}
+
+% informações do PDF
+\makeatletter
+\hypersetup{
+     	%pagebackref=true,
+		pdftitle={\@title}, 
+		pdfauthor={\@author},
+    	pdfsubject={\imprimirpreambulo},
+	    pdfcreator={LaTeX with abnTeX2},
+		pdfkeywords={abnt}{latex}{abntex}{abntex2}{trabalho acadêmico}, 
+		colorlinks=true,       		% false: boxed links; true: colored links
+    	linkcolor=blue,          	% color of internal links
+    	citecolor=blue,        		% color of links to bibliography
+    	filecolor=magenta,      		% color of file links
+		urlcolor=blue,
+		bookmarksdepth=4
+}
+\makeatother
+% --- 
+
+% ---
+% Posiciona figuras e tabelas no topo da página quando adicionadas sozinhas
+% em um página em branco. Ver https://github.com/abntex/abntex2/issues/170
+\makeatletter
+\setlength{\@fptop}{5pt} % Set distance from top of page to first float
+\makeatother
+% ---
+
+% ---
+% Possibilita criação de Quadros e Lista de quadros.
+% Ver https://github.com/abntex/abntex2/issues/176
+%
+\newcommand{\quadroname}{Quadro}
+\newcommand{\listofquadrosname}{Lista de quadros}
+
+% \newfloat[chapter]{quadro}{loq}{\quadroname}
+\newlistof{listofquadros}{loq}{\listofquadrosname}
+\newlistentry{quadro}{loq}{0}
+
+% configurações para atender às regras da ABNT
+\setfloatadjustment{quadro}{\centering}
+\counterwithout{quadro}{chapter}
+\renewcommand{\cftquadroname}{\quadroname\space} 
+\renewcommand*{\cftquadroaftersnum}{\hfill--\hfill}
+
+\setfloatlocations{quadro}{hbtp} % Ver https://github.com/abntex/abntex2/issues/176
+% ---
+
+% --- 
+% Espaçamentos entre linhas e parágrafos 
+% --- 
+
+% O tamanho do parágrafo é dado por:
+\setlength{\parindent}{1.3cm}
+
+% Controle do espaçamento entre um parágrafo e outro:
+\setlength{\parskip}{0.2cm}  % tente também \onelineskip
+
+% ---
+% compila o indice
+% ---
+\makeindex
+% ---
+
+% ----
+% ajuste de resumo e abstract
+% ABNT NBR 6028:2021
+%
+
+\newcommand{\comocitar}[2]{
+	{#1}, {#2}. \textbf{\imprimirtitulo}.  \imprimirorientadorRotulo~ \imprimirorientador. {\imprimirdata}. {\thelastpage}f. Dissertação (Mestrado em Ciência da Computação) -- Universidade Estadual do Oeste do Paraná, Cascavel -- Paraná, {\imprimirdata}.
+}
+
+\newcommand{\howtocite}[2]{
+	{#1}, {#2}. \textbf{\tituloen}.   \imprimirorientadorRotulo~ \imprimirorientador. {\imprimirdata}. {\thelastpage}f. Dissertação (Mestrado em Ciência da Computação) -- Universidade Estadual do Oeste do Paraná, Cascavel -- Paraná, {\imprimirdata}.
+}
+
+
+% ----
+% Início do documento
+% ----
+\begin{document}
+
+% Seleciona o idioma do documento (conforme pacotes do babel)
+%\selectlanguage{english}
+\selectlanguage{brazil}
+
+% Retira espaço extra obsoleto entre as frases.
+\frenchspacing 
+
+% ----------------------------------------------------------
+% ELEMENTOS PRÉ-TEXTUAIS
+% ----------------------------------------------------------
+% \pretextual
+
+% ---
+% Capa
+% ---
+\imprimircapa
+% ---
+
+% ---
+% Folha de rosto
+% (o * indica que haverá a ficha bibliográfica)
+% ---
+\imprimirfolhaderosto*
+% ---
+
+% ---
+% Inserir a ficha bibliografica
+% ---
+
+% Isto é um exemplo de Ficha Catalográfica, ou ``Dados internacionais de
+% catalogação-na-publicação''. Você pode utilizar este modelo como referência. 
+% Porém, provavelmente a biblioteca da sua universidade lhe fornecerá um PDF
+% com a ficha catalográfica definitiva após a defesa do trabalho. Quando estiver
+% com o documento, salve-o como PDF no diretório do seu projeto e substitua todo
+% o conteúdo de implementação deste arquivo pelo comando abaixo:
+%
+% \begin{fichacatalografica}
+%     \includepdf{fig_ficha_catalografica.pdf}
+% \end{fichacatalografica}
+
+%OMITIR NA QUALIFICAÇÃO
+%\begin{fichacatalografica}
+%	\sffamily
+%	\vspace*{\fill}					% Posição vertical
+%	\begin{center}					% Minipage Centralizado
+%	\fbox{\begin{minipage}[c][8cm]{15.5cm}		% Largura
+%	\small
+%	\imprimirautor
+%	%Sobrenome, Nome do autor
+%	
+%	\hspace{0.5cm} \imprimirtitulo  / \imprimirautor. --
+%	\imprimirlocal, \imprimirdata-
+%	
+%	\hspace{0.5cm} \thelastpage p. : il. (algumas color.) ; 30 cm.\\
+%	
+%	\hspace{0.5cm} \imprimirorientadorRotulo~\imprimirorientador\\
+%	
+%	\hspace{0.5cm}
+%	\parbox[t]{\textwidth}{\imprimirtipotrabalho -- \imprimirinstituicao,
+%	\imprimirdata.}\\
+%	
+%	\hspace{0.5cm}
+%	1. Emissão Acústica (EA)
+%	2. Cavitação
+%	3. FPGA
+%	4. Processamento Embarcado
+%	5. Redes Neurais Multicamada (rede MLP)
+%%		I. Orientador.
+%%		II. Universidade Estadual do Oeste do Paraná.
+%%		III. Faculdade de xxx.
+%%		IV. Título 			
+%	\end{minipage}}
+%	\end{center}
+%\end{fichacatalografica}
+%% ---
+
+% ---
+% Inserir errata
+% ---
+% \begin{errata}
+% Elemento opcional da \citeonline[4.2.1.2]{NBR14724:2011}. Exemplo:
+
+% \vspace{\onelineskip}
+
+% FERRIGNO, C. R. A. \textbf{Tratamento de neoplasias ósseas apendiculares com
+% reimplantação de enxerto ósseo autólogo autoclavado associado ao plasma
+% rico em plaquetas}: estudo crítico na cirurgia de preservação de membro em
+% cães. 2011. 128 f. Tese (Livre-Docência) - Faculdade de Medicina Veterinária e
+% Zootecnia, Universidade de São Paulo, São Paulo, 2011.
+
+% \begin{table}[htb]
+% \center
+% \footnotesize
+% \begin{tabular}{|p{1.4cm}|p{1cm}|p{3cm}|p{3cm}|}
+%   \hline
+%    \textbf{Folha} & \textbf{Linha}  & \textbf{Onde se lê}  & \textbf{Leia-se}  \\
+%     \hline
+%     1 & 10 & auto-conclavo & autoconclavo\\
+%    \hline
+% \end{tabular}
+% \end{table}
+
+% \end{errata}
+% ---
+
+% ---
+% Inserir folha de aprovação
+% ---
+
+% Isto é um exemplo de Folha de aprovação, elemento obrigatório da NBR
+% 14724/2011 (seção 4.2.1.3). Você pode utilizar este modelo até a aprovação
+% do trabalho. Após isso, substitua todo o conteúdo deste arquivo por uma
+% imagem da página assinada pela banca com o comando abaixo:
+%
+% \begin{folhadeaprovacao}
+% \includepdf{folhadeaprovacao_final.pdf}
+% \end{folhadeaprovacao}
+%
+
+%OMITIR NA QUALIFICAÇÃO
+\begin{folhadeaprovacao}
+
+  \begin{center}
+    {\ABNTEXchapterfont\large\imprimirautor}
+
+    \vspace*{\fill}\vspace*{\fill}
+    \begin{center}
+      \ABNTEXchapterfont\bfseries\Large\imprimirtitulo
+    \end{center}
+    \vspace*{\fill}
+    
+    \hspace{.45\textwidth}
+    \begin{minipage}{.5\textwidth}
+        \imprimirpreambulo
+    \end{minipage}%
+    \vspace*{\fill}
+   \end{center}
+        
+   % Banca de defesa: confirmar nomes e data (abaixo, a banca da qualificação).
+   \imprimirlocal, \completar{dia} de \completar{mês} de 2026:
+
+   \assinatura{\textbf{\imprimirorientador} \\ Orientador(a)}
+   \assinatura{\textbf{Dr. Thiago Berticelli Ló} \\ IFPR -- Cascavel}
+   \assinatura{\textbf{Dr. Guilherme Galante}  \\ UNIOESTE -- Cascavel}
+%   %\assinatura{\textbf{Professor} \\ Convidado 3}
+%   %\assinatura{\textbf{Professor} \\ Convidado 4}
+      
+   \begin{center}
+    \vspace*{0.5cm}
+    {\large\imprimirlocal}
+    \par
+    {\large\imprimirdata}
+    \vspace*{1cm}
+  \end{center}
+  
+\end{folhadeaprovacao}
+% ---
+
+% ---
+% Dedicatória - OMITIR NA QUALIFICAÇÃO
+% ---
+
+% \begin{dedicatoria}
+%    \vspace*{\fill}
+%    \centering
+%    \noindent
+%    \textit{ Este trabalho é dedicado às crianças adultas que,\\
+%    quando pequenas, sonharam em se tornar cientistas.} \vspace*{\fill}
+% \end{dedicatoria}
+% ---
+
+% ---
+% Agradecimentos  - OMITIR NA QUALIFICAÇÃO
+% ---
+% \begin{agradecimentos}
+% Os agradecimentos principais são direcionados à Gerald Weber, Miguel Frasson,
+% Leslie H. Watter, Bruno Parente Lima, Flávio de Vasconcellos Corrêa, Otavio Real
+% Salvador, Renato Machnievscz\footnote{Os nomes dos integrantes do primeiro
+% projeto abn\TeX\ foram extraídos de
+% \url{http://codigolivre.org.br/projects/abntex/}} e todos aqueles que
+% contribuíram para que a produção de trabalhos acadêmicos conforme
+% as normas ABNT com \LaTeX\ fosse possível.
+
+% Agradecimentos especiais são direcionados ao Centro de Pesquisa em Arquitetura
+% da Informação\footnote{\url{http://www.cpai.unb.br/}} da Universidade de
+% Brasília (CPAI), ao grupo de usuários
+% \emph{latex-br}\footnote{\url{http://groups.google.com/group/latex-br}} e aos
+% novos voluntários do grupo
+% \emph{\abnTeX}\footnote{\url{http://groups.google.com/group/abntex2} e
+% \url{http://www.abntex.net.br/}}~que contribuíram e que ainda
+% contribuirão para a evolução do \abnTeX.
+
+% \end{agradecimentos}
+% ---
+
+% ---
+% Epígrafe - OMITIR NA QUALIFICAÇÃO
+% ---
+% \begin{epigrafe}
+%     \vspace*{\fill}
+% 	\begin{flushright}
+% 		\textit{``Não vos amoldeis às estruturas deste mundo, \\
+% 		mas transformai-vos pela renovação da mente, \\
+% 		a fim de distinguir qual é a vontade de Deus: \\
+% 		o que é bom, o que Lhe é agradável, o que é perfeito.\\
+% 		(Bíblia Sagrada, Romanos 12, 2)}
+% 	\end{flushright}
+% \end{epigrafe}
+% ---
+
+% ---
+% RESUMOS
+% ---
+
+% resumo em português
+\setlength{\absparsep}{18pt} % ajusta o espaçamento dos parágrafos do resumo
+\begin{resumo}
+O monitoramento contínuo de máquinas hidráulicas por Emissão Acústica (EA) exige amostrar os sinais a vários megahertz, o que produz dezenas de gigabytes por hora por canal e desloca para o computador uma carga de transmissão, armazenamento e processamento desproporcional à atividade de interesse, que é esparsa. Esta dissertação propõe e avalia uma arquitetura de processamento em FPGA para a detecção de falhas em motobombas, na qual o sinal é reduzido a registros de \textit{hits} na lógica programável e a condição de operação é inferida por redes neurais MLP a partir desses registros. O extrator de \textit{hits}, implementado em um Artix-7 XC7A35T com as mesmas convenções temporais do sistema comercial Vallen AMSY-6, transmite por UDP um registro de 32 bytes por evento. Em ensaio simultâneo com o AMSY-6, com \textit{bursts} senoidais de 50 a 450\,kHz, o extrator registrou de 99,94 a 99,96\,\% de 48\,303 estímulos, sem perda na comunicação, com amplitudes 0,47 a 0,76\,dB acima das do instrumento comercial e redução de cerca de 770 vezes no volume de dados. Com 36 descritores de \textit{hits} agregados em janelas de 5\,s, MLPs estimaram a frequência de rotação de uma bomba com erro médio de 4 a 6\,Hz em corridas não vistas; a configuração das válvulas, reconhecida com 89 a 95\,\% de acurácia quando a corrida aparecia no treino, caiu para 21 a 28\,\% quando a corrida inteira foi deixada de fora, o que expôs as limitações do delineamento dos dados. A classificação foi quantizada em int8 e implementada no processador MicroBlaze e em lógica dedicada gerada por síntese de alto nível, com verificação inteiramente por simulação: o código embarcado reproduziu o modelo de referência bit a bit, a inferência levou cerca de 2\,ms na MicroBlaze sem FPU, medida em simulação RTL, e 114\,\(\mu\)s no acelerador, que ocupou 656 LUTs após o roteamento. Na base pública de rolamentos CWRU, \textit{hits} detectados com limiar flutuante recuperaram as frequências teóricas de defeito, e a validação que separa rolamentos físicos reduziu a acurácia de 87--92\,\% para 21--63\,\%. Os resultados mostram que a extração de \textit{hits} na borda resolve o problema de volume e preserva informação suficiente para inferir a condição de operação, e que a confiança nessa inferência depende de validações que separem as unidades físicas independentes.
+
+\textbf{Palavras-chave}: emissão acústica; detecção de \textit{hits}; FPGA; redes neurais MLP; processamento na borda; cavitação.
+\end{resumo}
+
+
+
+
+% abstract
+\begin{resumo}[Abstract]
+Continuous monitoring of hydraulic machines by Acoustic Emission (AE) requires sampling at several megahertz, which produces tens of gigabytes per hour per channel and places on the host computer a transmission, storage and processing load out of proportion to the sparse activity of interest. This dissertation proposes and evaluates an FPGA-based processing architecture for fault detection in motor pumps, in which the signal is reduced to hit records in programmable logic and the operating condition is inferred from these records by MLP neural networks. The hit extractor, implemented on an Artix-7 XC7A35T with the same timing conventions as the commercial Vallen AMSY-6 system, transmits one 32-byte record per event over UDP. In a simultaneous test with the AMSY-6, using sine bursts from 50 to 450\,kHz, the extractor recorded 99.94 to 99.96\,\% of 48,303 stimuli with no communication loss, amplitudes 0.47 to 0.76\,dB above those of the commercial instrument and a data reduction of about 770 times. Using 36 hit descriptors aggregated in 5\,s windows, MLPs estimated the rotation frequency of a pump with a mean error of 4 to 6\,Hz on unseen runs; the valve configuration, recognized with 89 to 95\,\% accuracy when the run was present in training, dropped to 21 to 28\,\% when the whole run was left out, exposing the limitations of the data design. The classification was quantized to int8 and implemented on the MicroBlaze processor and in dedicated logic generated by high-level synthesis, verified entirely by simulation: the embedded code reproduced the reference model bit-exactly, inference took about 2\,ms on the MicroBlaze without FPU, as measured in RTL simulation, and 114\,\(\mu\)s on the accelerator, which used 656 LUTs after routing. On the public CWRU bearing dataset, hits detected with a floating threshold recovered the theoretical defect frequencies, and the validation that separates physical bearings reduced accuracy from 87--92\,\% to 21--63\,\%. The results show that hit extraction at the edge solves the data volume problem while preserving enough information to infer the operating condition, and that confidence in this inference depends on validations that separate independent physical units.
+
+\textbf{Keywords}: acoustic emission; hit detection; FPGA; MLP neural networks; edge processing; cavitation.
+\end{resumo}
+
+%\begin{resumo}[Abstract]
+%This work investigates cavitation detection techniques in centrifugal pumps through the analysis of Acoustic Emission (AE) signals, with an emphasis on the implementation of efficient processing architectures for continuous condition monitoring. The research is aligned with the MOMEA Project — Online Monitoring via the Acoustic Emission Method — developed by the Itaipu ParqueTec research group in partnership with Itaipu Binacional, whose goal is to deliver intelligent and low-cost diagnostic solutions applicable to industrial hydraulic systems.In the initial stage of the project, the MomeaProbe/MomeaCapture platform was developed, comprising a high-throughput data acquisition hardware (12-bit ADC at 8 MSps per channel, USB 3.0 interface) and a software environment responsible for signal transfer, compression, storage, and visualization. This infrastructure enabled continuous acquisition of long time series as well as the generation of time–frequency maps using windowed FFT. Based on these spectrograms, two-dimensional convolutional neural networks (CNN-2D) were trained to classify different cavitation stages, achieving promising classification accuracy.However, experimental results revealed significant limitations related to the large data volumes generated (tens of gigabytes per hour) and the high computational cost associated with continuous compression, storage, and processing using a general-purpose CPU. The increasing software complexity—encompassing multithreading, circular buffers, LZMA compression, experimental use of Redis, and subsequent replacement by lock-free data structures—highlighted scalability challenges and difficulties in maintaining a sustained high-throughput data flow. Comparative tests showed that, even with software optimizations, CPU-based compression becomes a bottleneck when the system operates at higher activity levels.
+%To overcome these limitations, this work proposes the development and simulation of an FPGA-based embedded architecture, employing HIT detection to filter relevant acoustic events directly in hardware and a quantized MLP network for near–real-time inference. Embedded filtering drastically reduces data granularity and volume prior to transmission, enabling the replacement of the USB 3.0 interface with a 100 Mb/s Ethernet link. This redistribution of processing significantly alleviates the computational burden on the host system and establishes a far more efficient and predictable pipeline for field monitoring.
+%The proposed combination of FPGA-based processing and MLP inference is expected to reduce latency, power consumption, and transmitted data volume while preserving high sensitivity for the detection of incipient cavitation and microstructural faults. Consequently, this study contributes to the development of an intelligent, robust monitoring platform suitable for industrial environments, effectively combining the accuracy of machine learning techniques with the performance and parallelism offered by reconfigurable hardware.
+%\end{abstract}
+
+
+% inserir lista de ilustrações
+% ---
+\pagebreak
+\pdfbookmark[0]{\listfigurename}{lof}
+\listoffigures*
+\cleardoublepage
+% ---
+
+%% ---
+%% inserir lista de quadros
+%% ---
+%\pdfbookmark[0]{\listofquadrosname}{loq}
+%\listofquadros*
+%\cleardoublepage
+%% ---
+
+% ---
+% inserir lista de tabelas
+% ---
+\pdfbookmark[0]{\listtablename}{lot}
+\listoftables*
+\cleardoublepage
+% ---
+
+% ---
+% inserir lista de abreviaturas e siglas
+% ---
+\begin{siglas}
+	\item[\textbf{A/D}] Analógico-digital
+	\item[\textbf{ADC}] \textit{Analog-to-Digital Converter}
+	\item[\textbf{AM}] Aprendizado de Máquina
+	\item[\textbf{AMD}] \textit{Advanced Micro Devices}
+	\item[\textbf{ARI}] \textit{Adjusted Rand Index}
+	\item[\textbf{AXI}] \textit{Advanced eXtensible Interface}
+	\item[\textbf{BPFI}] \textit{Ball Pass Frequency, Inner race}
+	\item[\textbf{BPFO}] \textit{Ball Pass Frequency, Outer race}
+	\item[\textbf{BRAM}] \textit{Block RAM}
+	\item[\textbf{BSF}] \textit{Ball Spin Frequency}
+	\item[\textbf{CNN}] \textit{Convolutional Neural Network}
+	\item[\textbf{CPU}] \textit{Central Processing Unit}
+	\item[\textbf{CWRU}] \textit{Case Western Reserve University}
+	\item[\textbf{dB\(_{\mathrm{AE}}\)}] Decibel em relação a \(1\,\mu\)V na entrada do pré-amplificador
+	\item[\textbf{DDT}] \textit{Duration Discrimination Time} (tempo de definição do \textit{hit}; o mesmo que HDT)
+	\item[\textbf{DL}] \textit{Deep Learning}
+	\item[\textbf{DMA}] \textit{Direct Memory Access}
+	\item[\textbf{DSP}] \textit{Digital Signal Processing} (bloco DSP48 do FPGA)
+	\item[\textbf{EA}] Emissão Acústica
+	\item[\textbf{FFT}] \textit{Fast Fourier Transform}
+	\item[\textbf{FIFO}] \textit{First In, First Out}
+	\item[\textbf{FPGA}] \textit{Field-Programmable Gate Array}
+	\item[\textbf{FPU}] \textit{Floating-Point Unit}
+	\item[\textbf{GB}] \textit{Gradient Boosting}
+	\item[\textbf{GMM}] \textit{Gaussian Mixture Model}
+	\item[\textbf{GPU}] \textit{Graphics Processing Unit}
+	\item[\textbf{HDL}] \textit{Hardware Description Language}
+	\item[\textbf{HDT}] \textit{Hit Definition Time}
+	\item[\textbf{HLS}] \textit{High-Level Synthesis}
+	\item[\textbf{HLT}] \textit{Hit Lockout Time}
+	\item[\textbf{IA}] Inteligência Artificial
+	\item[\textbf{IIR}] \textit{Infinite Impulse Response}
+	\item[\textbf{IP}] \textit{Intellectual Property} (bloco de \textit{hardware} reutilizável)
+	\item[\textbf{k-NN}] \textit{k-Nearest Neighbors}
+	\item[\textbf{LMB}] \textit{Local Memory Bus}
+	\item[\textbf{LOLO}] \textit{Leave-One-Load-Out}
+	\item[\textbf{LORO}] \textit{Leave-One-Run-Out}
+	\item[\textbf{LOSO}] \textit{Leave-One-Series-Out} / \textit{Leave-One-Size-Out}
+	\item[\textbf{LSTM}] \textit{Long Short-Term Memory}
+	\item[\textbf{LUT}] \textit{Look-Up Table}
+	\item[\textbf{MAC}] Multiplicação-acumulação
+	\item[\textbf{MAE}] \textit{Mean Absolute Error}
+	\item[\textbf{MARSE}] \textit{Measured Area under the Rectified Signal Envelope}
+	\item[\textbf{MAXDUR}] Duração máxima do \textit{hit}
+	\item[\textbf{MLP}] \textit{Multilayer Perceptron}
+	\item[\textbf{MOMEA}] Monitoramento Online de Rotores de Turbinas pelo Método de Emissão Acústica
+	\item[\textbf{NMI}] \textit{Normalized Mutual Information}
+	\item[\textbf{PCA}] \textit{Principal Component Analysis}
+	\item[\textbf{PZT}] Titanato-zirconato de chumbo
+	\item[\textbf{RA}] Razão entre tempo de subida e amplitude
+	\item[\textbf{ReLU}] \textit{Rectified Linear Unit}
+	\item[\textbf{RF}] \textit{Random Forest}
+	\item[\textbf{RMS}] \textit{Root Mean Square}
+	\item[\textbf{RNA}] Rede Neural Artificial
+	\item[\textbf{ROVL}] Indicador de \textit{hit} com rearme durante o bloqueio
+	\item[\textbf{RTL}] \textit{Register-Transfer Level}
+	\item[\textbf{SoC}] \textit{System-on-Chip}
+	\item[\textbf{STFT}] \textit{Short-Time Fourier Transform}
+	\item[\textbf{SVM}] \textit{Support Vector Machine}
+	\item[\textbf{UDP}] \textit{User Datagram Protocol}
+	\item[\textbf{USB}] \textit{Universal Serial Bus}
+\end{siglas}
+
+% ---
+
+% ---
+%% inserir lista de símbolos
+%% ---
+\begin{simbolos}
+\item[\textbf{$x$}] Sinal de entrada (vetor de amostras).
+\item[\textbf{$\mathbb{R}^{N}$}] Espaço vetorial dos números reais com dimensão $N$.
+\item[\textbf{$N$}] Tamanho total do sinal de entrada.
+\item[\textbf{$\mathbb{R}^{K}$}] Espaço vetorial dos números reais com dimensão $K$.
+%\item[\textbf{$y_j[i]$}] Valor de ativação do $j$-ésimo neurônio na posição $i$.
+%\item[\textbf{$f(\cdot)$}] Função de ativação não linear.
+%\item[\textbf{$b_j$}] Viés (\textit{bias}) do $j$-ésimo neurônio.
+%\item[\textbf{$\sum_{m=1}^{K}$}] Operador somatório sobre o tamanho $K$ do kernel.
+%\item[\textbf{$w_j[m]$}] Peso (coeficiente) do $j$-ésimo kernel na posição $m$.
+%\item[\textbf{$x[i + m - 1]$}] Amostra do sinal de entrada na posição de cálculo.
+%\item[\textbf{$i$}] Índice temporal da sequência de saída.
+%\item[\textbf{$x_{i,l}$}] Valor da $l$-ésima variável de entrada associado à $i$-ésima amostra.
+\item[\textbf{$l$}] Índice do neurônio na camada de entrada, com $l = \{1,\ldots,p\}$.
+\item[\textbf{$p$}] Número total de variáveis explicativas (neurônios da camada de entrada).
+\item[\textbf{$\omega^{h}_{j,l}$}] Peso sináptico que conecta o neurônio $l$ da camada de entrada ao neurônio $j$ da camada oculta.
+\item[\textbf{$\theta^{h}_{j}$}] Viés (\textit{bias}) associado ao $j$-ésimo neurônio da camada oculta.
+\item[\textbf{$j$}] Índice do neurônio na camada oculta, com $j = \{1,\ldots,h\}$.
+\item[\textbf{$h$}] Número de neurônios na camada oculta.
+\item[\textbf{$\mathrm{rede}^{h}_{j}$}] Potencial interno (soma ponderada das entradas) do $j$-ésimo neurônio da camada oculta.
+\item[\textbf{$f^{h}_{j}(\cdot)$}] Função de ativação aplicada ao $j$-ésimo neurônio da camada oculta.
+\item[\textbf{$f^{h}_{j}(\mathrm{rede}^{h}_{j})$}] Saída do $j$-ésimo neurônio da camada oculta.
+\item[\textbf{$\omega^{o}_{k,j}$}] Peso sináptico que conecta o neurônio $j$ da camada oculta ao neurônio $k$ da camada de saída.
+\item[\textbf{$\theta^{o}_{k}$}] Viés (\textit{bias}) associado ao $k$-ésimo neurônio da camada de saída.
+\item[\textbf{$k$}] Índice do neurônio na camada de saída, com $k = \{1,\ldots,c\}$.
+\item[\textbf{$c$}] Número de neurônios na camada de saída (classes do problema).
+\item[\textbf{$\mathrm{rede}^{o}_{k}$}] Potencial interno do $k$-ésimo neurônio da camada de saída.
+\item[\textbf{$f^{o}_{k}(\cdot)$}] Função de ativação aplicada ao $k$-ésimo neurônio da camada de saída.
+\item[\textbf{$\hat{y}_{i,k}$}] Saída estimada da rede para a $i$-ésima amostra na classe $k$.
+\item[\textbf{$v_k$}] Potencial interno genérico do neurônio $k$, resultante da soma ponderada das entradas.
+\item[\textbf{$\varphi(\cdot)$}] Função de ativação não linear aplicada ao neurônio.
+\item[\textbf{$y_k$}] Saída do neurônio $k$ após a aplicação da função de ativação.
+
+\item[\textbf{$x$}] Vetor de entrada do modelo.
+\item[\textbf{$x_i$}] Vetor de entrada associado ao $i$-ésimo exemplo do conjunto de dados.
+\item[\textbf{$y$}] Rótulo (saída desejada) associado a uma entrada.
+\item[\textbf{$y_i$}] Rótulo associado ao $i$-ésimo exemplo do conjunto de dados.
+\item[\textbf{$\hat{y}$}] Saída estimada (predição) produzida pela MLP.
+\item[\textbf{$f_{\theta}(\cdot)$}] Função representada pela MLP parametrizada por $\theta$.
+\item[\textbf{$\theta$}] Conjunto de parâmetros treináveis da MLP (pesos e vieses).
+
+\item[\textbf{$\mathbb{R}^{d}$}] Espaço vetorial dos números reais de dimensão $d$.
+\item[\textbf{$d$}] Dimensão do vetor de entrada (número de atributos).
+
+\item[\textbf{$a^{(0)}$}] Ativação da camada de entrada, definida como $a^{(0)} = x$.
+\item[\textbf{$a^{(\ell)}$}] Vetor de ativações (saídas) da camada $\ell$ após a não linearidade.
+\item[\textbf{$z^{(\ell)}$}] Vetor pré-ativação da camada $\ell$ (combinação linear antes da ativação).
+\item[\textbf{$W^{(\ell)}$}] Matriz de pesos da camada $\ell$.
+\item[\textbf{$b^{(\ell)}$}] Vetor de vieses (\textit{bias}) da camada $\ell$.
+\item[\textbf{$\phi^{(\ell)}(\cdot)$}] Função de ativação aplicada na camada $\ell$.
+\item[\textbf{$\ell$}] Índice de camada, com $\ell = 1,\ldots,L$.
+\item[\textbf{$L$}] Número total de camadas parametrizadas da MLP (camadas com pesos).
+
+\item[\textbf{$\mathcal{D}$}] Conjunto de dados de treinamento, $\mathcal{D}=\{(x_i,y_i)\}_{i=1}^{N}$.
+\item[\textbf{$N$}] Número total de exemplos no conjunto de treinamento.
+\item[\textbf{$\mathcal{B}$}] Mini-batch (subconjunto) de $\mathcal{D}$ usado em uma iteração de treinamento.
+\item[\textbf{$|\mathcal{B}|$}] Cardinalidade (tamanho) do mini-batch.
+\item[\textbf{$B$}] Tamanho do mini-batch, $|\mathcal{B}|=B$.
+
+\item[\textbf{$\mathcal{L}(\hat{y},y)$}] Função de perda (erro) que quantifica discrepância entre predição e rótulo.
+\item[\textbf{$J_{\mathcal{B}}(\theta)$}] Função custo restrita ao mini-batch $\mathcal{B}$ (perda média + regularização).
+\item[\textbf{$\Omega(\theta)$}] Termo de regularização aplicado aos parâmetros do modelo.
+\item[\textbf{$\lambda$}] Hiperparâmetro que pondera a contribuição da regularização.
+
+\item[\textbf{$\nabla_{\theta}$}] Operador gradiente em relação aos parâmetros $\theta$.
+\item[\textbf{$g$}] Gradiente do custo em relação a $\theta$, tipicamente $g \gets \nabla_{\theta} J_{\mathcal{B}}(\theta)$.
+\item[\textbf{$\eta$}] Taxa de aprendizado (\textit{learning rate}) usada na atualização dos parâmetros.
+
+\item[\textbf{$E$}] Número de épocas de treinamento.
+\item[\textbf{$e$}] Índice da época, com $e = 1,\ldots,E$.
+\end{simbolos}
+%% ---
+
+% ---
+% inserir o sumario
+% ---
+\pdfbookmark[0]{\contentsname}{toc}
+\tableofcontents*
+\cleardoublepage
+% ---
+
+
+
+% ----------------------------------------------------------
+% ELEMENTOS TEXTUAIS
+% ----------------------------------------------------------
+\textual
+
+% ----------------------------------------------------------
+% Introdução (exemplo de capítulo sem numeração, mas presente no Sumário)
+% ----------------------------------------------------------
+\chapter{Introdução}
+\label{chap:introducao}
+\input{capitulos/introducao}
+
+\chapter{Fundamentação Teórica}
+\label{chap:fundamentacao}
+\input{capitulos/FundamentacaoTeorica/01-EmissaoAcustica}
+
+\section{Detecção e parametrização de \textit{hits}}
+\label{sec:fund_hits}
+\input{capitulos/importado/v2_hits_fundamentos}
+
+\input{capitulos/FundamentacaoTeorica/02-AprendizadoMaquina}
+
+\input{capitulos/FundamentacaoTeorica/03-FPGA}
+
+\chapter{Materiais e Métodos}
+\label{chap:metodos}
+\input{capitulos/MateriaisMetodos}
+
+\chapter{Resultados e Discussão}
+\label{chap:resultados}
+\input{capitulos/Resultados}
+
+\chapter{Conclusões}
+\label{chap:conclusoes}
+\input{capitulos/Conclusoes}
+
+\phantompart
+
+% ----------------------------------------------------------
+% ELEMENTOS PÓS-TEXTUAIS
+% ----------------------------------------------------------
+\postextual
+% ----------------------------------------------------------
+
+% ----------------------------------------------------------
+% Referências bibliográficas
+% ----------------------------------------------------------
+\bibliography{bibliografia,bibliografia_resultados}
+
+
+
+% ----------------------------------------------------------
+% Glossário
+% ----------------------------------------------------------
+%
+% Consulte o manual da classe abntex2 para orientações sobre o glossário.
+%
+%\glossary
+
+% ----------------------------------------------------------
+% Apêndices
+% ----------------------------------------------------------
+
+% ---
+% Inicia os apêndices
+% ---
+% \begin{apendicesenv}
+
+% Imprime uma página indicando o início dos apêndices
+% \partapendices
+
+% % ----------------------------------------------------------
+% \chapter{Quisque libero justo}
+% % ----------------------------------------------------------
+
+% \lipsum[50]
+
+% % ----------------------------------------------------------
+% \chapter{Nullam elementum urna vel imperdiet sodales elit ipsum pharetra ligula
+% ac pretium ante justo a nulla curabitur tristique arcu eu metus}
+% % ----------------------------------------------------------
+% \lipsum[55-57]
+
+% \end{apendicesenv}
+% ---
+
+
+% ----------------------------------------------------------
+% Anexos
+% ----------------------------------------------------------
+
+% ---
+% Inicia os anexos
+% ---
+% \begin{anexosenv}
+
+% Imprime uma página indicando o início dos anexos
+% \partanexos
+
+% ---
+%\chapter{Morbi ultrices rutrum lorem.}
+% ---
+%\lipsum[30]
+
+% ---
+%\chapter{Cras non urna sed feugiat cum sociis natoque penatibus et magnis dis
+%parturient montes nascetur ridiculus mus}
+% ---
+
+%\lipsum[31]
+
+% ---
+%\chapter{Fusce facilisis lacinia dui}
+% ---
+
+%\lipsum[32]
+
+% \end{anexosenv}
+
+%---------------------------------------------------------------------
+% INDICE REMISSIVO
+%---------------------------------------------------------------------
+\phantompart
+\printindex
+%---------------------------------------------------------------------
+
+\end{document}

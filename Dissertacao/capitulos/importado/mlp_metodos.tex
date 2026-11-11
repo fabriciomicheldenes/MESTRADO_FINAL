@@ -1,0 +1,210 @@
+% Gerado por ferramentas/importar_relatorios.py a partir de MLP/artigo/MLP_EA_bomba.tex.
+% Revisado à mão na dissertação: edite este arquivo, não a fonte.
+\subsection{Dados e delineamento}
+\label{mlp:sec:dados}
+
+\subsubsection{Ensaio}
+
+A bancada \completar{descrever: bomba, motor e inversor, tubulação, sensores de EA, posição dos canais A e B, pré-amplificadores} foi operada em delineamento cruzado. Oito frequências do motor (20, 30, 40, 50, 60, 70, 80 e 90\,Hz) foram combinadas com sete configurações de abertura das válvulas de recalque e sucção. Em cada configuração, uma das válvulas ficava totalmente aberta (100\,\%) e a outra assumia 75, 50 ou 25\,\%. As configurações, no formato recalque-sucção, são 100-100, 100-75, 100-50, 100-25, 75-100, 50-100 e 25-100. Cada combinação foi registrada uma única vez, por cerca de 300\,s, totalizando 56 corridas.
+
+Os registros foram feitos pelo MOMEA (\texttt{ae\_hit\_dashboard.py} rev.~0.6), com dois canais (A e B), ganho de 34\,dB, HDT de \(250\,\mu\)s, HLT re-armável de 2\,ms e duração máxima (MAXDUR) de 100\,ms. Cada corrida gera um arquivo \texttt{hits.csv} com um registro por \textit{hit} e um \texttt{config.json} com os parâmetros do extrator. Os rótulos foram lidos da estrutura de pastas. A pasta de primeiro nível indica as válvulas (por exemplo, \texttt{100REC\_50SUC}) e a de segundo nível indica a frequência (por exemplo, \texttt{01\_40HZ-\ldots}). As subpastas da série 100-50 trazem o rótulo \texttt{REC100-25SUC}, provavelmente um erro de nomeação. Adotou-se a pasta de primeiro nível, cujos horários (05/11, 16h52 a 17h45) são distintos dos da série 100-25 (06/11).
+
+\subsubsection{Ordem temporal}
+
+Cada série de válvulas foi ensaiada em bloco contínuo, em dois dias (Figura~\ref{mlp:fig:ordem}, Tabela~\ref{mlp:tab:ordem}). Dentro de cada série, as frequências seguiram ordem crescente, com duas exceções. As séries 25-100 e 100-50 foram decrescentes. Na série 100-100, a corrida de 20\,Hz foi feita por último e com outro limiar. Assim, as válvulas estão confundidas com o dia, o horário e o limiar de detecção. A frequência está confundida com o tempo dentro de cada série, mas não entre séries, porque o sentido da varredura muda.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figs/mlp/fig_ordem_temporal.png}
+	\caption{Ordem temporal das 56 corridas. Cada barra é uma corrida de cerca de 5\,min; o número acima dela é a frequência do motor e a cor indica o limiar de detecção usado na sessão.}
+	\label{mlp:fig:ordem}
+\end{figure}
+
+\begin{table}[htbp]
+	\centering
+	\caption{Séries de válvulas, horários, sentido da varredura de frequência e limiares.}
+	\label{mlp:tab:ordem}
+	\small
+	\begin{tabular}{llll}
+		\toprule
+		\textbf{Série} & \textbf{Dia e horário} & \textbf{Ordem das freq.} & \textbf{Limiar A/B (dB\(_{\mathrm{AE}}\))} \\
+		\midrule
+		100-100 & 05/11, 10h42--12h09 & 30\(\rightarrow\)90, depois 20 & 63/50 (20\,Hz: 65/55) \\
+		25-100 & 05/11, 15h54--16h41 & 90\(\rightarrow\)20 & 65/55 \\
+		100-50 & 05/11, 16h52--17h45 & 90\(\rightarrow\)20 & 65/55 \\
+		100-25 & 06/11, 09h49--10h32 & 20\(\rightarrow\)90 & 50/50 \\
+		100-75 & 06/11, 11h17--12h01 & 20\(\rightarrow\)90 & 50/50 \\
+		75-100 & 06/11, 14h49--15h32 & 20\(\rightarrow\)90 & 50/50 \\
+		50-100 & 06/11, 15h52--16h41 & 20\(\rightarrow\)90 & 50/50 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+% =======================================================================================================
+\subsection{Qualidade dos dados}
+\label{mlp:sec:qualidade}
+
+Antes de modelar, os registros foram inspecionados. Cinco características condicionam toda a análise.
+
+\paragraph{Saturação.} Com 34\,dB de ganho, 69,8\,\% dos \textit{hits} têm o indicador SAT ativo. A partir de 40 a 50\,Hz, praticamente todos os \textit{hits} dos dois canais saturam, e a amplitude acumula-se no fundo de escala, 102,8\,dB\(_{\mathrm{AE}}\) (Figuras~\ref{mlp:fig:exemplo}, \ref{mlp:fig:amplitude} e~\ref{mlp:fig:mapas}). Nessa faixa, a amplitude de pico deixa de discriminar as condições.
+
+\paragraph{Duração máxima.} 17,8\,\% dos \textit{hits}, quase todos no canal A, atingiram a duração máxima de 100\,ms e foram encerrados pelo MAXDUR. São trechos de emissão contínua, coerentes com ruído de escoamento ou cavitação. A fração MAXDUR do canal A varia entre condições sem ordem simples com a frequência (Figura~\ref{mlp:fig:mapas}).
+
+\paragraph{Rearme e cadência dos \textit{hits}.} O indicador ROVL está ativo em 100\,\% dos \textit{hits}, nos dois canais e em todas as corridas. No extrator, ROVL marca um cruzamento do limiar durante o bloqueio re-armável (HLT), que reinicia a espera. Com emissão quase contínua, isso ocorre em todo \textit{hit}, e o indicador não separa nada nestes dados. Além disso, os \textit{hits} de cada canal chegam espaçados em cerca de 0,1\,s, ou cerca de 0,2\,s depois de um \textit{hit} com MAXDUR (Figura~\ref{mlp:fig:intervalo}). O canal B registra de 9,5 a 9,9 \textit{hits}/s em quase todas as condições. Essa cadência é compatível com um bloqueio que se estende enquanto houver cruzamentos, até cerca de 100\,ms. O detector passa, então, a amostrar o sinal contínuo a cerca de 10\,Hz. A consequência é que a taxa de \textit{hits} não mede a atividade acústica: ela é função da duração do \textit{hit}. O limite de cerca de 100\,ms não foi confirmado no HDL da versão ensaiada.
+
+\paragraph{Limiar variável.} O limiar mudou entre sessões: 63/50, 65/55 e 50/50\,dB\(_{\mathrm{AE}}\) nos canais A/B (Tabela~\ref{mlp:tab:ordem}). Aplicar um corte comum no maior limiar (65,1/55,0\,dB\(_{\mathrm{AE}}\)) removeria apenas 0,001\,\% dos \textit{hits}, porque os picos ficam quase sempre muito acima de qualquer dos limiares. O efeito do limiar está na duração, nas contagens e na energia, que o FPGA mede acima do limiar da sessão, e não pode ser corrigido depois.
+
+\paragraph{Tempo.} A coluna \texttt{timestamp} está zerada. Usou-se o tempo de chegada no computador, \texttt{rx\_time\_s}, cuja resolução é suficiente para janelas de segundos.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figs/mlp/fig_exemplo_hits.png}
+	\caption{Trechos de 10\,s de \textit{hits} em duas corridas. A 20\,Hz (esquerda), as amplitudes variam e não há saturação. A 80\,Hz (direita), todos os \textit{hits} estão no fundo de escala e quase todos os do canal A atingem a duração máxima (pontos pretos). As linhas pontilhadas marcam as janelas de 5\,s.}
+	\label{mlp:fig:exemplo}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figs/mlp/fig_amplitude_saturacao.png}
+	\caption{Distribuição da amplitude de pico por faixa de frequência do motor. A partir de 40\,Hz, a maior parte dos \textit{hits} acumula-se em 102,8\,dB\(_{\mathrm{AE}}\) (saturação do ADC).}
+	\label{mlp:fig:amplitude}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figs/mlp/fig_intervalo_hits.png}
+	\caption{Intervalo entre \textit{hits} consecutivos do mesmo canal, em todas as corridas. Os picos em 0,1\,s (após \textit{hit} normal) e 0,2\,s (após \textit{hit} de 100\,ms com MAXDUR) indicam cadência imposta pelo tempo morto do rearme, e não pela atividade acústica.}
+	\label{mlp:fig:intervalo}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figs/mlp/fig_mapas_condicao.png}
+	\caption{Indicadores por condição, um valor por corrida: taxa de \textit{hits}, fração de \textit{hits} saturados (SAT), fração com duração máxima (MAXDUR) e mediana de \(\log_{10}\) da energia por segundo no canal A.}
+	\label{mlp:fig:mapas}
+\end{figure}
+
+% =======================================================================================================
+\subsection{Descritores por janela}
+\label{mlp:sec:descritores}
+
+A cavitação e o ruído de escoamento são fenômenos quase contínuos. Classificar \textit{hits} isolados faria pouco sentido, porque um \textit{hit} individual não carrega a condição e \textit{hits} vizinhos são redundantes. Os \textit{hits} foram, então, agregados em janelas consecutivas de duração \(T_w = 5\)\,s, sem sobreposição. O resultado são 3\,540 janelas, cerca de 63 por corrida, com aproximadamente 25 a 50 \textit{hits} por canal em cada uma.
+
+Para cada janela e cada canal, calcularam-se 18 descritores, 36 no total.
+
+\textbf{Com todos os \textit{hits} do canal}, cinco descritores:
+\begin{itemize}
+	\item a taxa de \textit{hits};
+	\item a fração saturada (SAT);
+	\item a fração com duração máxima (MAXDUR);
+	\item o logaritmo da energia total por segundo,
+	\begin{equation}
+		E_s = \log_{10}\!\Big(\frac{1}{T_w}\sum_{i\in w} E_i + 1\Big),
+		\label{mlp:eq:energia_s}
+	\end{equation}
+	que inclui os \textit{hits} contínuos e funciona como um indicador de nível RMS;
+	\item a frequência média \(\mathrm{FM} = N_{\mathrm{cont}}/t_{\mathrm{dur}}\), em mediana.
+\end{itemize}
+
+\textbf{Só com os \textit{hits} sem MAXDUR}, cuja duração não foi truncada, treze descritores:
+\begin{itemize}
+	\item média e percentis 10, 50 e 90 da amplitude;
+	\item percentis 50 e 90 de \(\log_{10}\) da energia, da duração e das contagens;
+	\item mediana de \(\log_{10}\) do tempo de subida;
+	\item mediana da frequência média;
+	\item mediana de \(\log_{10}\) de RA,
+	\begin{equation}
+		\mathrm{RA} = \frac{t_{\mathrm{sub}}\ [\mathrm{ms}]}{A_{\mathrm{pico}}\ [\mathrm{V}]},
+		\label{mlp:eq:ra}
+	\end{equation}
+	com a amplitude em volts no sensor \cite{ohno2010}.
+\end{itemize}
+
+O logaritmo atenua a assimetria de energia, duração e contagens. Janelas sem \textit{hits} normais (6,7\,\% dos valores) ficam com descritores faltantes, imputados pela mediana. Imputação e padronização (média zero, variância unitária) são ajustadas apenas no treino de cada fold.
+
+As Figuras~\ref{mlp:fig:box_freq} e~\ref{mlp:fig:box_valv} mostram a distribuição de seis descritores por frequência e por válvula. A energia por segundo cresce de forma monotônica com a frequência e estabiliza a partir de cerca de 60\,Hz. A frequência média do canal A cai de 120 a 220\,kHz, em 20\,Hz, para menos de 50\,kHz a partir de 50\,Hz, quando os \textit{hits} longos dominam. Por válvula, as diferenças são menores que a dispersão entre frequências. As exceções são as séries 100-25 e 25-100, que se destacam na fração MAXDUR do canal A: quase nula na primeira e quase total na segunda, acima de 50\,Hz. A Figura~\ref{mlp:fig:desc_cond} resume as medianas por corrida.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figs/mlp/fig_boxplot_por_frequencia.png}
+	\caption{Distribuição, por janela de 5\,s, de seis descritores em função da frequência do motor (todas as configurações de válvula agrupadas).}
+	\label{mlp:fig:box_freq}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figs/mlp/fig_boxplot_por_valvula.png}
+	\caption{Os mesmos descritores da Figura~\ref{mlp:fig:box_freq} em função da configuração das válvulas (todas as frequências agrupadas).}
+	\label{mlp:fig:box_valv}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=\textwidth]{figs/mlp/fig_descritores_por_condicao.png}
+	\caption{Mediana por corrida de descritores selecionados em função da frequência, uma curva por configuração de válvulas.}
+	\label{mlp:fig:desc_cond}
+\end{figure}
+
+% =======================================================================================================
+\subsection{Método}
+\label{mlp:sec:metodo}
+
+\subsubsection{Alvos}
+
+\paragraph{Frequência.} A frequência do motor é uma grandeza ordenada. Foi tratada como \textbf{regressão}, e a leitura ordinal foi obtida arredondando a previsão ao nível mais próximo entre 20 e 90\,Hz. Assim, errar 40\,Hz por 50\,Hz custa menos que errar por 90\,Hz, o que não ocorreria com oito classes independentes.
+
+\paragraph{Válvulas.} Como o delineamento é cruzado, só existem 7 das 16 combinações possíveis de recalque e sucção. A configuração foi modelada como \textbf{uma classe com 7 níveis}, equilibrada com 8 corridas por classe. Os acertos em \% recalque e \% sucção foram derivados da classe prevista. Dois classificadores independentes poderiam prever combinações nunca ensaiadas e teriam classes desbalanceadas, já que 100\,\% aparece em 4 das 7 configurações. Em nenhum caso o problema foi formulado como 56 classes.
+
+\subsubsection{Modelos}
+
+Três modelos foram comparados, todos com hiperparâmetros fixos e precedidos de imputação e padronização no mesmo \textit{pipeline} (scikit-learn 1.9.1 \cite{pedregosa2011}).
+
+\begin{itemize}
+	\item \textbf{MLP}: duas camadas ocultas de 64 e 32 neurônios, ReLU, otimizador Adam, penalidade L2 \(\alpha = 10^{-3}\) e parada antecipada. A parada usa 15\,\% das janelas de treino como validação interna, com paciência de 30 épocas, e restaura os pesos da melhor época \cite{prechelt1998}. Na regressão, o alvo também é padronizado.
+	\item \textbf{RF}: 300 árvores, mínimo de 2 amostras por folha e 50\,\% dos descritores por divisão na regressão (\(\sqrt{p}\) na classificação) \cite{breiman2001}.
+	\item \textbf{GB}: \textit{HistGradientBoosting}, com 300 iterações na regressão e 200 na classificação, taxa de aprendizado de 0,05 e sem parada antecipada \cite{friedman2001}.
+\end{itemize}
+
+A ausência de busca de hiperparâmetros é deliberada. Com 56 corridas, uma busca aninhada teria pouca resolução \cite{varma2006}, e otimizar sobre o próprio teste inflaria os resultados. Os números são, portanto, linhas de base.
+
+\subsubsection{Validação}
+
+Nenhuma validação sorteia \textit{hits} ou janelas entre treino e teste (Figura~\ref{mlp:fig:div_aleat}). Como não há repetições das condições, não foi possível deixar uma repetição de fora. Usaram-se três esquemas, em ordem crescente de independência \cite{roberts2017}:
+
+\begin{description}
+	\item[BLOCOS (pseudo-repetição, 5 folds).] Cada corrida é dividida em 5 trechos consecutivos de cerca de 60\,s. No fold \(k\), o \(k\)-ésimo trecho de todas as corridas é o teste, e o restante é o treino. Uma janela de cada lado do trecho de teste é excluída para reduzir a dependência entre janelas contíguas (Figura~\ref{mlp:fig:div_blocos}). A mesma corrida aparece no treino e no teste.
+	\item[LORO (\textit{leave-one-run-out}, 56 folds).] Uma corrida inteira é o teste. Sua frequência aparece no treino com outras válvulas, e sua configuração aparece com outras frequências (Figura~\ref{mlp:fig:div_loro}). Este é o teste de generalização para uma condição não vista.
+	\item[LOSO (\textit{leave-one-series-out}, 7 folds, só frequência).] Uma série de válvulas inteira, isto é, uma sessão contínua, é o teste (Figura~\ref{mlp:fig:div_loso}). A classificação das válvulas não é possível aqui, porque a classe testada estaria ausente do treino.
+\end{description}
+
+As métricas da frequência são o erro absoluto médio (MAE), o RMSE, o \(R^2\), o acerto do nível exato e o acerto em \(\pm 10\)\,Hz. As das válvulas são a acurácia, a acurácia balanceada, o F1 macro e os acertos de \% recalque e \% sucção. Todas foram calculadas por janela e também por corrida: mediana das previsões para a frequência e voto majoritário para as válvulas.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.92\textwidth]{figs/mlp/fig_divisao_aleatoria.png}
+	\caption{Divisão aleatória 70/15/15 por janela, \textbf{não} usada. Janelas vizinhas da mesma corrida caem em treino, validação e teste, o que mede a memorização da corrida.}
+	\label{mlp:fig:div_aleat}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.92\textwidth]{figs/mlp/fig_divisao_blocos.png}
+	\caption{Esquema BLOCOS (fold 3 de 5): o terceiro trecho de cada corrida é o teste, com uma janela de exclusão de cada lado. As faixas amarelas são a validação interna da parada antecipada da MLP, sorteada dentro do treino.}
+	\label{mlp:fig:div_blocos}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.92\textwidth]{figs/mlp/fig_divisao_loro.png}
+	\caption{Esquema LORO (um dos 56 folds): a corrida 100-50 a 60\,Hz inteira é o teste.}
+	\label{mlp:fig:div_loro}
+\end{figure}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.92\textwidth]{figs/mlp/fig_divisao_loso.png}
+	\caption{Esquema LOSO (um dos 7 folds): a série 100-25 inteira é o teste.}
+	\label{mlp:fig:div_loso}
+\end{figure}
+
+% =======================================================================================================

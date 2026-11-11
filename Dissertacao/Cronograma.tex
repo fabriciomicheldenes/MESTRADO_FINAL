@@ -1,0 +1,38 @@
+\chapter{Cronograma}
+
+\begin{table}[H]
+	\centering
+	\footnotesize
+	\caption{Cronograma previsto para o desenvolvimento da MLP e implementação/síntese com Vivado (Fev–Out/2026).}
+	\renewcommand{\arraystretch}{1.3}
+	\begin{tabular}{p{6cm} c c c c c c c c c}
+		\toprule
+		\textbf{Atividade} &
+		\textbf{Fev} &
+		\textbf{Mar} &
+		\textbf{Abr} &
+		\textbf{Mai} &
+		\textbf{Jun} &
+		\textbf{Jul} &
+		\textbf{Ago} &
+		\textbf{Set} &
+		\textbf{Out} \\
+		\midrule
+		Preparação e limpeza da base de dados & X & X &   &   &   &   &   &   &   \\
+		Segmentação e definição das janelas (pré-processamento) & X & X &   &   &   &   &   &   &   \\
+		\midrule
+		Definição da arquitetura MLP &   & X & X &   &   &   &   &   &   \\
+		Treinamento inicial e ajuste de hiperparâmetros &   &   & X & X &   &   &   &   &   \\
+		Validação da MLP (métricas clássicas) &   &   &   & X & X &   &   &   &   \\
+		\midrule
+		Quantização e Prunning &   &   &   & X & X & X  &   &   &   \\
+		\midrule
+		Geração do pipeline \textit{dataflow} no Vivado &   &   &   &   &   & X & X &   &   \\
+		Simulação de latência, recursos e throughput &   &   &   &   &   & X & X &   &   \\
+		Ajuste fino e iteração entre Vivado e modelo &   &   &   &   &   &   & X & X &   \\
+		\midrule
+		Avaliação final dos resultados (software + Vivado) &   &   &   &   &   &   &   & X & X \\
+		Redação dos resultados e consolidação do capítulo &   &   &   &   &   &   &   &   & X \\
+		\bottomrule
+	\end{tabular}
+\end{table}

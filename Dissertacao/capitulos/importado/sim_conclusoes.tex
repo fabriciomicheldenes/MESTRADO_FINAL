@@ -1,0 +1,14 @@
+% Gerado por ferramentas/importar_relatorios.py a partir de MLP/ARTIGO_SIM_EMBARCADO-10.11.2026/ARTIGO_SIM_EMBARCADO.tex.
+% Revisado à mão na dissertação: edite este arquivo, não a fonte.
+\subsection{Conclusões}
+\label{sim:sec:conclusoes}
+
+A cadeia de classificação de condições de bomba por EA foi levada do computador para o FPGA do MOMEA e verificada inteiramente por simulação. O cálculo dos descritores em C, com percentis exatos, e as MLPs quantizadas para int8 reproduziram o modelo de referência em 100\,\% das 3\,540 janelas quanto à classe e ao nível de frequência; a quantização, isoladamente, alterou 1,8\,\% das classes e 0,81\,Hz da frequência em média. O núcleo int8, com fonte única, passou na cossimulação C/RTL e, como IP, ocupa cerca de 3\,\% das LUTs, 16\,\% dos DSPs e 7\,\% das BRAMs do XC7A35T, com 114\,\(\mu\)s por inferência. Na MicroBlaze simulada no nível RTL, o mesmo binário produziu resultados idênticos aos do computador, com a inferência int8 em \mbMlpIntSoftUs\,\(\mu\)s sem FPU e \mbMlpIntFpuUs\,\(\mu\)s com FPU, e a cadeia completa ocupa menos de \mbCargaEnsaioMax\,\% da CPU na taxa dos ensaios.
+
+Os próximos passos, quando houver acesso às placas, são integrar a cadeia ao firmware do MOMEA, medir o tempo de parede com a pilha de rede ativa e validar o ciclo completo com sinais injetados e na bancada. Do lado do modelo, a prioridade é um novo ensaio com repetições, ordem aleatorizada, limiar fixo e ganho ajustado para evitar a saturação; os modelos resultantes entram no mesmo fluxo sem mudanças no código.
+
+\subsection*{Reprodutibilidade}
+
+Todo o fluxo está em \texttt{MLP/embarcado/}: \texttt{exportar\_modelo.py} e \texttt{exportar\_hits.py} geram os pesos, os vetores de teste e os \textit{hits}; \texttt{teste\_pc.bat} executa os níveis V1 e V2; \texttt{hls/run\_hls.tcl} e \texttt{hls/run\_hls\_impl.tcl} executam V3 e V4; e \texttt{microblaze/sim/rodar\_sim\_mb.py} compila os ELFs já gerados, monta o sistema MicroBlaze no Vivado e executa as simulações de V5. As figuras saem de \texttt{figuras\_sim.py}.
+
+% =======================================================================================================

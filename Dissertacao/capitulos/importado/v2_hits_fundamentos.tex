@@ -1,0 +1,220 @@
+% Gerado por ferramentas/importar_relatorios.py a partir de ARTIGO_V2-10.11.2026/2-Emissao_acustica_deteccao2.tex.
+% Revisado à mão na dissertação: edite este arquivo, não a fonte.
+%=======================================================================================================
+
+\subsection{Definição operacional do \textit{hit}}
+\label{v2:subsec:formalizacao_hit}
+
+Um \textit{hit} é uma unidade operacional de detecção associada à resposta observada em um único canal. Essa definição não implica correspondência biunívoca com um evento físico de EA: uma mesma fonte pode produzir \textit{hits} em diferentes sensores, enquanto reflexões, reverberações e escolhas inadequadas dos parâmetros temporais podem segmentar uma ocorrência em vários \textit{hits} ou agrupar ocorrências distintas em uma única detecção \cite{unnthorsson2013}.
+
+Considere \(v_{\mathrm{in}}[n]\) a sequência de tensão referida à entrada do pré-amplificador, amostrada à frequência \(f_{\mathrm{s}}\), com período \(\Delta = 1/f_{\mathrm{s}}\). A grandeza efetivamente aplicada ao comparador é denotada por \(u[n]\). Em termos gerais, \(u[n] = \mathcal{D} \left\{v_{\mathrm{in}}[n] \right\}\), em que \(\mathcal{D}\{\cdot\}\) representa o processamento anterior à decisão, podendo incluir filtragem, escalonamento, retificação, módulo ou cálculo de envelope. 
+
+No sistema MOMEA, \(\mathcal{D}\{\cdot\}\) consiste na retificação de onda completa (valor absoluto / magnitude), de modo que \(u[n] = |v_{\mathrm{in}}[n]|\). Para tal, subtrai-se da amostra crua do ADC (12 bits, codificação binário deslocado) o código de zero calibrado do canal, \(z_{\mathrm{c}}\), e toma-se o módulo: \(\texttt{mag} = |\texttt{raw} - z_{\mathrm{c}}|\) (extrator rev 0.07). Os zeros calibrados são \(z_{\mathrm{A}} = 2142{,}325\) e \(z_{\mathrm{B}} = 2143{,}889\) códigos, com fatores de escala de \(3{,}2278\) e \(3{,}1265\,\mathrm{mV/código}\) na entrada da placa. A versão anterior usava o meio da escala (\(\texttt{raw} - 2048\)); como o zero real da cadeia fica cerca de 95 códigos (\(\approx 0{,}3\,\mathrm{V}\)) acima de 2048, a magnitude em repouso já valia \(\approx 95\) códigos, da mesma ordem do limiar utilizado (155 códigos), o que deslocava o limiar efetivo e enviesava pico, energia e \textit{Signal Strength}. O comparador atua de forma unipolar sobre essa magnitude, sem histerese, de forma que o sinal lógico de atividade é \(\texttt{above = (mag \(\geq\) threshold)}\), e o cruzamento ascendente é definido pela borda de subida de \(\texttt{above}\). Não há limiar inferior distinto (sem histerese) nem comparação bipolar com sinal. Com a opção \texttt{pos\_only} = 1, usada em todos os ensaios, as contagens consideram apenas os cruzamentos ascendentes do limiar pelo semiciclo positivo (rev 0.05), de modo que uma senoide de \(K\) ciclos acima do limiar produz \(K\) contagens, como no AMSY-6. Essa distinção é necessária porque a utilização do sinal com sinal, de seu módulo ou de seu envelope produz números de cruzamentos diferentes para uma mesma forma de onda.
+
+Para um limiar fixo \(V_{\mathrm{th}}\), define-se um cruzamento ascendente no índice \(n\) pela condição:
+\begin{equation}
+	u[n-1] \leq V_{\mathrm{th}} \quad\text{e}\quad u[n] > V_{\mathrm{th}}
+	\label{v2:eq:cruzamento_ascendente}
+\end{equation}
+e, se for empregado limiar flutuante, \(V_{\mathrm{th}}\) deve ser substituído por sua sequência temporal \(V_{\mathrm{th}}[n]\), e o método utilizado para estimá-la deve ser especificado.
+
+Denota-se por \(n_0\) o índice do primeiro cruzamento, por \(n_{\ell}\) o índice do último cruzamento pertencente ao mesmo \textit{hit} e por \(n_{\mathrm{f}}\) o índice no qual o processamento é efetivamente encerrado. Após cada cruzamento, o temporizador de discriminação de duração é reiniciado. O encerramento ocorre quando transcorre o número configurado de amostras sem novo cruzamento.
+
+Se o tempo de discriminação desejado é \(T_{\mathrm{DDT}}\), a conversão para número inteiro de amostras é dada por:
+\begin{equation}
+	N_{\mathrm{DDT}} = \left\lceil T_{\mathrm{DDT}}f_{\mathrm{s}} \right\rceil, \qquad T_{\mathrm{DDT,impl}} = N_{\mathrm{DDT}}\Delta t
+	\label{v2:eq:ddt_amostras}
+\end{equation}
+
+A implementação define que a expiração do temporizador de discriminação (HDT) ocorre no \(N_{\mathrm{HDT}}\)-ésimo ciclo (amostra) de silêncio, e não no ciclo imediatamente posterior. Para tal, o registrador \(r_{\mathrm{hdt}}\) é zerado a cada amostra acima do limiar e incrementado apenas nas amostras de silêncio (condição \texttt{data\_valid \&\& !above}). O encerramento ocorre quando \(r_{\mathrm{hdt}} \geq N_{\mathrm{HDT}}\), ou seja, a expiração se dá na própria \(N_{\mathrm{HDT}}\)-ésima amostra de silêncio. Essa convenção está declarada explicitamente na Seção~\ref{sec:mm_implementacao} e é reproduzida no cálculo off-line dos descritores de referência (Camada 1). Para a frequência de amostragem de 10 MHz, tem-se \(N_{\mathrm{HDT}} = T_{\mathrm{HDT}} \cdot 10^7\). A convenção foi verificada por simulação do HDL (extrator rev 0.08) com testes de fronteira (separações de \(N_{\mathrm{HDT}}-1\), \(N_{\mathrm{HDT}}\) e \(N_{\mathrm{HDT}}+1\) amostras entre dois pulsos): a separação de \(N_{\mathrm{HDT}}-1\) amostras funde os pulsos em um único \textit{hit}, e as de \(N_{\mathrm{HDT}}\) e \(N_{\mathrm{HDT}}+1\) produzem dois \textit{hits}, tanto com \(N_{\mathrm{HDT}} = 20\) quanto com \(N_{\mathrm{HDT}} = 2500\) (\(250\,\mu\mathrm{s}\)), conforme a Seção~\ref{sec:mm_implementacao}. Caso se constate que o AMSY-6 expira em \(N+1\), o ajuste no HDL resume-se à troca de \(\geq\) por \(>\). Essa definição inequívoca de \(n_{\mathrm{f}}\) evita ambiguidades de uma amostra. Em geral, \(n_{\mathrm{f}}>n_{\ell}\), pois o processamento permanece aberto durante a espera pela expiração do temporizador.
+% -------------------------------------------------------------------------------------------------------
+\subsection{Descritores do \textit{hit}}
+\label{v2:subsec:descritores_hit}
+
+A partir da janela delimitada por \(n_0\) e \(n_{\mathrm{f}}\), consideram-se os descritores definidos a seguir.
+
+\begin{description}
+	\item[Amplitude de pico:] maior magnitude da tensão referida à entrada do pré-amplificador:
+	\begin{equation}
+		V_{\mathrm{pico}} = \max_{n_0\leq n\leq n_{\mathrm{f}}} \left| v_{\mathrm{in}}[n] \right|
+		\label{v2:eq:amplitude_pico}
+	\end{equation}
+	
+	Em sistemas de EA, a amplitude é frequentemente expressa em \(\mathrm{dB}_{\mathrm{AE}}\), tomando-se \(1\,\mu\mathrm{V}\) na entrada do pré-amplificador como referência:
+	\begin{equation}
+		A_{\mathrm{dB}_{\mathrm{AE}}} = 20\log_{10} \left(\frac{V_{\mathrm{pico}}}{1\,\mu\mathrm{V}} \right)
+		\label{v2:eq:amplitude_dbae}
+	\end{equation}
+	
+	Se \(V_{\mathrm{pico,m}}\) é medido em outro ponto da cadeia e o ganho efetivo calibrado pode ser representado pelo escalar \(G_{\mathrm{AFE,cal}}\), então:
+	\begin{equation}
+		V_{\mathrm{pico}} \approx \frac{V_{\mathrm{pico,m}}} {\left|G_{\mathrm{AFE,cal}}\right|}
+		\label{v2:eq:amplitude_referida_entrada}
+	\end{equation}
+	
+	Essa aproximação requer cautela quando o ganho varia significativamente com a frequência ou quando ocorre saturação.
+	
+	\item[Tempo de subida:] intervalo entre o primeiro cruzamento e a primeira ocorrência da amplitude de pico. Definindo:
+	\begin{equation}
+		n_{\mathrm{p}} = \min \left\{ n: n_0\leq n\leq n_{\mathrm{f}}, \; \left|v_{\mathrm{in}}[n]\right| = \max_{n_0\leq k\leq n_{\mathrm{f}}} |v_{\mathrm{in}}[k]| \right\}
+		\label{v2:eq:indice_primeiro_pico}
+	\end{equation}
+	
+	\noindent
+	obtém-se o tempo de subida \(t_{\mathrm{rise}} = \left(n_{\mathrm{p}}-n_0 \right)\Delta t\). A escolha da primeira ocorrência elimina a ambiguidade quando o valor máximo aparece em mais de uma amostra.
+	
+	\item[Duração:] intervalo entre o primeiro e o último cruzamento pertencentes ao \textit{hit}:
+	\begin{equation}
+		t_{\mathrm{dur}} = \left(n_{\ell}-n_0 \right)\Delta t
+		\label{v2:eq:duracao_hit}
+	\end{equation}
+	
+	A duração não inclui o intervalo posterior ao último cruzamento durante o qual se aguarda a expiração do DDT. Portanto, a duração reportada e o comprimento da janela de processamento são grandezas distintas.
+	
+	\item[Contagens:] número de cruzamentos ascendentes do limiar durante o \textit{hit}. Para limiar fixo,
+	\begin{equation}
+		N_{\mathrm{cont}} = \sum_{n=n_0}^{n_{\mathrm{f}}} \mathbf{1} \left[u[n-1]\leq V_{\mathrm{th}} \;\wedge\; u[n]>V_{\mathrm{th}} \right]
+		\label{v2:eq:contagens_hit}
+	\end{equation}
+	
+	\noindent
+	em que \(\mathbf{1}[\cdot]\) é a função indicadora. Essa definição inclui o cruzamento que inicia o \textit{hit}.
+	
+	\item[Instante de chegada:] o índice \(n_0\) determina o instante local do primeiro cruzamento. Se \(t_{\mathrm{ref}}\) é a referência temporal associada à aquisição, então:
+	
+	\begin{equation}
+		t_{\mathrm{arr}} = t_{\mathrm{ref}} + n_0\Delta t
+		\label{v2:eq:instante_chegada}
+	\end{equation}
+	
+	A comparação entre canais ou instrumentos requer que \(t_{\mathrm{ref}}\) seja preservado e que as bases de tempo sejam sincronizadas ou que seu desvio seja medido. O registro do \textit{hit} reserva um campo de 64 bits para o carimbo de tempo (\textit{timestamp}), mas o \textit{bitstream} utilizado nos ensaios o envia zerado: o carimbo está especificado e não implementado. A arquitetura prevista é um contador livre de 64 bits a 10 MHz (resolução de 100 ns, igual à do AMSY-6), com época zerada nos comandos START e STOP e amostrado no instante correspondente a \(n_0\); a largura de 64 bits assegura ausência de recontagem em qualquer horizonte prático de operação. Enquanto o carimbo não for implementado, a única referência temporal disponível é a hora de chegada do datagrama no computador, cuja dispersão (dezenas de milissegundos, introduzida pelo sistema operacional) impede a associação \textit{hit} a \textit{hit} com o estímulo e com o AMSY-6 e a medição da deriva entre as bases de tempo. Nos ensaios desta etapa, a associação foi feita por bloco de estímulos (Seção~\ref{sec:mm_delineamento}).
+\end{description}
+
+Os descritores anteriores são resultados conjuntos do sinal observado e da configuração do instrumento, e não propriedades exclusivas da fonte física. Alterações no sensor, no acoplamento, no ganho, na banda de passagem, no limiar, na taxa de amostragem ou nos parâmetros temporais podem modificar seus valores mesmo quando o estímulo permanece inalterado. A comparação entre instrumentos exige, portanto, que essas configurações sejam registradas e que as tensões sejam referidas ao mesmo ponto da cadeia.
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Definições do descritor de energia}
+\label{v2:subsec:energia_ea}
+
+A denominação ``energia'' não identifica uma única grandeza na literatura de EA. Duas formas integrais são encontradas com frequência e apresentam dimensões e dependências distintas em relação à amplitude. A primeira corresponde à integral do valor absoluto da tensão:
+
+\begin{equation}
+	S_{\mathrm{abs}} = \int_{t_0}^{t_{\mathrm{f}}} \left| v_{\mathrm{in}}(t) \right| \,\mathrm{d}t \approx \Delta t \sum_{n=n_0}^{n_{\mathrm{f}}} \left| v_{\mathrm{in}}[n] \right|
+	\label{v2:eq:integral_sinal_retificado}
+\end{equation}
+
+Sua dimensão é tensão multiplicada por tempo. Essa forma é dimensionalmente compatível com o descritor \textit{Signal Strength} do AMSY-6, expresso em \(\mathrm{nVs}\), com \(1\,\mathrm{nVs} = 10^{-9}\,\mathrm{Vs}\) \cite{vallen2022}. 
+
+Grandezas desse tipo são por vezes associadas à área sob o sinal retificado ou sob seu envelope, frequentemente denominada MARSE, acrônimo de \textit{Measured Area under the Rectified Signal Envelope}. A igualdade quantitativa entre essas grandezas não deve ser pressuposta, pois depende da retificação, do cálculo do envelope, da filtragem, da janela e do escalonamento empregados. A especificação pública consultada do AMSY-6 informa a unidade e a resolução da \textit{Signal Strength}, mas não descreve integralmente seu algoritmo de cálculo.
+
+A segunda forma é a integral do quadrado da tensão: 
+\begin{equation}
+	E_{\mathrm{V^2s}} = \int_{t_0}^{t_{\mathrm{f}}} v_{\mathrm{in}}^{\,2}(t) \,\mathrm{d}t \approx \Delta t \sum_{n=n_0}^{n_{\mathrm{f}}} v_{\mathrm{in}}^{\,2}[n]
+	\label{v2:eq:true_energy}
+\end{equation}
+
+Essa grandeza é quadrática em relação à amplitude e possui dimensão \(\mathrm{V^2s}\). O AMSY-6 denomina seu descritor correspondente \textit{True Energy}, \cite{vallen2022}, e adota a unidade:
+\begin{equation}
+	1\,\mathrm{eu} = 10^{-14}\,\mathrm{V^2s}, \qquad E_{\mathrm{eu}} = \frac{E_{\mathrm{V^2s}}} {10^{-14}\,\mathrm{V^2s}}
+	\label{v2:eq:unidade_true_energy}
+\end{equation}
+
+Embora denominada \textit{True Energy} pelo fabricante, essa grandeza permanece um descritor da energia do sinal elétrico. Ela não corresponde diretamente à energia acústica ou mecânica liberada pela fonte, em joules, sem um modelo que inclua impedância, sensibilidade do sensor, acoplamento, propagação e função de transferência da cadeia.
+
+Na implementação digital, o acumulador opera sobre códigos ou amostras em ponto fixo. Se \(q[n]\) é a amostra utilizada no acumulador (no MOMEA, \(q[n] = \mathrm{mag}[n]\)) e \(K_q\) é o fator calibrado que converte uma unidade de \(q[n]\) em volts referidos à entrada do pré-amplificador, então:
+\begin{equation}
+	E_{\mathrm{V^2s}} \approx \Delta t\,K_q^2 \sum_{n=n_0}^{n_{\mathrm{f}}} q^2[n]
+	\label{v2:eq:energia_codigos_adc}
+\end{equation}
+
+Os parâmetros de implementação do acumulador (largura, arredondamento, tratamento de transbordo, janela de integração e o próprio fator \(K_q\)) estão definidos diretamente no HDL e consolidados na Tabela~\ref{v2:tab:parametros_energia}. A conversão para \(E_{\mathrm{V^2s}}\) é dada por \(E_{\mathrm{V^2s}} \approx \Delta t \cdot K_q^2 \cdot \sum \mathrm{mag}^2\), com \(\Delta t = 100\) ns; para a unidade do AMSY-6, tem-se \(E_{\mathrm{eu}} = E_{\mathrm{V^2s}} / 10^{-14}\). O fator \(K_q\), por depender do ganho calibrado \(G_{\mathrm{AFE,cal}}\), entra ao quadrado na energia, sendo o descritor mais sensível à qualidade da calibração. Em termos de \textit{pipeline}, a energia utiliza um fluxo de 2 estágios (\textit{register sample\_e/otr\_e} no ciclo \(N\), quadrado e acumulação no ciclo \(N+1\)). Na transição para \texttt{CLOSING}, a última amostra em trânsito não é somada; por ser sub-limiar (hit encerrando), a contribuição omitida é desprezível.
+
+\begin{table}[htbp]
+	\centering
+	\caption{Parâmetros de implementação do acumulador de energia no FPGA.}
+	\label{v2:tab:parametros_energia}
+	\begin{tabularx}{\textwidth}{p{0.30\textwidth} X}
+		\toprule
+		\textbf{Item} & \textbf{Implementação no MOMEA} \\
+		\midrule
+		Grandeza acumulada & \textit{True Energy}: \(\sum \mathrm{mag}^2\) (soma do quadrado da magnitude), aproximando \(\int v^2 dt\) a menos de \(\Delta t\) e \(K_q^2\). \\
+		Largura do acumulador & 48 bits (\texttt{ENERGY\_WIDTH = 48}, desde a rev 0.05), interno e no campo do registro de \textit{hit}. Com 32 bits, a energia saturava em \(\approx 0{,}8\,\mathrm{ms}\) com senoide a meia escala. \\
+		Arredondamento & Nenhum: aritmética inteira exata (\(\mathrm{mag}\) é inteiro de 12 bits; \(\mathrm{mag}^2\) cabe em 24 bits; a soma acumula em 48 bits). Não há truncamento de produto. \\
+		Transbordo & Saturação, sem \textit{wrap-around}: antes de somar, testa-se \(\texttt{energy\_sat} = (r_{\mathrm{energy}} > 2^{48}-1 - \mathrm{mag}^2)\); em transbordo, \(r_{\mathrm{energy}}\) é fixado em \(2^{48}-1\). \\
+		Janela integrada & Apenas em \texttt{ACTIVE} (condição \(\texttt{state} == \texttt{S\_ACTIVE}\)), delimitada até \(n_\ell\). Não acumula em \texttt{CLOSING} nem em \texttt{LOCKOUT}. \\
+		Fator de escala \(K_q\) & \(K_q = \dfrac{V_{\mathrm{FS}}}{4096 \cdot |G_{\mathrm{AFE,cal}}|}\) [volts por LSB referido à entrada]. \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+Neste trabalho, a grandeza da Equação~\eqref{v2:eq:true_energy} é adotada como definição-alvo do descritor de energia. Essa escolha é compatível, quanto à forma e à unidade, com a \textit{True Energy} especificada para o AMSY-6. Ela não garante, por si só, a concordância numérica entre os instrumentos. Essa concordância requer a verificação do fator de escala, da referência de tensão e da janela efetivamente integrada em cada sistema. A \textit{Signal Strength}, quando utilizada, deve ser identificada explicitamente e não pode ser convertida em \textit{True Energy} por um fator constante independente da forma de onda.
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Parâmetros temporais e correspondência entre nomenclaturas}
+\label{v2:subsec:parametros_temporizacao}
+
+A delimitação de \textit{hits} depende de parâmetros que controlam o encerramento, a determinação do pico, um eventual bloqueio pós-\textit{hit} e o agrupamento de \textit{hits} em cascatas. As nomenclaturas da literatura e do sistema Vallen AMSY-6 não são inteiramente equivalentes. A Tabela~\ref{v2:tab:parametros_temporizacao} apresenta o mapeamento adotado neste trabalho \cite{unnthorsson2013,vallen2022}.
+
+\begingroup
+\footnotesize
+\renewcommand{\arraystretch}{1.25}
+\begin{longtable}
+	{|>{\raggedright\arraybackslash}p{0.13\textwidth}
+		|>{\raggedright\arraybackslash}p{0.20\textwidth}
+		|>{\raggedright\arraybackslash}p{0.28\textwidth}
+		|>{\raggedright\arraybackslash}p{0.28\textwidth}|}
+	\caption{Correspondência entre os parâmetros temporais adotados neste trabalho, a literatura de emissão acústica e o sistema Vallen AMSY-6.}
+	\label{v2:tab:parametros_temporizacao}\\
+	\hline
+	\textbf{Função} & \textbf{Neste trabalho} & \textbf{Correspondência} & \textbf{Observação} \\
+	\hline
+	\endfirsthead
+	\multicolumn{4}{c}
+	{\tablename\ \thetable{} -- continuação}\\
+	\hline
+	\textbf{Função} & \textbf{Neste trabalho} & \textbf{Correspondência} & \textbf{Observação} \\
+	\hline
+	\endhead
+	\hline
+	\multicolumn{4}{r}{Continua na próxima página.}\\
+	\endfoot
+	\hline
+	\endlastfoot
+	Início do \textit{hit} & Primeiro cruzamento ascendente & Detecção por limiar & A operação \(\mathcal{D}\{\cdot\}\) é a retificação de onda completa (magnitude), conforme Subseção~\ref{v2:subsec:formalizacao_hit}. \\
+	\hline
+	Encerramento do \textit{hit} & \(T_{\mathrm{HDT}}\) (implementado como HDT) & DDT no AMSY-6; função próxima à do HDT na literatura & A expiração ocorre na \(N_{\mathrm{HDT}}\)-ésima amostra de silêncio (convenção confirmada no HDL e verificada em simulação de fronteira). \\
+	\hline
+	Duração máxima & \(T_{\max}\) (MAXDUR), padrão de 100 ms, configurável por SETHITMAX & \textit{Timeout} do AMSY-6 (\(\approx 100\,\mathrm{ms}\)) & Ao atingi-la, o \textit{hit} é fechado e marcado com o indicador MAXDUR (rev 0.06). \\
+	\hline
+	Determinação do pico & Sem temporizador independente & PDT em parte da literatura; sem parâmetro independente identificado na especificação consultada do AMSY-6 & O pico é procurado em toda a janela de processamento do \textit{hit}. \\
+	\hline
+	Bloqueio pós-\textit{hit} & HLT (Hit Lockout Time) re-armável & Rearme do AMSY-6 (RAT), quanto ao bloqueio e ao indicador R & Implementado no FPGA via estado \texttt{LOCKOUT}; intervalo programável. Desde a rev 0.05, cada cruzamento durante o bloqueio reinicia a espera e marca o \textit{hit} com o indicador ROVL, equivalente ao indicador R do AMSY-6; o \textit{hit} só é emitido ao fim do rearme. \\
+	\hline
+	Agrupamento em cascatas & Não implementado & RAT no AMSY-6 (descritores de cascata) & O FPGA não produz descritores de cascata (número de \textit{hits} e valores acumulados); essa ausência é declarada na Seção~\ref{sec:mm_implementacao}. \\
+\end{longtable}
+\endgroup
+
+O DDT apresenta função próxima à do \textit{Hit Definition Time} (HDT): ambos estabelecem o intervalo admissível sem novo cruzamento antes do encerramento do \textit{hit}. Valores muito pequenos podem fragmentar uma resposta; valores muito grandes podem agrupar respostas que deveriam ser tratadas separadamente.
+
+O \textit{Rearm Time} (RAT) do AMSY-6 não deve ser descrito como equivalente ao \textit{Hit Lockout Time} (HLT). A especificação do fabricante define uma cascata como o conjunto de \textit{hits} sucessivos separados por intervalos inferiores ao RAT e registra, para a cascata, o número de \textit{hits} e valores acumulados de contagens, energia e \textit{Signal Strength} \cite{vallen2022}. O HLT, por sua vez, designa um período de bloqueio após um \textit{hit}. Agrupar detecções e impedir detecções são comportamentos distintos.
+
+Consequentemente, a máquina de estados por canal no FPGA possui exatamente quatro estados: \texttt{IDLE} \(\rightarrow\) \texttt{ACTIVE} \(\rightarrow\) \texttt{CLOSING} \(\rightarrow\) \texttt{LOCKOUT} \(\rightarrow\) \texttt{IDLE}. O estado \texttt{LOCKOUT} implementa o HLT (\textit{hold-off time}), de modo que o sistema opera com esse recurso. Desde a rev 0.05, o \texttt{LOCKOUT} é re-armável, para reproduzir a semântica de rearme do AMSY-6: um cruzamento do limiar durante o bloqueio reinicia a contagem do HLT e marca o \textit{hit} corrente com o indicador ROVL (equivalente ao indicador R do AMSY-6), e o registro só é emitido ao fim do rearme. Com \(T_{\mathrm{HLT}}\) igual ao RAT configurado no AMSY-6 (2000~\(\mu\)s nos ensaios), o bloqueio e o indicador são comparáveis entre os instrumentos. Não há, porém, estados ou módulos que produzam os descritores de cascata do AMSY-6; essa parte permanece como diferença funcional declarada. Ademais, o sistema não possui PDT (\textit{peak detection timer}) parametrizado; a detecção do pico é realizada sobre a janela completa do \textit{hit} (comportamento inerente à janela \texttt{ACTIVE} + \texttt{CLOSING}). Essa arquitetura está formalmente declarada na Seção~\ref{sec:mm_implementacao}.
+
+Algumas implementações também empregam o \textit{Peak Definition Time} (PDT), que limita a janela de procura do pico. Na formalização adotada neste trabalho, não se pressupõe um PDT independente: o pico é determinado sobre a janela completa definida na Equação~\eqref{v2:eq:amplitude_pico}. Essa escolha deve coincidir com o comportamento efetivamente implementado no FPGA.
+
+O limiar também interfere na segmentação. Valores elevados reduzem detecções associadas ao ruído, mas podem excluir respostas de baixa amplitude. Valores reduzidos aumentam a sensibilidade e podem introduzir \textit{hits} espúrios ou alterar contagens e durações. Seus efeitos dependem do ganho, da banda, do ruído, da resolução do conversor e dos parâmetros temporais. Como o AMSY-6 admite limiares fixos ou flutuantes \cite{vallen2022}, os experimentos devem registrar o tipo de limiar, seu valor referido à entrada e o procedimento utilizado para configurá-lo.
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Trabalhos relacionados e posicionamento do estudo}
+\label{v2:subsec:trabalhos_relacionados}
+
+Os trabalhos diretamente relacionados distribuem-se entre três eixos: instrumentação comercial, processamento embarcado de EA e métodos de detecção. No primeiro eixo, sistemas comerciais como o AMSY-6 integram aquisição multicanal, filtragem, formação de \textit{hits}, extração de descritores, registro de formas de onda e comunicação com o computador \cite{vallen2022}. Essas plataformas constituem referências de comparação, mas parte dos detalhes algorítmicos e numéricos de seus processadores não é exposta na documentação pública.
+
+No segundo eixo, Kang, Kim e Kim desenvolveram uma arquitetura multicore em FPGA para diagnóstico de falhas em rolamentos a partir de sinais de EA, explorando paralelismo para processamento em tempo real \cite{kang2015}. Wirtz et al.\ apresentaram uma plataforma de baixo custo baseada em FPGA para processamento embarcado de EA, com implementação de transformada wavelet e aplicação à supervisão de um processo físico \cite{wirtz2018}. Esses trabalhos demonstram a pertinência do hardware reconfigurável para sinais de alta taxa, mas seus objetivos principais são diagnóstico e transformação tempo--frequência, e não a reprodução controlada do conjunto convencional de descritores de \textit{hit}.
+
+No terceiro eixo, Piñal-Moctezuma, Delgado-Prieto e Romeral-Martínez compararam métodos de detecção de \textit{hits} com base em grandezas temporais e mostraram que a escolha do detector afeta a determinação do início, do término e da duração das ocorrências \cite{pinal2019}. Esse resultado reforça que a comparação entre instrumentos não pode ser reduzida à aplicação do mesmo valor nominal de limiar.
+
+No conjunto de trabalhos examinado, identifica-se espaço para uma avaliação que integre: uma plataforma FPGA de baixo custo; a extração local de amplitude, tempo de subida, duração, contagens e energia; a comparação com os valores programados no gerador; e a comparação com um sistema comercial configurado de forma tão equivalente quanto sua arquitetura permite. O presente trabalho posiciona-se nesse recorte. A afirmação de concordância deve ser limitada aos descritores, às faixas e às configurações efetivamente ensaiadas, sem pressupor equivalência geral entre as arquiteturas.
+
+As definições desta seção estabelecem, assim, a base para os requisitos e as decisões apresentados na Seção~\ref{sec:mm_decisoes}, para a descrição da implementação na Seção~\ref{sec:mm_implementacao} e para a comparação experimental das Seções~\ref{sec:mm_delineamento} e~\ref{sec:res_extrator}.
+% =======================================================================================================

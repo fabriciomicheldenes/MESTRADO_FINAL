@@ -1,0 +1,168 @@
+% =======================================================================================================
+% Capítulo 3 - Materiais e Métodos
+% As seções 3.3 a 3.8 incorporam, revisados, os relatórios do projeto (ver capitulos/importado/).
+% =======================================================================================================
+
+Este capítulo descreve o sistema desenvolvido e os procedimentos usados para avaliá-lo. A Seção~\ref{sec:mm_visao} apresenta a visão geral da proposta e delimita o que já existia no Projeto MOMEA e o que constitui contribuição desta dissertação. A Seção~\ref{sec:mm_antecedentes} resume a plataforma de aquisição contínua que antecedeu este trabalho. As Seções~\ref{sec:mm_decisoes} a~\ref{sec:mm_delineamento} tratam do extrator de \textit{hits} em FPGA: as decisões de projeto, a implementação e o delineamento do ensaio comparativo com um sistema comercial. As Seções~\ref{sec:mm_bomba} a~\ref{sec:mm_cwru} descrevem o uso dos registros de \textit{hits} para classificar condições de operação, a implementação embarcada dessa classificação e a validação externa em uma base pública. A Seção~\ref{sec:mm_ferramentas} lista as ferramentas utilizadas.
+
+% -------------------------------------------------------------------------------------------------------
+\section{Visão geral da proposta}
+\label{sec:mm_visao}
+
+A Figura~\ref{fig:pipeline_proposto} resume a cadeia proposta. O sinal de EA é captado por um sensor piezoelétrico, amplificado e digitalizado a 10\,MSa/s. Em vez de transmitir todas as amostras, a lógica programável do FPGA detecta os \textit{hits} e calcula seus descritores (amplitude, contagens, tempo de subida, duração e energia), de modo que cada \textit{hit} é reduzido a um registro de 32 bytes. Esses registros são então agregados em janelas de tempo, das quais se extraem descritores estatísticos que alimentam uma rede MLP. A classificação pode ocorrer no computador, como nos ensaios com a bomba, ou no próprio FPGA, no processador embarcado MicroBlaze ou em um acelerador gerado por síntese de alto nível (HLS).
+
+\begin{figure}[htbp]
+	\centering
+	\resizebox{\textwidth}{!}{%
+	\begin{tikzpicture}[
+		font=\small, node distance=5mm and 5mm,
+		bloco/.style={draw, rounded corners=2pt, align=center, minimum height=12mm, text width=23mm},
+		exist/.style={bloco, fill=gray!12},
+		novo/.style={bloco, fill=blue!10, very thick},
+		sw/.style={bloco, fill=orange!12, very thick},
+		seta/.style={-{Latex[length=2mm]}, thick}]
+		\node[exist] (sens) {Sensor de EA\\e pré-amplificador\\(34\,dB)};
+		\node[exist, right=of sens] (adc) {Conversor A/D\\12 bits,\\10\,MSa/s};
+		\node[novo, right=of adc] (hit) {Filtro digital e\\detector de \textit{hits}\\(lógica do FPGA)};
+		\node[novo, right=of hit] (reg) {Registro de\\32 bytes por \textit{hit}\\(MicroBlaze, UDP)};
+		\node[sw, below=12mm of reg] (jan) {Descritores por\\janela de 5\,s\\(36 valores)};
+		\node[sw, left=of jan] (mlp) {MLP\\(frequência e\\condição)};
+		\node[sw, left=of mlp, text width=27mm] (emb) {Inferência int8\\na MicroBlaze\\ou em IP HLS};
+		\node[bloco, left=of emb, text width=22mm] (dec) {Estado da\\máquina};
+		\draw[seta] (sens) -- (adc);
+		\draw[seta] (adc) -- node[above, font=\scriptsize]{amostras} (hit);
+		\draw[seta] (hit) -- node[above, font=\scriptsize]{\textit{hits}} (reg);
+		\draw[seta] (reg) -- (jan);
+		\draw[seta] (jan) -- (mlp);
+		\draw[seta] (mlp) -- (emb);
+		\draw[seta] (emb) -- (dec);
+	\end{tikzpicture}}
+	\caption[Cadeia proposta: extração de \textit{hits} na borda e classificação por MLP]{Cadeia proposta. Em cinza, elementos que já existiam no Projeto MOMEA; em azul, o extrator de \textit{hits} em FPGA desenvolvido neste trabalho (Seções~\ref{sec:mm_decisoes} a~\ref{sec:mm_delineamento}); em laranja, a classificação a partir dos registros e sua implementação embarcada (Seções~\ref{sec:mm_bomba} a~\ref{sec:mm_cwru}). Fonte: o autor.}
+	\label{fig:pipeline_proposto}
+\end{figure}
+
+Essa organização responde a uma questão central do trabalho: por que usar aprendizado de máquina se a detecção já seleciona os trechos que ultrapassam o limiar? As duas etapas têm papéis distintos. A detecção de \textit{hits} é uma etapa de \emph{redução de dados e extração de atributos}: ela descarta o ruído de fundo e resume cada evento em poucos números, mas não interpreta o que os eventos significam. Um único \textit{hit} não indica, por si só, a condição da máquina, porque eventos de mesma amplitude podem vir de cavitação, de impactos mecânicos ou de ruído hidráulico. A condição se manifesta na \emph{população} de \textit{hits} ao longo do tempo (taxa, distribuição de amplitudes e energias, duração, periodicidade), e é essa população que o classificador interpreta. Assim, o limiar decide \emph{o que} é registrado; o modelo decide \emph{o que} os registros indicam.
+
+\subsection{Delimitação das contribuições}
+
+Para deixar claro o que é contribuição desta dissertação, distinguem-se três grupos de elementos:
+\begin{itemize}
+	\item \textbf{pré-existentes no Projeto MOMEA}: sensores, pré-amplificadores e bancada; a plataforma de aquisição contínua MomeaProbe/MomeaCapture, com interface USB~3.0 (Seção~\ref{sec:mm_antecedentes}); e os estudos com redes convolucionais sobre espectrogramas, conduzidos por outro membro da equipe;
+	\item \textbf{desenvolvidos nesta dissertação}: o extrator de \textit{hits} em FPGA, com registro compacto e comunicação por UDP (Seções~\ref{sec:mm_decisoes} e~\ref{sec:mm_implementacao}); sua avaliação em ensaio simultâneo com o sistema comercial Vallen AMSY-6 (Seção~\ref{sec:mm_delineamento}); a classificação das condições de operação de uma bomba a partir dos registros de \textit{hits} (Seção~\ref{sec:mm_bomba}); a implementação da classificação em int8, na MicroBlaze e em lógica dedicada, verificada por simulação (Seção~\ref{sec:mm_embarcado}); e a validação externa do método em uma base pública de rolamentos (Seção~\ref{sec:mm_cwru});
+	\item \textbf{realizados apenas em simulação}: a execução da inferência na placa. O processador MicroBlaze e o acelerador HLS foram verificados por simulação RTL e por síntese, mas não executados no \textit{hardware}, pelos motivos discutidos na Seção~\ref{sec:mm_embarcado}.
+\end{itemize}
+
+\subsection{Bases de dados utilizadas}
+
+A Tabela~\ref{tab:bases} resume as bases usadas, seu tamanho e a forma como foram divididas entre treino e teste. A base de bombas do UWA \textit{System Health Lab}, prevista na qualificação, não foi utilizada: os registros de \textit{hits} do próprio MOMEA e a base CWRU cobriram, respectivamente, a aplicação-alvo e a necessidade de uma referência pública.
+
+\begin{table}[htbp]
+	\centering
+	\small
+	\caption{Bases de dados utilizadas, tamanho e divisão entre treino e teste.}
+	\label{tab:bases}
+	\setlength{\tabcolsep}{4pt}
+	\begin{tabular}{L{0.17\textwidth}L{0.29\textwidth}L{0.19\textwidth}L{0.24\textwidth}}
+		\toprule
+		\textbf{Base} & \textbf{Conteúdo} & \textbf{Tamanho} & \textbf{Divisão treino/teste} \\
+		\midrule
+		Ensaio elétrico R1 & \textit{Bursts} senoidais injetados simultaneamente no MOMEA e no AMSY-6 & 48\,303 estímulos; 3 frequências e 5 taxas & Não há treino: comparação de instrumentos \\
+		Bancada da bomba (MOMEA) & Registros de \textit{hits} de 2 canais em 56 corridas (8 frequências \(\times\) 7 configurações de válvulas) & 283\,618 \textit{hits}; 3\,540 janelas de 5\,s; 36 descritores & Validação cruzada sem sorteio de \textit{hits}: blocos de tempo, corrida e série deixadas de fora \\
+		CWRU (48\,kHz, lado do acionamento) & Vibração com rolamento são e com defeitos na pista interna, na esfera e na pista externa & 40 gravações; 1\,376 janelas de 0,25\,s & Janelas sorteadas, carga e diâmetro do defeito deixados de fora \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+Em nenhuma das validações \textit{hits} ou janelas de uma mesma gravação foram sorteados livremente entre treino e teste como critério principal, porque isso superestima o desempenho, como se mostra nos Capítulos~\ref{chap:resultados} e na literatura \cite{kaufman2012,roberts2017}. O sorteio aparece apenas como referência, para tornar visível o tamanho desse viés.
+
+% -------------------------------------------------------------------------------------------------------
+\section{Antecedentes: aquisição contínua no Projeto MOMEA}
+\label{sec:mm_antecedentes}
+
+Na etapa inicial do Projeto MOMEA, foi desenvolvida a plataforma \textbf{MomeaProbe/MomeaCapture}. O MomeaProbe é o \textit{hardware} de aquisição, com dois conversores A/D de 12 bits a 8\,MSa/s e transmissão por USB~3.0 (Figura~\ref{fig:MomeaProbe12USB}). O MomeaCapture é a aplicação em C++/Qt que recebe, compacta, armazena em banco de dados e exibe os sinais (Figura~\ref{fig:MomeaCapture}). Essa infraestrutura permitiu registrar longas séries temporais contínuas, a partir das quais outro membro da equipe treinou redes convolucionais bidimensionais sobre espectrogramas para classificar regimes de cavitação.
+
+\begin{figure}[htbp]
+	\centering
+	\begin{subfigure}[b]{0.38\textwidth}
+		\centering
+		\includegraphics[angle=90, width=\linewidth]{figs/PlacasADC_AD9226.jpeg}
+		\caption{Placas de captura MomeaProbe12USB.}
+		\label{fig:MomeaProbe12USB}
+	\end{subfigure}\hfill
+	\begin{subfigure}[b]{0.58\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{figs/MomeaCapture.png}
+		\caption{Aplicação MomeaCapture.}
+		\label{fig:MomeaCapture}
+	\end{subfigure}
+	\caption{Plataforma de aquisição contínua que antecedeu este trabalho. Fonte: o autor.}
+	\label{fig:momea_usb}
+\end{figure}
+
+O uso dessa plataforma evidenciou o problema que motivou esta dissertação. A 8 a 10\,MSa/s por canal, com 12 a 16 bits por amostra, cada canal produz de 16 a 20\,MB/s, isto é, dezenas de gigabytes por hora. Manter esse fluxo exigiu, no computador, aquisição em múltiplas \textit{threads}, \textit{buffers} circulares, compactação contínua (LZMA) e escrita de alta vazão em disco. Na Figura~\ref{fig:MomeaUSB}, os dados brutos atravessam todo o caminho até a aplicação e só então são segmentados e analisados, de modo que a análise ocorre depois da gravação, e não em tempo real. A maior parte desse volume corresponde a ruído de fundo entre os eventos de interesse, que são esparsos.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.95\linewidth]{figs/FluxoOperacaoMOMEAUSB}
+	\caption[Fluxo de operação do sistema Momea USB]{Fluxo de operação do sistema MOMEA com aquisição contínua por USB: os dados brutos são compactados, armazenados em um banco temporário e só depois processados pela aplicação. Fonte: o autor.}
+	\label{fig:MomeaUSB}
+\end{figure}
+
+A proposta desta dissertação desloca a redução de dados para antes da transmissão (Figura~\ref{fig:MomeaFPGA}): o FPGA detecta e parametriza os \textit{hits}, e apenas os registros seguem para a aplicação, por Ethernet a 100\,Mb/s. O destaque da figura é a diferença em relação ao fluxo USB: o bloco ``FPGA + HIT'' substitui a transmissão contínua de amostras, e a etapa de compactação deixa de ser necessária. As decisões que levaram a essa arquitetura são detalhadas a seguir.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.9\linewidth]{figs/FluxoOperacaoMOMEAFPGA}
+	\caption[Fluxo de operação do sistema Momea FPGA]{Fluxo de operação do sistema MOMEA com extração de \textit{hits} no FPGA. Em relação à Figura~\ref{fig:MomeaUSB}, o bloco ``FPGA + HIT'' (destacado) substitui a transmissão contínua das amostras. Fonte: o autor.}
+	\label{fig:MomeaFPGA}
+\end{figure}
+
+% -------------------------------------------------------------------------------------------------------
+\section{Arquitetura proposta: decisões de projeto}
+\label{sec:mm_decisoes}
+\input{capitulos/importado/v2_decisoes}
+
+% -------------------------------------------------------------------------------------------------------
+\section{Implementação do extrator de \textit{hits}}
+\label{sec:mm_implementacao}
+\input{capitulos/importado/v2_implementacao}
+
+% -------------------------------------------------------------------------------------------------------
+\section{Delineamento experimental do extrator}
+\label{sec:mm_delineamento}
+\input{capitulos/importado/v2_delineamento}
+
+% -------------------------------------------------------------------------------------------------------
+\section{Classificação das condições de operação de uma bomba}
+\label{sec:mm_bomba}
+
+Esta seção descreve o uso dos registros de \textit{hits} do MOMEA para reconhecer as condições de operação de uma bomba ensaiada em bancada. O objetivo é verificar se os descritores extraídos na borda bastam para classificar a condição e, sobretudo, com que confiança o resultado se generaliza para condições não vistas no treino. O modelo é treinado com os \emph{descritores} calculados a partir dos registros de \textit{hits}, e não com o sinal bruto: a cadeia proposta não transmite as amostras, de modo que o classificador precisa funcionar com o que o FPGA entrega.
+
+\input{capitulos/importado/mlp_metodos}
+
+% -------------------------------------------------------------------------------------------------------
+\section{Inferência embarcada e verificação por simulação}
+\label{sec:mm_embarcado}
+
+Nos ensaios da Seção~\ref{sec:mm_bomba}, a classificação ocorre no computador. Esta seção descreve como a mesma cadeia (descritores por janela e MLP) foi levada para o FPGA. Como o acesso às placas foi encerrado antes desta etapa, toda a verificação foi feita por simulação, com critérios de aceitação explícitos em cada nível, desde o modelo de referência em Python até a simulação RTL do processador executando o binário final.
+
+\input{capitulos/importado/sim_metodos}
+
+% -------------------------------------------------------------------------------------------------------
+\section{Validação externa na base CWRU}
+\label{sec:mm_cwru}
+\input{capitulos/importado/cwru_introducao}
+\input{capitulos/importado/cwru_metodos}
+
+% -------------------------------------------------------------------------------------------------------
+\section{Ferramentas e ambiente de desenvolvimento}
+\label{sec:mm_ferramentas}
+
+O \textit{hardware} do extrator usa a placa Arty A7-35T, com o FPGA Artix-7 XC7A35T \cite{xilinx2020ds180}. O desenvolvimento usou o ecossistema da AMD/Xilinx, versão 2022.2:
+\begin{itemize}
+	\item \textbf{Vivado Design Suite}: síntese, implementação, integração de blocos (\textit{IP Integrator}) e simulação lógica (\textit{Vivado Simulator}, xsim). As métricas de utilização de recursos (LUTs, \textit{flip-flops}, BRAMs e DSPs) e de temporização foram obtidas dessa ferramenta \cite{amd_ug900};
+	\item \textbf{Vitis HLS}: síntese de alto nível do núcleo da MLP a partir de C, com simulação C, cossimulação C/RTL e exportação como IP. Diretivas como \textit{pipeline} e desenrolamento de laços controlam o compromisso entre latência e área \cite{amd_ug1399,cong2011hls};
+	\item \textbf{Vitis} e \texttt{mb-gcc}: compilação do \textit{firmware} e dos programas da MicroBlaze \cite{amd_ug984};
+	\item \textbf{Python 3}, com \texttt{numpy}, \texttt{pandas}, \texttt{scipy}, \texttt{matplotlib} e \texttt{scikit-learn} \cite{pedregosa2011}: análise dos registros, treinamento e validação dos modelos, exportação dos pesos e geração das figuras.
+\end{itemize}
+Os \textit{scripts} de cada etapa estão organizados nos repositórios do projeto e permitem reproduzir os resultados do Capítulo~\ref{chap:resultados} a partir dos dados brutos.

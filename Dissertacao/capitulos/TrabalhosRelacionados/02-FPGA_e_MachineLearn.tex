@@ -1,0 +1,61 @@
+\chapter{Uso e Implementação de Deep Learning em FPGA}
+
+O avanço das redes neurais profundas (Deep Learning) tem revolucionado áreas como visão computacional, reconhecimento de padrões e processamento de sinais. No entanto, a alta demanda computacional dessas técnicas exige plataformas de hardware eficientes para sua execução, especialmente em cenários que requerem baixo consumo de energia e alta velocidade de processamento. Os Field Programmable Gate Arrays (FPGAs) emergiram como uma solução promissora devido à sua flexibilidade, eficiência energética e capacidade de paralelismo. Este texto explora o uso e a implementação de Deep Learning em FPGAs, com foco em Convolutional Neural Networks (CNNs) e Long Short-Term Memory (LSTM), utilizando como base teórica e fonte de resultados três artigos acadêmicos: um da SET EXPO Proceedings (Aguirre e Jerji, 2022), um da Neural Computing and Applications (Mittal, 2018) e outro da Sensors (Wu et al., 2024).
+
+\section{Fundamentos do Uso de FPGAs em Deep Learning}
+Os FPGAs são dispositivos reconfiguráveis que oferecem vantagens significativas sobre processadores tradicionais como CPUs e GPUs em aplicações específicas de Deep Learning. Conforme destacado por Mittal (2018), os FPGAs proporcionam maior eficiência energética e desempenho superior às CPUs, além de flexibilidade em comparação com Application-Specific Integrated Circuits (ASICs). Sua arquitetura permite a implementação de operações paralelas, essenciais para redes neurais, utilizando recursos como Look-Up Tables (LUTs), Block RAMs (BRAMs) e Digital Signal Processing units (DSPs).
+
+Aguirre e Jerji (2022) enfatizam que os avanços recentes em FPGAs, como maior capacidade de processamento paralelo e ferramentas de síntese de alto nível (High-Level Synthesis - HLS), como o Xilinx Vivado, tornaram-nos candidatos ideais para acelerar redes neurais. Essas ferramentas reduzem a complexidade do design, permitindo a compilação de código de alto nível para especificações de Register Transfer Level (RTL), o que facilita a implementação por desenvolvedores sem expertise avançada em hardware.
+
+Por fim, Wu et al. (2024) demonstram que os FPGAs são particularmente úteis em aplicações que demandam baixo consumo energético e processamento em tempo real, como o reconhecimento de sinais de emissores de radar. A combinação de reconfigurabilidade e eficiência energética torna os FPGAs uma plataforma versátil para diferentes modelos de Deep Learning.
+
+\section{Implementação de Convolutional Neural Networks (CNNs) em FPGAs}
+As CNNs, amplamente utilizadas em tarefas de reconhecimento de imagens e sinais, requerem operações intensivas como convoluções e multiplicações matriz-vetor. A implementação dessas redes em FPGAs tem sido explorada para otimizar desempenho e eficiência.
+
+\subsection{Estrutura e Otimizações}
+Mittal (2018) descreve que as CNNs em FPGAs enfrentam desafios como a limitação de memória on-chip para armazenar parâmetros (e.g., AlexNet requer ~250 MB). Para contornar isso, técnicas como loop unrolling, pipelining e tiling são empregadas. O loop unrolling explora o paralelismo entre iterações, enquanto o pipelining permite que operações subsequentes comecem antes do término das anteriores, aumentando o throughput. O tiling particiona os dados em blocos menores para otimizar o uso da memória cache.
+
+Aguirre e Jerji (2022) detalham a implementação de uma CNN em FPGA para reconhecimento de imagens usando o dataset MNIST. Eles utilizaram VHDL para criar blocos modulares (e.g., TOP, neuron, layer) e testaram diferentes configurações, como número de camadas e precisão numérica (inteiros vs. ponto fixo). Os resultados mostram que a precisão de três casas decimais e o uso de LUTs para funções de ativação (e.g., sigmoid) reduzem o tempo de resposta sem sacrificar acurácia, alcançando tempos de 23,77 a 27,37 µs em uma placa Basys 3 Artix-7 com clock de 100 MHz.
+
+\subsection{Aplicações Específicas}
+Wu et al. (2024) propõem uma CNN unidimensional (1D-CNN) combinada com LSTM para reconhecimento de sinais de radar. A CNN extrai características locais dos dados de frequência intermediária (IF), utilizando quatro camadas convolucionais com kernels de tamanho 15 e pooling máximo. A implementação em FPGA (Xilinx XCKU040) utiliza um array sistólico de 32x64 para acelerar operações de convolução 1D, alcançando um throughput de 7,34 GOPS com consumo de 5,022 W e acurácia de 96,53%. Essa abordagem demonstra a capacidade dos FPGAs em processar sinais de comprimento variável em tempo real.
+
+\subsection{Integração de Long Short-Term Memory (LSTM) em FPGAs}
+As redes LSTM, um tipo de Recurrent Neural Network (RNN), são projetadas para modelar dependências temporais, sendo ideais para sequências como sinais de radar. Sua implementação em FPGAs apresenta desafios adicionais devido à natureza sequencial das operações.
+
+\subsection{Design e Aceleração}
+Wu et al. (2024) integram uma camada LSTM após a CNN em seu modelo 1D-CNN-LSTM. O array sistólico é reutilizado para multiplicações matriz-vetor, e as funções de ativação (sigmoid e tanh) são implementadas via tabelas de consulta (LUTs) em ROM, reduzindo o custo computacional. A flexibilidade do modelo permite lidar com variações no comprimento dos pulsos de radar (1-10 µs), mantendo uma acurácia acima de 55% mesmo fora do intervalo de treinamento (1-5 µs).
+
+Aguirre e Jerji (2022) não exploram diretamente LSTMs, mas sua abordagem de design flexível em VHDL poderia ser adaptada para incluir camadas recorrentes, ajustando o número de neurônios e camadas via código reconfigurável.
+
+\subsection{Benefícios e Limitações}
+A integração CNN-LSTM em Wu et al. (2024) destaca a eficiência energética (1,46 GOPS/W) em comparação com CPUs (0,02 GOPS/W) e GPUs (0,16 GOPS/W), embora o throughput absoluto seja menor que o de GPUs (7,34 vs. 16,73 GOPS). Mittal (2018) aponta que a natureza sequencial das RNNs pode limitar o paralelismo total em FPGAs, sugerindo otimizações como folding temporal ou espacial para redes maiores.
+
+\subsection{Comparação com Outras Plataformas e Resultados}
+Os artigos analisados comparam o desempenho dos FPGAs com CPUs e GPUs. Aguirre e Jerji (2022) mostram que sua CNN em FPGA tem um tempo de resposta de 25,17 µs, muito inferior aos 20 ms em uma CPU Intel i7-6700K e 18 ms em uma GPU Nvidia GTX 980TI, evidenciando a vantagem em aplicações de baixa latência, como veículos autônomos. Wu et al. (2024) reforçam essa superioridade em eficiência energética, crucial para dispositivos embarcados. Mittal (2018) observa que, embora GPUs ofereçam maior throughput bruto, os FPGAs superam em cenários de energia limitada e permitem atualizações rápidas via reconfiguração, ao contrário dos ASICs.
+
+\section{\textcolor{red}{Uso de Aprendizado de Máquina Embarcado em FPGA para Análise de Dados de Emissão Acústica na Detecção de Falhas}}
+
+\subsection{Introdução}
+
+A detecção de falhas é uma área crítica em diversas indústrias, desde o setor aeroespacial até a infraestrutura civil. A combinação da técnica de Emissão Acústica (EA) com algoritmos de Aprendizado de Máquina (ML) tem mostrado grande potencial para melhorar a precisão e a eficiência na identificação de falhas incipientes. Além disso, a implementação de sistemas embarcados baseados em Field-Programmable Gate Arrays (FPGA) oferece uma solução otimizada para o processamento em tempo real dos dados de EA, superando as limitações de sistemas tradicionais baseados em software. Este artigo examina a evolução do uso de aprendizado de máquina embarcado em FPGAs para análise de dados de EA, bem como suas aplicações e desafios.
+
+\subsection{História do Uso de FPGAs e Aprendizado de Máquina com Emissão Acústica}
+
+A Emissão Acústica como técnica de monitoramento de falhas foi amplamente adotada a partir da década de 1950 (Kaiser, 1950). No entanto, o desenvolvimento de sistemas embarcados para processar esses dados de forma eficiente começou a ganhar tração nas décadas de 1990 e 2000, com a evolução dos FPGAs como plataformas programáveis para processamento de sinais digitais (DSP) (Benkrid et al., 2008). Com o avanço das técnicas de aprendizado de máquina, tornou-se possível implementar algoritmos complexos diretamente em hardware, proporcionando uma análise em tempo real com baixa latência e alto desempenho, características fundamentais para monitoramento preditivo.
+
+O uso de FPGAs para implementar aprendizado de máquina surgiu como uma alternativa a processadores de propósito geral devido à capacidade de paralelismo massivo, flexibilidade e eficiência energética, o que é essencial em aplicações que demandam alta taxa de amostragem e processamento contínuo de grandes volumes de dados, como é o caso da Emissão Acústica (Marino et al., 2018).
+
+\subsection{Conclusão}
+A combinação de aprendizado de máquina embarcado em FPGA e Emissão Acústica é uma abordagem poderosa para a detecção de falhas em tempo real. O uso de FPGAs oferece vantagens claras em termos de desempenho e eficiência energética, enquanto o aprendizado de máquina permite uma análise precisa e automatizada dos dados de EA. Com o avanço contínuo nas tecnologias de FPGA e nas técnicas de aprendizado de máquina, essa abordagem está se tornando cada vez mais essencial para aplicações de monitoramento preditivo e manutenção de ativos críticos.
+
+% 4.10.	Referências
+% •	Beattie, A. G. (1995). Acoustic emission monitoring of metal fatigue. NASA STI/Recon Technical Report N.
+% •	Benkrid, K., Crookes, D., & Erdogan, A. T. (2008). FPGA architectures for high-performance computing. Journal of Parallel and Distributed Computing, 68(4), 501-517.
+% •	Grosse, C., & Ohtsu, M. (2008). Acoustic Emission Testing. Springer.
+% •	Kaiser, J. (1950). Untersuchung über das Auftreten von Geräuschen beim Zugversuch (Doctoral dissertation, Technische Hochschule München).
+% •	Marino, D., San Miguel, J. M., & Kurkovsky, S. (2018). Power-efficient FPGA-based acceleration of deep learning algorithms for image processing. ACM Transactions on Embedded Computing Systems, 17(3), 1-23.
+% •	Prosser, W. H. (1991). Advanced AE techniques in composite materials research. Journal of Acoustic Emission, 9(4), 292-306.
+% •	Sulaiman, M., Naeem, M., & Ahmed, S. (2021). FPGA-based architectures for deep learning applications: A survey. IEEE Access, 9, 14584-14598.
+% •	Zhao, L., Wang, Y., Xu, X., & Zhang, Y. (2023). Edge computing with FPGAs: Emerging trends and future directions. ACM Computing Surveys, 55(1), 1-33.
+% •	Zhu, M., Wang, Z., Xu, Y., & Zhang, T. (2020). An overview of federated learning. Journal of Nondestructive Testing, 40, 1231-1245.

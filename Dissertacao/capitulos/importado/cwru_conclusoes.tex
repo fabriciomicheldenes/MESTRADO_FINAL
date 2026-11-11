@@ -1,0 +1,14 @@
+% Gerado por ferramentas/importar_relatorios.py a partir de CWRU/RELATORIO_CWRU-10.11.2026/RELATORIO_CWRU.tex.
+% Revisado à mão na dissertação: edite este arquivo, não a fonte.
+\subsection{Conclusões}
+\label{cwru:sec:conclusoes}
+
+Aplicado à base CWRU, o fluxo desenvolvido para o MOMEA mostrou que descritores de \textit{hits} capturam a periodicidade dos defeitos de rolamento quando o limiar acompanha o nível do sinal, e que a acurácia relatada depende essencialmente da validação: 87--92\,\% com janelas sorteadas e 21--63\,\% com rolamentos nunca vistos. O envelope foi o grupo que mais generalizou, e os \textit{hits} com limiar flutuante ficaram a meio caminho, por uma fração do custo computacional e compatíveis com a arquitetura embarcada. A MLP int8 preservou a decisão em 98 a 100\,\% das janelas.
+
+Para a dissertação, o estudo serve como validação externa do método e reforça duas recomendações ao MOMEA: implementar um limiar flutuante no extrator e o carimbo de tempo de \textit{hardware}, que viabiliza os descritores de periodicidade. A comparação com outros trabalhos na base CWRU deve ser sempre feita sob o mesmo esquema de validação.
+
+\subsection*{Reprodutibilidade}
+
+O estudo inteiro é executado por \texttt{CWRU/cwru\_mlp.py} sobre os arquivos em \texttt{CWRU/Dados/}, cuja lista, com endereços e tamanhos, está em \texttt{Dados/lista\_arquivos.json}. As saídas, com janelas, inventário, métricas, int8, figuras e resumo, estão em \texttt{CWRU/resultados/}.
+
+% =======================================================================================================

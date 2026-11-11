@@ -1,0 +1,581 @@
+% Gerado por ferramentas/importar_relatorios.py a partir de ARTIGO_V2-10.11.2026/4-Implementacao_sistema2.tex.
+% Revisado à mão na dissertação: edite este arquivo, não a fonte.
+% =======================================================================================================
+
+Esta seção descreve a implementação da cadeia de aquisição, detecção, parametrização e transmissão dos registros de \textit{hits}. O protótipo avaliado nos ensaios da Seção~\ref{sec:res_extrator} foi construído segundo a arquitetura descrita a seguir. A exposição distingue os elementos confirmados no protótipo das informações que ainda dependem de verificação final no esquemático, no código-fonte e nos relatórios das ferramentas de desenvolvimento.
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Visão geral da arquitetura}
+\label{v2:subsec:visao_geral_arquitetura}
+
+O sistema adota uma organização funcional comparável à encontrada em instrumentos de EA, sem pretender reproduzir integralmente a arquitetura interna de um equipamento comercial. A cadeia compreende sensor, pré-amplificação, filtragem e ganho analógicos, conversão A/D, processamento em lógica programável, software embarcado e comunicação Ethernet.
+
+\begin{figure}[htbp]
+	\centering
+	\IfFileExists{figuras/arquitetura_geral_sistema.pdf}
+	{
+		\includegraphics[width=\textwidth]
+		{figuras/arquitetura_geral_sistema.pdf}
+	}
+	{
+		\fbox{
+			\parbox[c][4.0cm][c]{0.92\textwidth}{
+				\centering
+				\textbf{Diagrama da arquitetura}\\[0.3cm] (arquivo \texttt{figuras/arquitetura\_geral\_sistema.pdf})
+				
+			}
+		}
+	}
+	\caption{Arquitetura geral do sistema embarcado de aquisição, detecção e parametrização de \textit{hits} de emissão acústica.}
+	\label{v2:fig:arquitetura_geral}
+\end{figure}
+
+No domínio analógico, o sinal proveniente do sensor é amplificado e limitado em banda antes de ser adequado à faixa de entrada do conversor. O filtro analógico participa da rejeição das componentes que poderiam sofrer \textit{aliasing}; essa função não pode ser transferida integralmente para o processamento digital, pois componentes já sobrepostas à banda útil após a amostragem não podem ser separadas posteriormente.
+
+No domínio digital, a lógica programável recebe as amostras, executa a filtragem, compara o sinal processado com o limiar, delimita os \textit{hits} e acumula seus descritores. Os registros consolidados são encaminhados ao subsistema com MicroBlaze e FreeRTOS, que realiza a retirada, o empacotamento, o atendimento aos comandos de configuração e a transmissão por UDP.
+
+As interfaces da versão ensaiada, com largura, taxa, relógio e controle de fluxo, são:
+\begin{itemize}
+	\item ADC AD9226 \(\rightarrow\) \texttt{adc12\_frontend}: 2 canais \(\times\) 12 bits + OTR, 10\,MSa/s, relógio de 10\,MHz gerado por MMCM;
+	\item filtro IIR (\texttt{adc\_ctrl\_axi} / \texttt{iir\_biquad\_df2}): Butterworth passa-baixas de 4ª ordem (2 \textit{biquads}), coeficientes Q3.17 de 20 bits, domínio de 100\,MHz;
+	\item extrator (\texttt{ae\_hit\_extractor} rev 0.08, dentro do \texttt{ae\_hit\_axi\_wrapper} rev 0.08) \(\rightarrow\) \texttt{hit\_to\_axis} rev 0.07: palavra de 256 bits, AXI-Stream com TLAST ao fim de cada \textit{hit};
+	\item \texttt{axis\_data\_fifo} \(\rightarrow\) AXI DMA (S2MM, modo simples) \(\rightarrow\) DDR3 pelo controlador MIG (interface a 81,25\,MHz; referência de 200\,MHz);
+	\item MicroBlaze + FreeRTOS + lwIP (100\,MHz) \(\rightarrow\) AXI Ethernet Lite (PHY a 25\,MHz) \(\rightarrow\) UDP: comandos na porta 5006 e registros na porta 5007;
+	\item controle de fluxo: sinal \texttt{tready} do AXI-Stream; estouro da FIFO sinalizado por \texttt{overflow\_out} do \texttt{hit\_to\_axis}.
+\end{itemize}
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{\textit{Front-end} analógico}
+\label{v2:subsec:front_end_analogico}
+
+O \textit{front-end} analógico realiza o acoplamento elétrico com o sensor, a amplificação, a limitação de banda e a adequação do sinal à entrada do conversor A/D. São utilizados dois sensores Vallen: o VS45-H (sensor de baixa frequência, faixa nominal 30–100 kHz) e o VS900-M (sensor de banda larga).
+
+Em primeira aproximação e fora das regiões de ressonância, um sensor piezoelétrico pode ser representado por uma fonte de tensão associada a uma capacitância \(C_{\mathrm{s}}\). Sua impedância é, portanto, dependente da frequência:
+\begin{equation}
+	Z_{\mathrm{s}}(f)
+	\approx
+	\frac{1}{j2\pi f C_{\mathrm{s}}},
+	\label{v2:eq:impedancia_sensor}
+\end{equation}
+sendo utilizado apenas para ilustrar a dependência frequencial da impedância, e não como substituto da resposta eletromecânica completa do transdutor.
+
+O pré-amplificador utilizado nos ensaios possui ganho de patamar medido de \(34{,}00\,\mathrm{dB}\), próximo do ganho nominal do pré-amplificador AEP5 usado com o AMSY-6 (34\,dB). A descrição anterior deste texto (três amplificadores AD8065, com \textit{buffer} seguido de dois estágios de ganho 10, totalizando 40\,dB nominais) não corresponde ao circuito efetivamente ensaiado.
+
+Ganho e banda foram medidos por varredura de 1\,kHz a 35\,MHz, com 100\,mVpp injetados pelo gerador e saída lida no osciloscópio de referência, na mesma montagem de cabos RG59 e divisor usada nos ensaios. Os resultados estão na Tabela~\ref{v2:tab:preamp_medido}. A versão original do circuito tinha corte superior em \(\approx 0{,}99\,\mathrm{MHz}\), abaixo da meta de 2\,MHz; a modificação do circuito levou o corte para \(\approx 2{,}5\,\mathrm{MHz}\), sem saturação na faixa. Também foi eliminada a oscilação de 43\,MHz que surgia no \textit{buffer} de entrada com o cabo do sensor conectado: o resistor de isolação na entrada passou de \(100\,\Omega\) para \(1\,\mathrm{k}\Omega\).
+
+\begin{table}[htbp]
+	\centering
+	\footnotesize
+		\caption{Ganho e banda medidos dos pré-amplificadores.}
+	\label{v2:tab:preamp_medido}
+	\begin{tabular}{|p{0.30\textwidth}|p{0.14\textwidth}|p{0.16\textwidth}|p{0.26\textwidth}|}
+		\hline
+		\textbf{Pré-amplificador} & \textbf{Ganho de patamar} & \textbf{Corte superior (\(-3\,\mathrm{dB}\))} & \textbf{Observação} \\
+		\hline
+		Sistema proposto, versão original & 33,90\,dB & \(\approx 0{,}99\,\mathrm{MHz}\) & Abaixo da meta de 2\,MHz \\
+		\hline
+		Sistema proposto, após modificação (usado nos ensaios) & 34,00\,dB & \(\approx 2{,}50\,\mathrm{MHz}\) & Atende a meta de 2\,MHz; sem saturação na faixa \\
+		\hline
+		Vallen AEP5 (referência) & 34,22\,dB & \(\approx 4{,}10\,\mathrm{MHz}\) & Próximo do nominal de 34\,dB \\
+		\hline
+	\end{tabular}
+\end{table}
+
+Todas as conversões entre \(\mathrm{dB}_{\mathrm{AE}}\) e códigos do ADC usam o ganho de 34\,dB: por exemplo, o limiar de \(80\,\mathrm{dB}_{\mathrm{AE}}\) corresponde a 155 códigos, ou \(\approx 0{,}50\,\mathrm{V}\) na entrada da placa.
+
+O AD8065 é um amplificador de realimentação de tensão com entrada FET. A documentação informa, entre outros valores típicos, corrente de polarização de entrada de \(1\,\mathrm{pA}\), densidade espectral de ruído de tensão de \(7\,\mathrm{nV}/\sqrt{\mathrm{Hz}}\) a \(10\,\mathrm{kHz}\) e largura de banda de \(145\,\mathrm{MHz}\) em ganho unitário \cite{analogdevicesad8065}. Esses números não demonstram, isoladamente, a adequação do circuito montado. A banda do conjunto e a estabilidade com o cabo do sensor foram tratadas acima.
+
+Denotando por \(G_{\mathrm{pre}}(f)\) a resposta do pré-amplificador, por \(H_{\mathrm{PB}}(f)\) a resposta do filtro passa-banda analógico e por \(G_{\mathrm{aj}}(f)\) a resposta do estágio de ganho ajustável, a resposta do \textit{front-end} é:
+\begin{equation}
+	G_{\mathrm{AFE}}(f) = G_{\mathrm{pre}}(f) H_{\mathrm{PB}}(f) G_{\mathrm{aj}}(f)
+	\label{v2:eq:ganho_front_end}
+\end{equation}
+
+Consequentemente, a conversão da amplitude digital para uma grandeza referida à entrada não emprega apenas o produto dos ganhos nominais, mas um ganho efetivo \(G_{\mathrm{AFE,cal}}\) obtido por calibração, na banda e na configuração de ganho correspondentes ao ensaio. No lado digital, a banda é conformada por um Butterworth passa-baixas de 4ª ordem com corte padrão de 600\,kHz, configurável pelos comandos SETFILT e SETFILTCH (Subseção~\ref{v2:subsec:filtragem_digital}). A migração para um passa-banda de 25 a 800\,kHz, banda padrão do AMSY-6, foi decidida e depende da verificação de temporização e de recursos.
+
+A placa é alimentada por tensões simétricas próximas de \(\pm12\,\mathrm{V}\). Reguladores das famílias 7809 e 7909 produzem, nominalmente, \(+9\,\mathrm{V}\) e \(-9\,\mathrm{V}\) para os estágios analógicos. No protótipo, sinal e alimentação são conduzidos por cabos ou condutores independentes. Não foi adotada uma interface IEPE; portanto, alimentação por corrente constante e transmissão de sinal no mesmo par de condutores permanecem fora do escopo da implementação avaliada.
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Conversão analógico-digital}
+\label{v2:subsec:conversao_ad}
+
+A conversão A/D emprega resolução nominal de 12 bits. A partir da análise do HDL (\texttt{ae\_hit\_extractor.v} e do \textit{wrapper}), as informações consolidadas para a caracterização da conversão A/D na versão atual do sistema são apresentadas na Tabela~\ref{v2:tab:caracterizacao_adc}.
+
+\begingroup
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\begin{longtable}{
+		|>{\raggedright\arraybackslash}p{0.20\textwidth}
+		|>{\raggedright\arraybackslash}p{0.35\textwidth}
+		|>{\raggedright\arraybackslash}p{0.35\textwidth}|}
+	\caption{Informações necessárias para caracterizar a conversão A/D.}
+	\label{v2:tab:caracterizacao_adc}\\
+	\hline
+	\textbf{Item} & \textbf{Situação nesta versão} & \textbf{Informação para fechamento} \\
+	\hline
+	\endfirsthead
+	\multicolumn{3}{c}
+	{\tablename\ \thetable{} -- continuação}\\
+	\hline
+	\textbf{Item} & \textbf{Situação nesta versão} & \textbf{Informação para fechamento} \\
+	\hline
+	\endhead
+	\hline
+	\endlastfoot
+	Resolução & 12 bits por canal + 1 bit OTR (over-range). & Codificação offset-binary (signed = raw $-$ 0x800);\newline alinhamento paralelo;\newline códigos extremos indicados pelo bit OTR. \\
+	\hline
+	Componente & AD9226 (Analog Devices),\newline 1 conversor dedicado. & Modelo e fabricante confirmados;\newline folha de dados disponível para consulta. \\
+	\hline
+	Amostragem & 10 MSa/s por canal (alvo do projeto). & Taxa efetiva definida;\newline 1 canal dedicado (sem multiplexação);\newline desalinhamento entre canais não se aplica. \\
+	\hline
+	Entrada analógica & Unipolar 0--5 V, diferencial,\newline V\textsubscript{ref} interno 2 V. & Faixa total 0--5 V;\newline impedância 5\,k$\Omega$//7\,pF;\newline modo diferencial com circuito de acionamento compatível. \\
+	\hline
+	Interface digital & Paralela (12 bits ao FPGA),\newline níveis 3,3 V,\newline captura na borda de subida. & Padrão CMOS 3,3 V;\newline barramento paralelo de 12 bits;\newline dados válidos na borda de subida do clock. \\
+	\hline
+	Relógio & 10 MHz dedicada à captura dos ADCs,\newline gerada pelo MMCM. & Fontes geradas pelo MMCM:\newline 100 MHz (MicroBlaze/AXI),\newline 200 MHz (interface memória),\newline 25 MHz (Ethernet),\newline 10 MHz (ADCs);\newline jitter a ser caracterizado. \\
+	\hline
+	Faixa calibrada & Na entrada da placa, por ajuste senoidal (IEEE 1057), calibração de 12/10/2026. & Canal A: \(-6{,}92\) a \(+6{,}30\,\mathrm{V}\), \(3{,}2278\,\mathrm{mV/código}\), zero em 2142,325;\newline canal B: \(-6{,}70\) a \(+6{,}10\,\mathrm{V}\), \(3{,}1265\,\mathrm{mV/código}\), zero em 2143,889. \\
+	\hline
+	Simultaneidade & Os dois canais são amostrados no mesmo relógio de 10\,MHz. & --- \\
+	\hline
+	ENOB & Não estimado. & \\
+\end{longtable}
+\endgroup
+
+Para um conversor ideal de \(N\) bits e faixa total \(V_{\mathrm{FS}}\), o incremento nominal de quantização é:
+\begin{equation}
+	\Delta V_{\mathrm{ADC}} = \frac{V_{\mathrm{FS}}}{2^N}
+	\label{v2:eq:lsb_adc}
+\end{equation}
+
+Para \(N=12\),
+\begin{equation}
+	\Delta V_{\mathrm{ADC}} = \frac{V_{\mathrm{FS}}}{4096}
+	\label{v2:eq:lsb_adc_12bits}
+\end{equation}
+
+Referido à entrada do pré-amplificador, o incremento nominal é:
+\begin{equation}
+	\Delta V_{\mathrm{in}} = \frac{\Delta V_{\mathrm{ADC}}} {\left|G_{\mathrm{AFE,cal}}\right|}
+	\label{v2:eq:lsb_referido_entrada}
+\end{equation}
+
+\noindent
+em que \(G_{\mathrm{AFE,cal}}\) é o ganho efetivo obtido por calibração. Esse incremento não representa, por si só, o menor sinal detectável. O limite prático também depende do ruído, da interferência, da linearidade, do relógio e do número efetivo de bits.
+
+Quando o SINAD da cadeia estiver disponível, o ENOB pode ser estimado por:
+\begin{equation}
+	\mathrm{ENOB} = \frac{\mathrm{SINAD}-1{,}76}{6{,}02}
+	\label{v2:eq:enob}
+\end{equation}
+
+Com a taxa confirmada de \(10\,\mathrm{MSa/s}\), o intervalo elementar entre amostras é:
+\begin{equation}
+	\Delta t_{\mathrm{s}} = \frac{1}{10\times10^6} = 100\,\mathrm{ns}
+	\label{v2:eq:resolucao_temporal_8msps}
+\end{equation}
+
+Esse valor coincide com a resolução temporal dos descritores do AMSY-6. A especificação do AMSY-6 informa conversão A/D a \(40\,\mathrm{MS/s}\) com 16 bits por canal; os 18 bits referem-se ao resultado do filtro FIR interno. O processamento dos descritores de \textit{hits} opera a \(10\,\mathrm{MHz}\), com resolução temporal de \(100\,\mathrm{ns}\) \cite{vallen2022}. Logo, a comparação não deve opor simplesmente ``12 bits'' a ``18 bits'', mas considerar ADC, ENOB, faixa de entrada, ruído referido à entrada, ganho e resolução dos descritores.
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Filtragem digital e aritmética de ponto fixo}
+\label{v2:subsec:filtragem_digital}
+
+A cadeia digital utiliza filtros IIR em cascata de seções de segunda ordem (\textit{biquads}). O filtro implementado no HDL é um passa-baixas Butterworth de 4ª ordem, composto por duas seções de segunda ordem (dois \textit{biquads}) em cascata, realizadas em Forma Direta II Transposta (\texttt{iir\_biquad\_df2.v}), com coeficientes calculados em tempo de execução pelo firmware do MicroBlaze e escritos nos registradores AXI (mapa \texttt{adc\_ctrl\_axi} rev 0.10). A frequência de corte padrão é 600\,kHz. A versão anterior, de 2ª ordem (seção única), foi substituída porque a 4ª ordem atenua 80\,dB por década acima do corte, contra 40\,dB por década, e rejeita melhor o ruído entre a banda de interesse e a frequência de Nyquist (5\,MHz).
+
+O método de projeto é o Butterworth analógico com transformada bilinear (\texttt{butter2\_lpf}) à taxa de amostragem de 10\,MHz. A frequência de corte é configurável em tempo de execução pelos comandos UDP \texttt{SETFILT} e \texttt{SETFILTCH}. O ganho DC do conjunto é unitário e é balanceado entre as duas seções pela raiz quadrada, de modo que nenhuma seção intermediária exceda a faixa; o resultado foi validado bit a bit contra o modelo de referência com senoide de 100\,kHz. Os coeficientes são representados em Q3.17 com 20 bits assinados. O exemplo do cabeçalho do HDL ($a_1 = -1,91119707$) corresponde a uma seção com $f_c = 100\,kHz$ a $f_s = 10\,MHz$. Mesmo com 4ª ordem, a rejeição de \textit{aliasing} continua a cargo do filtro analógico, pois o filtro digital atua após a amostragem; o filtro digital conforma a banda analisada.
+
+Considerando \(a_0=1\) e a convenção de sinais adotada abaixo, cada seção é descrita por:
+\begin{equation}
+	y[n] = b_0x[n] + b_1x[n-1] + b_2x[n-2] - a_1y[n-1] - a_2y[n-2]
+	\label{v2:eq:biquad}
+\end{equation}
+
+Os coeficientes utilizam uma palavra assinada de 20 bits, com 17 bits fracionários. Nesta seção, essa representação é denominada Q3.17 sob a convenção em que os três bits anteriores ao ponto incluem o sinal. Essa declaração é necessária porque a notação \(Qm.n\) não é uniforme na literatura. O intervalo representável é:
+\begin{equation}
+	-4 \leq c \leq 4-2^{-17}
+	\label{v2:eq:intervalo_q317}
+\end{equation}
+
+\noindent
+com resolução
+\begin{equation}
+	\Delta c = 2^{-17}
+	\label{v2:eq:resolucao_q317}
+\end{equation}
+
+Para um coeficiente real \(c\) pertencente a esse intervalo, a quantização por arredondamento é representada por:
+\begin{equation}
+	\widehat{c} = 2^{-17} \operatorname{round} \left(2^{17}c\right)
+	\label{v2:eq:quantizacao_coeficiente}
+\end{equation}
+
+A especificação dos coeficientes não caracteriza integralmente a aritmética. As amostras de entrada e saída são de 12 bits assinadas em complemento de 2 (\texttt{DATA\_W=12}, \texttt{DATA\_SIGNED=1}). Os coeficientes são de 20 bits assinados em Q3.17 (\texttt{COEF\_W=20}, \texttt{IIR\_FRAC=17}). O acumulador e os estados internos ($s_1$, $s_2$) possuem 36 bits (\texttt{ACC\_W = DATA\_W + COEF\_W + 4}) assinados. O produto de 36 bits pelo coeficiente de 20 bits é seguido de deslocamento aritmético de 17 bits (\texttt{>>> FRAC}); a política de arredondamento é o truncamento (deslocamento aritmético com sinal, sem soma de 1/2 LSB). O transbordo na saída é tratado por saturação para a faixa de 12 bits; os estados de 36 bits oferecem folga contra transbordo interno. O escalonamento entre as duas seções é feito pela divisão do ganho DC (raiz quadrada do ganho total em cada seção). A latência do \textit{pipeline} é de 5 ciclos de amostra e a taxa de iniciação é de 1 ciclo por amostra (\textit{II}=1); o modo \textit{bypass} (\texttt{filt\_enable=0}) aplica o atraso correspondente de 5 ciclos para manter o alinhamento.
+
+A implementação inicial possuía intervalo insuficiente para alguns coeficientes. Nessas configurações, a conversão para ponto fixo provocava transbordo e alterava a resposta do filtro. A adoção da palavra assinada de 20 bits com 17 bits fracionários eliminou o transbordo observado nos coeficientes avaliados. A verificação numérica está em andamento na Camada 1/2 do plano de validação. Ela inclui a comparação entre a resposta em ponto flutuante e a resposta em ponto fixo com os mesmos coeficientes; a verificação da posição dos polos antes e depois da quantização para a representação Q3.17; a resposta ao impulso e a senóides, incluindo amplitudes próximas ao limite de 12 bits para exercitar a saturação de saída; testes de ciclos-limite (entrada nula após excitação) e de crescimento dos estados internos de 36 bits; além da avaliação de magnitude, fase e atraso de grupo, pois esses parâmetros afetam o primeiro cruzamento, o tempo de subida, a duração e as contagens do \textit{hit}. Enquanto apenas um conjunto de coeficientes for testado, a conclusão permanece restrita a esse conjunto.
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Máquina de estados para detecção de \textit{hits}}
+\label{v2:subsec:maquina_estados_hit}
+
+O núcleo de detecção opera sobre um sinal digital \(u[n]\). O sinal \(u[n]\) é a magnitude da diferença entre o código do ADC e o zero calibrado do canal, \(\texttt{mag} = |\texttt{código} - z_{\mathrm{c}}|\) (rev 0.07; os valores de \(z_{\mathrm{c}}\) são escritos nos registradores \texttt{ZERO\_A}/\texttt{ZERO\_B}). Essa escolha é consistente com a definição \(\mathcal{D}\{\cdot\}\) da Seção~\ref{v2:subsec:formalizacao_hit}: qualquer semiciclo, positivo ou negativo, pode iniciar ou manter o \textit{hit}, mas, com \texttt{pos\_only} = 1, apenas os cruzamentos ascendentes do semiciclo positivo são contados (rev 0.05).
+
+Para um comparador sem histerese, o cruzamento ascendente é definido pela borda de subida do sinal lógico \texttt{above = (mag >= threshold)}. Assim, a condição de cruzamento ascendente no índice \(n\) é:
+\begin{equation}
+	u[n-1] < V_{\mathrm{th}} \quad\text{e}\quad u[n] \ge V_{\mathrm{th}}
+	\label{v2:eq:cruzamento_ascendente_secao4}
+\end{equation}
+A igualdade está incluída para refletir a implementação no HDL, que utiliza \(\ge\) (e não \(>\)). Não há histerese nem comparação bipolar.
+
+De acordo com a arquitetura confirmada, a máquina de estados possui quatro estados: \texttt{IDLE}, \texttt{ACTIVE}, \texttt{CLOSING} e \texttt{LOCKOUT}:
+
+\begin{description}
+	\item[\texttt{IDLE}:] aguarda o primeiro cruzamento. Quando ele ocorre, registra-se o índice inicial \(n_0\), inicializam-se os acumuladores e a máquina passa a \texttt{ACTIVE}.
+	
+	\item[\texttt{ACTIVE}:] atualiza os descritores (pico, contagens, energia) enquanto o sinal permanece acima do limiar. O temporizador de silêncio (HDT) é zerado a cada amostra que excede o limiar. Quando a condição ativa deixa de ser satisfeita, o temporizador passa a contar amostras de silêncio; se o sinal retornar acima do limiar antes da expiração, o temporizador é reiniciado e a máquina permanece em \texttt{ACTIVE}. Se o temporizador atingir o valor configurado, a máquina transita para \texttt{CLOSING} em um único ciclo.
+	
+	\item[\texttt{CLOSING}:] estado de duração de um único ciclo. Apenas captura os valores já consolidados e inicia o \texttt{LOCKOUT}, ao fim do qual o sinal \texttt{hit\_valid} é gerado para transmissão. Nenhum descritor (pico, contagens, energia) é atualizado durante este estado; todos se referem à janela ativa \([n_0, n_\ell]\), e a cauda de discriminação (HDT) não é incluída na duração nem na energia.
+	
+	\item[\texttt{LOCKOUT}:] estado de bloqueio re-armável (HLT) após o encerramento do \textit{hit}. Desde a rev 0.05, um cruzamento do limiar durante o \texttt{LOCKOUT} reinicia a contagem do HLT e marca o \textit{hit} com o indicador ROVL, equivalente ao indicador R do AMSY-6; o registro só é emitido (\texttt{hit\_valid}) ao fim do rearme. O mecanismo reproduz o bloqueio do RAT do AMSY-6, mas não produz descritores de cascata, pois não integra os \textit{hits} consecutivos.
+\end{description}
+
+Para uma taxa \(f_{\mathrm{s}}\), o temporizador de encerramento (HDT) é configurado por um registrador de 20 bits (\texttt{HDT\_CYCLES}), com incremento de uma amostra e faixa de 0 a \(2^{20}-1\) (até \(\approx 0{,}105\,\text{s}\) a 10 MHz). O contador é zerado a cada amostra acima do limiar e incrementado nas amostras de silêncio. O encerramento ocorre quando o contador atinge ou ultrapassa o valor configurado, ou seja, na \(N_{\mathrm{HDT}}\)-ésima amostra de silêncio. A relação entre o número de ciclos e o tempo é:
+\begin{equation}
+	N_{\mathrm{HDT}} = \texttt{HDT\_CYCLES}, \qquad T_{\mathrm{HDT,impl}} = \frac{N_{\mathrm{HDT}}}{f_{\mathrm{s}}}
+	\label{v2:eq:ddt_implementado}
+\end{equation}
+com a convenção de que o fechamento se dá no ciclo em que a condição \(\text{contador} \ge N_{\mathrm{HDT}}\) é satisfeita.
+
+A máquina de três estados original foi expandida para quatro estados. O \texttt{LOCKOUT} re-armável reproduz o bloqueio e o indicador do RAT do AMSY-6, mas não há descritores de cascata; essa diferença funcional é considerada na comparação com o AMSY-6 e neutralizada nos ensaios pelo uso de estímulos isolados. Duas consequências do rearme são relevantes para os ensaios: um estímulo que chega durante o bloqueio é absorvido no \textit{hit} anterior (marcado com ROVL), e a latência mínima de emissão a partir do último cruzamento é \(T_{\mathrm{HDT}} + T_{\mathrm{HLT}}\).
+
+Para limitar \textit{hits} longos, a rev 0.06 introduziu uma duração máxima \(T_{\max}\), configurável pelo comando SETHITMAX (padrão de 100\,ms, próximo do \textit{timeout} de \(\approx 100\,\mathrm{ms}\) do AMSY-6). Ao atingi-la, o \textit{hit} é encerrado e marcado com o indicador MAXDUR, contado por canal no registrador \texttt{HITCNT}. Sem esse limite, um sinal contínuo acima do limiar manteria o canal ocupado indefinidamente sem emitir registros.
+
+\textbf{Testes de fronteira do DDT.} A convenção de encerramento foi verificada em 29/10/2026 por simulação do HDL atual (\texttt{ae\_hit\_extractor} rev 0.08, Icarus Verilog, \textit{testbench} \texttt{tb\_ddt.v}). Com amostras a 10\,MSa/s (uma a cada 10 ciclos de 100\,MHz) e limiar de 100 códigos, aplicaram-se dois pulsos de 5 amostras a 500 códigos separados por \(G\) amostras de silêncio. Os resultados estão na Tabela~\ref{v2:tab:fronteira_ddt}: o \textit{hit} se encerra na \(N_{\mathrm{HDT}}\)-ésima amostra de silêncio; a separação de \(N_{\mathrm{HDT}}-1\) amostras funde os pulsos em um \textit{hit} (duração de \(5+G+5\) amostras e 2 contagens), e as separações de \(N_{\mathrm{HDT}}\) e \(N_{\mathrm{HDT}}+1\) geram dois \textit{hits}, com o mesmo resultado para \(N_{\mathrm{HDT}} = 20\) e \(N_{\mathrm{HDT}} = 2500\). Com HLT de \(N_{\mathrm{HLT}}\) amostras, o segundo pulso é absorvido no rearme (ROVL) para \(N_{\mathrm{HDT}} \le G \le N_{\mathrm{HDT}} + N_{\mathrm{HLT}} - 1\) e torna-se novo \textit{hit} para \(G \ge N_{\mathrm{HDT}} + N_{\mathrm{HLT}}\). O tempo morto efetivo após o último cruzamento é, portanto, exatamente \(N_{\mathrm{HDT}} + N_{\mathrm{HLT}}\) amostras.
+
+\begingroup
+\footnotesize
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{|c|c|c|c|c|>{\raggedright\arraybackslash}p{0.38\textwidth}|}
+	\caption{Teste de fronteira do DDT por simulação do extrator rev 0.08 (\texttt{tb\_ddt.v}).}
+	\label{v2:tab:fronteira_ddt}\\
+	\hline
+	\(N_{\mathrm{HDT}}\) & \(N_{\mathrm{HLT}}\) & \(G\) & \(G - N_{\mathrm{HDT}}\) & \textit{Hits} & Resultado \\
+	\hline
+	\endfirsthead
+	\hline
+	\(N_{\mathrm{HDT}}\) & \(N_{\mathrm{HLT}}\) & \(G\) & \(G - N_{\mathrm{HDT}}\) & \textit{Hits} & Resultado \\
+	\hline
+	\endhead
+	\hline
+	\endlastfoot
+	20 & 0 & 19 & \(-1\) & 1 & 1 \textit{hit} fundido (29 amostras, 2 contagens) \\
+	20 & 0 & 20 & 0 & 2 & 2 \textit{hits} separados \\
+	20 & 0 & 21 & \(+1\) & 2 & 2 \textit{hits} separados \\
+	\hline
+	2500 & 0 & 2499 & \(-1\) & 1 & 1 \textit{hit} fundido (2509 amostras, 2 contagens) \\
+	2500 & 0 & 2500 & 0 & 2 & 2 \textit{hits} separados \\
+	2500 & 0 & 2501 & \(+1\) & 2 & 2 \textit{hits} separados \\
+	\hline
+	20 & 50 & 20 & 0 & 1 & 1 \textit{hit}; 2º pulso absorvido (ROVL) \\
+	20 & 50 & 21 & \(+1\) & 1 & 1 \textit{hit}; 2º pulso absorvido (ROVL) \\
+	20 & 50 & 69 & \(+49\) & 1 & 1 \textit{hit}; 2º pulso absorvido (ROVL) \\
+	20 & 50 & 70 & \(+50\) & 2 & 2 \textit{hits} separados \\
+	20 & 50 & 71 & \(+51\) & 2 & 2 \textit{hits} separados \\
+\end{longtable}
+\endgroup
+
+Os demais itens da verificação foram tratados da seguinte forma:
+\begin{itemize}
+	\item \textbf{Erro de uma amostra:} o defeito observado durante o desenvolvimento (transição \texttt{ACTIVE}\(\rightarrow\)\texttt{CLOSING} que nunca ocorria e tempo de subida com \(-1\) amostra) foi corrigido na rev 0.04: a FSM passou a testar o contador de silêncio a cada ciclo, e o tempo de subida recebeu \(+1\). Desde então, duração e energia vão até o último cruzamento \(n_\ell\).
+	\item \textbf{\textit{Hits} longos e encerramento forçado:} a duração máxima (MAXDUR) foi verificada em simulação (\textit{testbench} \texttt{tb\_maxdur}), e o \textit{hardware} possui contadores próprios.
+	\item \textbf{Transbordo dos acumuladores:} energia em 48 bits, \textit{Signal Strength} em 32 bits, tempos em 24 bits e contagens em 16 bits, todos com saturação, sem retorno a zero.
+	\item \textbf{Saturação do ADC:} indicador OTR pegajoso por \textit{hit} (SAT). Nenhum \textit{hit} com SAT ocorreu nos ensaios.
+\end{itemize}
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Formato do registro de \textit{hit}}
+\label{v2:subsec:formato_registro_hit}
+
+Cada \textit{hit} consolidado é representado por uma palavra de 256 bits, correspondente a 32 bytes (\texttt{hit\_to\_axis} rev 0.07). O mapa do registro, extraído da declaração no HDL, é apresentado na Tabela~\ref{v2:tab:mapa_registro_hit}; no datagrama, o byte 0 corresponde aos bits [7:0]. Os campos incluem amplitude de pico, contagens, tempo de subida, duração, energia, \textit{Signal Strength}, canal, os indicadores SAT, ROVL e MAXDUR, um campo de 64 bits reservado ao carimbo de tempo e 32 bits livres. A versão anterior, de 128 bits, foi ampliada porque a energia passou a 48 bits (com 32 bits, ela saturava em \(\approx 0{,}8\,\mathrm{ms}\) com senoide a meia escala), os indicadores ROVL e MAXDUR entraram nas revisões 0.05 e 0.06 e o carimbo de tempo precisava de espaço próprio.
+
+\begingroup
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\begin{longtable}{|
+		>{\raggedright\arraybackslash}p{2.3cm}|
+		>{\raggedright\arraybackslash}p{1.4cm}|
+		>{\raggedright\arraybackslash}p{1.1cm}|
+		>{\raggedright\arraybackslash}p{2.2cm}|
+		>{\raggedright\arraybackslash}p{2.6cm}|
+		>{\raggedright\arraybackslash}p{3.2cm}|}
+	\caption{Mapa do registro de \textit{hit} (256 bits).}
+	\label{v2:tab:mapa_registro_hit}\\
+	\hline
+	\textbf{Campo} & \textbf{Bits} & \textbf{Larg.} & \textbf{Codificação} & \textbf{Escala} & \textbf{Faixa e condição excepcional} \\
+	\hline
+	\endfirsthead
+	\multicolumn{6}{c}
+	{\tablename\ \thetable{} -- continuação}\\
+	\hline
+	\textbf{Campo} & \textbf{Bits} & \textbf{Larg.} & \textbf{Codificação} & \textbf{Escala} & \textbf{Faixa e condição excepcional} \\
+	\hline
+	\endhead
+	\hline
+	\endlastfoot
+	Amplitude de pico & 255:244 & 12 bits & Inteiro sem sinal & Código ADC (\(|\text{código} - z_{\mathrm{c}}|\)) & 0 a 4095; verificar indicador de saturação. \\
+	\hline
+	Contagens & 243:228 & 16 bits & Inteiro sem sinal & 1 cruzamento ascendente do limiar positivo & Satura em 65\,535. \\
+	\hline
+	Tempo de subida & 227:204 & 24 bits & Inteiro sem sinal & Amostras (100 ns) & Satura em \(2^{24}-1\). \\
+	\hline
+	Duração & 203:180 & 24 bits & Inteiro sem sinal & Amostras (100 ns) & Até \(n_\ell\); satura em \(2^{24}-1\). \\
+	\hline
+	Energia & 179:132 & 48 bits & Inteiro sem sinal & \(\Sigma \text{mag}^2\) até \(n_\ell\) (código)\textsuperscript{2} & Satura em \(2^{48}-1\) (sem \textit{wrap}). \\
+	\hline
+	\textit{Signal Strength} & 131:100 & 32 bits & Inteiro sem sinal & \(\Sigma |\text{mag}|\) até \(n_\ell\) (código) & Satura em \(2^{32}-1\) (sem \textit{wrap}). \\
+	\hline
+	Saturação (SAT) & 99 & 1 bit & Indicador OTR pegajoso & 1 = \textit{over-range} no ADC durante o \textit{hit} & Indica recorte no conversor. \\
+	\hline
+	Canal & 98 & 1 bit & Identificador & 0 = A, 1 = B & 2 canais. \\
+	\hline
+	ROVL & 97 & 1 bit & Indicador & 1 = estímulo absorvido no rearme & Equivalente ao indicador R do AMSY-6. \\
+	\hline
+	\textit{Timestamp} & 96:33 & 64 bits & Inteiro sem sinal & Previsto: ciclos de 100 ns & Reservado; enviado zerado na versão ensaiada. \\
+	\hline
+	MAXDUR & 32 & 1 bit & Indicador & 1 = \textit{hit} encerrado pela duração máxima & --- \\
+	\hline
+	Reservado & 31:0 & 32 bits & -- & -- & Livre (candidato a número de sequência). \\
+\end{longtable}
+\endgroup
+
+O carimbo de tempo de 64 bits está reservado no registro, mas não implementado (Seção~\ref{v2:subsec:formalizacao_hit}). O número de sequência também não é gerado no dispositivo; o campo livre de 32 bits é candidato a recebê-lo.
+
+Para um campo inteiro sem sinal de largura \(w\) e resolução \(\delta\), a maior grandeza representável é
+\begin{equation}
+	x_{\max} = \left(2^w-1\right)\delta
+	\label{v2:eq:faixa_campo_registro}
+\end{equation}
+
+Esse cálculo se aplica aos campos temporais, contagens e energia. A energia acumulada é a soma dos quadrados da magnitude (\(\Sigma \text{mag}^2\)), durante a fase ativa do \textit{hit} e até o último cruzamento \(n_\ell\). Essa grandeza é proporcional à integral do quadrado da tensão (\(\int v^2 dt\), a ``\textit{True Energy}'') a menos do intervalo de amostragem \(\Delta t\) e do fator de calibração \(K_q\). O acumulador interno tem largura de 48 bits e aritmética inteira exata: mag (12 bits) \(\rightarrow\) mag² (24 bits) \(\rightarrow\) acumulação em 48 bits, sem arredondamento. O campo transmitido é o acumulador bruto em (código)², sem escalonamento prévio. A conversão para unidade física é realizada em \textit{software}: \(E_{\mathrm{V^2s}} \approx \Delta t \cdot K_q^2 \cdot \Sigma \text{mag}^2\), com o resultado expresso em eu (\(10^{-14}\,\mathrm{V^2s}\)) no arquivo de registros. O sistema acumula em paralelo o \textit{Signal Strength} (\(\Sigma |\text{mag}|\)), também de 32 bits e com saturação, reutilizando o mesmo caminho de dados sem multiplicador. Nenhum logaritmo ou reescalonamento é aplicado no hardware, preservando a resolução.
+
+O indicador de saturação do ADC é distinto dos indicadores de transbordo interno. Quando ocorre recorte no conversor, amplitude e energia calculadas a partir do sinal recortado constituem limites inferiores para os valores que seriam obtidos sem saturação. Contagens e tempos também podem ser alterados, mas não possuem necessariamente viés de direção conhecido.
+
+O carimbo de tempo associado ao primeiro cruzamento e os números de sequência do registro ou do pacote são necessários para ordenação, associação entre canais e observabilidade de perdas. Um cabeçalho de protocolo de aplicação, precedendo os registros no mesmo datagrama UDP, foi especificado com os seguintes campos: versão do protocolo (8 bits); identificação do dispositivo (16 bits); número de sequência do pacote (32 bits); quantidade de registros no pacote (16 bits); contador cumulativo de registros produzidos (32 bits); carimbo de tempo de referência (64 bits, resolução de 100\,ns); tamanho do conteúdo (16 bits); e indicadores de reinicialização, erro e estouro de fila (8 bits).
+
+Esse cabeçalho não foi implementado na versão ensaiada. O \texttt{hit\_to\_axis} encerra cada transferência AXI-Stream com TLAST ao fim de cada \textit{hit}, de modo que cada transferência do DMA corresponde a um registro e é enviada imediatamente: cada datagrama da porta 5007 leva apenas os 32 bytes de um \textit{hit}, sem cabeçalho de aplicação, sem número de sequência e sem carimbo de tempo de referência. A observabilidade de perdas é obtida por contadores, descritos na Subseção~\ref{v2:subsec:software_comunicacao}. O agrupamento de vários registros por datagrama reduziria a sobrecarga, mas exige mudar a geração do TLAST e aumenta a latência; na taxa ensaiada (333 \textit{hits}/s por canal), ele não é necessário.
+
+A palavra de 256 bits constitui uma representação reduzida com perda de informação, e não uma codificação que preserve a possibilidade de reconstruir a forma de onda. Se:
+\begin{equation}
+	N_{\mathrm{jan}} = \left\lceil T_{\mathrm{jan}}f_{\mathrm{s}} \right\rceil 
+	\label{v2:eq:numero_amostras_janela}
+\end{equation}
+
+\noindent
+é o número de amostras da janela e \(b_{\mathrm{tr}}\) é o número de bits transportados por amostra, o volume bruto arredondado para bytes é:
+\begin{equation}
+	B_{\mathrm{bruto,hit}} = \left\lceil \frac{N_{\mathrm{jan}}b_{\mathrm{tr}}}{8} \right\rceil
+	\label{v2:eq:volume_bruto_hit}
+\end{equation}
+
+A razão intrínseca de redução por registro é:
+\begin{equation}
+	\Gamma_{\mathrm{hit}} = \frac{B_{\mathrm{bruto,hit}}}{32}
+	\label{v2:eq:reducao_por_hit}
+\end{equation}
+
+Para os \textit{bursts} de 10 ciclos usados nos ensaios, a janela de um \textit{hit} amostrada a 10\,MSa/s em 16 bits ocupa 3776 bytes em 50\,kHz, 944 bytes em 200\,kHz e 420 bytes em 450\,kHz, o que dá \(\Gamma_{\mathrm{hit}} \approx 118\), 30 e 13, respectivamente (valores calculados).
+
+A janela \(T_{\mathrm{jan}}\) não se confunde automaticamente com a duração reportada. Seu término depende da política de integração durante \texttt{CLOSING}. Além disso, a redução global é calculada no mesmo intervalo \(\Delta T\), incluindo pacotes, estado e configuração:
+\begin{equation}
+	\Gamma_{\mathrm{global}}(\Delta T) = \frac{B_{\mathrm{streaming}}(\Delta T)}{B_{\mathrm{borda}}(\Delta T)}
+	\label{v2:eq:reducao_global}
+\end{equation}
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Software embarcado e comunicação}
+\label{v2:subsec:software_comunicacao}
+
+O MicroBlaze executa FreeRTOS e mantém as tarefas de retirada dos registros, empacotamento, configuração e comunicação pela pilha lwIP. Os registros são transferidos da lógica programável para memória por DMA e encapsulados em datagramas UDP sobre Ethernet. A saída para o módulo \texttt{hit\_to\_axis} possui um \textit{gate} \texttt{hit\_run} (CTRL[2]) que impede a aceitação de \textit{hits} com o extrator parado. O subsistema de transferência tem a seguinte configuração:
+
+\begin{itemize}
+	\item \textbf{Controlador:} AXI DMA (\texttt{axi\_dma\_0}), canal S2MM em modo simples, sem \textit{scatter-gather}.
+	\item \textbf{Caminho:} \texttt{hit\_to\_axis} (256 bits, TLAST por \textit{hit}) \(\rightarrow\) \texttt{axis\_data\_fifo} \(\rightarrow\) AXI DMA \(\rightarrow\) DDR3 pelo controlador MIG (região de 256\,MB a partir de \texttt{0x8000\_0000}).
+	\item \textbf{\textit{Buffers}:} dois \textit{buffers} de 1024 bytes em DDR3, alinhados a 64 bytes, usados em alternância (\textit{ping-pong}). O próximo \textit{buffer} é armado assim que uma transferência termina. Cada \textit{buffer} comporta 32 registros, mas, com TLAST por \textit{hit}, cada transferência leva um registro (32 bytes).
+	\item \textbf{Notificação:} consulta (\textit{polling}) ao registrador de estado do S2MM (bits \textit{Idle} e de erro) a cada \textit{tick} do FreeRTOS, com tempo-limite de 200\,ms; em caso de erro, o DMA é reiniciado e rearmado.
+	\item \textbf{Coerência de \textit{cache}:} \texttt{Xil\_DCacheInvalidateRange} sobre o \textit{buffer} antes de armar a transferência e depois de concluí-la, antes da leitura pelo processador.
+	\item \textbf{Contrapressão:} o sinal \texttt{tready} do AXI DMA retém a FIFO; com a FIFO cheia, o \texttt{hit\_to\_axis} sinaliza estouro (\texttt{overflow\_out}), lido no \textit{wrapper}.
+	\item \textbf{Ethernet:} o AXI Ethernet Lite não possui DMA próprio; o MicroBlaze copia cada datagrama pela pilha lwIP (\texttt{lwip\_sendto}). Os comandos chegam pela porta 5006 e os registros saem pela porta 5007, com destino igual ao endereço IP de quem enviou o comando START.
+\end{itemize}
+
+O UDP evita estabelecimento de conexão, confirmações e retransmissões automáticas no transporte. Não fornece, contudo, entrega garantida, ordenação, proteção contra duplicação nem latência determinística \cite{postel1980udp}. No sistema implementado, como não há cabeçalho de aplicação (Subseção~\ref{v2:subsec:formato_registro_hit}), a observabilidade dessas propriedades é obtida por contadores independentes em cada etapa: na lógica, o registrador \texttt{HITCNT} conta \textit{hits}, ROVL e MAXDUR por canal, e os registradores de depuração (\texttt{0x50} a \texttt{0x74} do mapa AXI) expõem contadores de amostras e de \textit{hits}; no \textit{firmware}, há contadores de transferências do DMA e de falhas de envio, lidos pela porta serial; no receptor, os datagramas e os registros são numerados na chegada. Ao parar cada captura, o \textit{software} de aquisição lê o \texttt{HITCNT}, grava-o junto com os dados e o compara com o total recebido.
+
+Os registros gerados, entregues ao DMA, encapsulados e recebidos são contados separadamente. Com \(N_{\mathrm{tx}}\) registros informados pelo transmissor e \(N_{\mathrm{rx}}\) registros válidos recebidos, após o tratamento de duplicações e retorno modular, podem ser calculados
+\begin{equation}
+	N_{\mathrm{perdidos}} = N_{\mathrm{tx}}-N_{\mathrm{rx}}, \qquad \widehat{p}_{\mathrm{perda}} = \frac{N_{\mathrm{perdidos}}}{N_{\mathrm{tx}}}
+	\label{v2:eq:taxa_perda_udp}
+\end{equation}
+
+Essa expressão pressupõe que os contadores se referem ao mesmo intervalo e que reinicializações foram detectadas. Na versão ensaiada, \(N_{\mathrm{tx}}\) é o total do \texttt{HITCNT} na lógica.
+
+\textbf{Ensaio de carga.} O ensaio foi executado com blocos de 1, 100, 1000, 5000 e 10\,000 \textit{bursts}, cada um em 30\,s (intervalos nominais de 300\,ms a 3\,ms), em 50, 200 e 450\,kHz, na captura simultânea com o AMSY-6 de 15/10/2026 (Seção~\ref{sec:mm_delineamento}). Não houve perda na comunicação: 0 em 48\,280 registros. Todos os estímulos não registrados pelo sistema proposto foram explicados no detector, por \textit{hits} com ROVL (estímulo absorvido no rearme) ou por \textit{hits} fundidos; como cada ROVL absorve pelo menos um estímulo, a perda entre a lógica e o computador tem limite superior zero. Pela Equação~\eqref{v2:eq:limite_zero_falhas}, o limite superior unilateral de 95\,\% para a probabilidade de perda é \(3/48\,280 \approx 6\times10^{-5}\). A maior taxa testada foi de 333 \textit{hits}/s em média por canal, com intervalo nominal de 3\,ms. A tabela por bloco está na Seção~\ref{sec:res_extrator}. O resultado é registrado como \(0/48\,280\), e não como garantia universal de perda nula.
+
+Durante o ensaio, foi identificada e corrigida uma perda no receptor: a interface gráfica descartava datagramas acima de \(\approx 300\) \textit{hits}/s por causa do \textit{buffer} de recepção padrão do Windows. O receptor passou a usar \textit{buffer} de 8\,MB (\texttt{SO\_RCVBUF}, \textit{dashboard} rev 0.6), e as perdas na comunicação foram a zero.
+
+
+O número de registros por datagrama estabelece um compromisso entre eficiência e latência de acumulação. O conteúdo IP deve respeitar a MTU efetiva do caminho para evitar fragmentação. Na versão ensaiada, cada datagrama leva 32 bytes de dados (um registro), o que resulta em quadro Ethernet de 74 bytes (14 de Ethernet + 20 de IP + 8 de UDP + 32), mais 4 bytes de sequência de verificação. O máximo é limitado pelo \textit{buffer} de 1024 bytes (32 registros), abaixo dos 1472 bytes que evitam fragmentação, com verificação em tempo de compilação no \textit{firmware}; com TLAST por \textit{hit}, sai sempre um registro por datagrama. Cada transferência concluída é enviada imediatamente, sem espera por agrupamento, de modo que não há envio parcial nem tempo-limite de agrupamento. A soma de verificação UDP é gerada pela pilha lwIP (\texttt{CHECKSUM\_GEN\_UDP} = 1, valor padrão).
+
+Comandos de configuração enviados por UDP exigem identificadores de operação, confirmação e tratamento de duplicação, e operações repetidas precisam ser idempotentes ou ter regra explícita que impeça efeitos inconsistentes.
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Utilização de recursos e desempenho temporal}
+\label{v2:subsec:utilizacao_recursos}
+
+A utilização e a temporização definitivas são as do relatório pós-implementação; os valores pós-síntese servem como informação intermediária.
+
+Para o XC7A35T, a documentação informa \(20\,800\) LUTs e \(41\,600\) registradores de \textit{slice}. O dispositivo também possui 50 blocos equivalentes de \(36\,\mathrm{Kb}\) e 90 DSP48E1 \cite{xilinx2020ds180}. Os valores da Tabela~\ref{v2:tab:utilizacao_pos_implementacao} vêm do relatório pós-síntese da versão anterior à migração da FIFO para BRAM; a situação da versão ensaiada é descrita logo após a tabela. A tabela mantém a unidade usada pelo relatório para BRAM (blocos RAMB36E1 e RAMB18E1), sem misturar as duas unidades.
+
+\begingroup
+\footnotesize
+\renewcommand{\arraystretch}{1.2}
+\begin{longtable}{
+		|>{\raggedright\arraybackslash}p{0.20\textwidth}
+		|>{\raggedright\arraybackslash}p{0.2\textwidth}
+		|>{\raggedright\arraybackslash}p{0.2\textwidth}
+		|>{\raggedright\arraybackslash}p{0.2\textwidth}|}
+	\caption{Utilização pós-síntese da versão anterior à migração da FIFO para BRAM (valores de síntese).}
+	\label{v2:tab:utilizacao_pos_implementacao}\\
+	\hline
+	\textbf{Recurso} & \textbf{Utilizado} & \textbf{Disponível} & \textbf{Utilização (\%)} \\
+	\hline
+	\endfirsthead
+	\multicolumn{4}{c}
+	{\tablename\ \thetable{} -- continuação}\\
+	\hline
+	\textbf{Recurso} & \textbf{Utilizado} & \textbf{Disponível} & \textbf{Utilização (\%)} \\
+	\hline
+	\endhead
+	\hline
+	\endlastfoot
+	LUTs como lógica & 17.448 & \(20\,800\) & 83,9\% \\
+	\hline
+	LUTs como memória & 8.615 & 9.600 (LUTRAM) & 89,7\% \\
+	\hline
+	LUTs totais & 26.063 & \(20\,800\) & 125,3\% \\
+	\hline
+	Registradores de slice & 24.269 & \(41\,600\) & 58,3\% \\
+	\hline
+	BRAM36 equivalentes & 25,5 & 50 & 51,0\% \\
+	\hline
+	DSP48E1 & 23 & 90 & 25,6\% \\
+	\hline
+	Recursos de relógio & MMCM: 2, PLL: 1 & 5 cada & 40\% / 20\% \\
+	\hline
+	Entradas e saídas & 118 & 210 & 56,2\% \\
+	\hline
+	WNS (setup) & +0,427 ns & -- & -- \\
+	\hline
+	TNS (setup) & 0,000 ns & -- & -- \\
+\end{longtable}
+\endgroup
+
+\textbf{Observações sobre a temporização:} O caminho crítico de \textit{setup} encontra-se no filtro IIR (\texttt{s1\_reg} do biquad em forma direta II), com atraso de 9,43 ns para um período de 10 ns (folga de +0,427 ns). Não há violações de \textit{setup} (TNS = 0). Entretanto, o relatório pós-síntese aponta violações de \textit{hold}: WHS = $-1,645$\,ns, THS = $-26,916$\,ns, com 55 \textit{endpoints} falhando. Essas violações são comuns nessa etapa e normalmente são corrigidas pelo \textit{place \& route}; caso persistam, serão tratadas individualmente. Além disso, 41 portas de entrada e 27 de saída não possuem restrições de \textit{I/O delay}, essas restrições serão adicionadas ao XDC. O excesso de LUTs totais (125,3\%) decorre principalmente do uso de LUT como memória (8.615, dos quais 7.912 como RAM distribuída), que será mitigado pela migração dessas memórias para Block RAM (há BRAM livre, 49\%) e pela execução de \texttt{opt\_design} após a síntese. As violações de \textit{hold} e o excesso de LUTs estão em correção para a versão pós-implementação final.
+
+\textbf{Situação atual.} Após migrar a FIFO de LUTRAM para Block RAM, o uso de LUTs caiu de 125\,\% para 92\,\%. O fechamento temporal foi obtido após a inserção de um \textit{pipeline} de 2 estágios na entrada do extrator (rev 0.08, bit-exata à rev 0.07) e da restrição de cruzamento de domínio de relógio do monitor de temperatura do controlador MIG (\texttt{momea\_timing.xdc}).
+
+A utilização pode ser decomposta por bloco funcional, conforme a hierarquia do projeto:
+
+\begin{itemize}
+	\item \textbf{Blocos compartilhados}: front-end ADC (\texttt{adc12\_frontend\_1mhz}, \texttt{adc\_ctrl\_axi}), serialização do \textit{hit} (\texttt{hit\_to\_axis}), \textit{buffer} de \textit{stream} (\texttt{axis\_data\_fifo}), DMA (\texttt{axi\_dma}), processador MicroBlaze (com \texttt{intc}, temporizador, memória \texttt{lmb\_bram}), controlador Ethernet (\texttt{axi\_ethernetlite}) e controlador de memória externa (\texttt{mig\_7series}).
+	\item \textbf{Blocos replicados por canal}: o filtro IIR (\texttt{iir\_biquad\_df2}) e o extrator de \textit{hit} (\texttt{ae\_hit\_axi\_wrapper}, que contém a FSM e os acumuladores) são duplicados para cada canal (atualmente 2 canais).
+	\item \textbf{Custo incremental}: a adição de um novo canal replicaria apenas o filtro IIR e o extrator de \textit{hit}, sem duplicar a infraestrutura compartilhada. Os números exatos de LUT/FF/DSP/BRAM por instância serão extraídos do relatório de utilização hierárquico pós-implementação (\texttt{report\_utilization -hierarchical}) para quantificar esse custo incremental.
+\end{itemize}
+
+Uma frequência máxima não pode ser inferida apenas do relatório pós-síntese nem do inverso de um único atraso crítico.
+
+A latência do caminho por amostra é:
+\begin{equation}
+	L_{\mathrm{PL}} = \frac{N_{\mathrm{pipe}}}{f_{\mathrm{clk}}}
+	\label{v2:eq:latencia_pl}
+\end{equation}
+
+\noindent
+em que \(N_{\mathrm{pipe}}\) é medido entre pontos de referência explicitamente definidos. A partir do último cruzamento, a emissão do registro ocorre aproximadamente após
+\begin{equation}
+	L_{\mathrm{emissao}} = T_{\mathrm{DDT,impl}} + \frac{N_{\mathrm{fin}}}{f_{\mathrm{clk}}}
+	\label{v2:eq:latencia_emissao_registro}
+\end{equation}
+
+\noindent
+sem incluir esperas variáveis no DMA, no software e na rede. Para medir desde o primeiro cruzamento, inclui-se também a duração do \textit{hit}.
+
+Com o \texttt{LOCKOUT} re-armável, o registro só é emitido ao fim do rearme, de modo que, na versão ensaiada, a Equação~\eqref{v2:eq:latencia_emissao_registro} passa a incluir o HLT: a latência mínima a partir do último cruzamento é \(T_{\mathrm{HDT}} + T_{\mathrm{HLT}} = 2{,}25\,\mathrm{ms}\) com 250/2000\,\(\mu\)s, mais cerca de 3 ciclos de \textit{pipeline}. Depois vêm até um \textit{tick} do FreeRTOS de consulta ao DMA e a cópia para a pilha lwIP. A hora de chegada no computador tem dispersão de dezenas de milissegundos causada pelo sistema operacional e não serve para medir a latência. O procedimento proposto é alternar um pino de GPIO a cada datagrama enviado e medir o intervalo entre a saída de sincronismo do gerador e esse pulso, em cada bloco da matriz experimental, reportando mediana e percentis.
+
+
+A margem de recursos remanescente mostra disponibilidade física, mas não sustenta isoladamente a viabilidade de inferência embarcada. Esse argumento exige ao menos uma classe concreta de modelos e estimativas de operações, precisão, memória, largura de banda, potência e impacto no fechamento temporal.
+
+% -------------------------------------------------------------------------------------------------------
+\subsection{Software de apoio à configuração e aos ensaios}
+\label{v2:subsec:software_apoio}
+
+As ferramentas executadas no computador hospedeiro foram desenvolvidas em Python e não integram o caminho crítico de detecção. Elas estão organizadas em três grupos:
+\begin{itemize}
+	\item \textbf{Configuração e verificação:} rotinas para configurar limiar e parâmetros temporais e verificar a cadeia de detecção. O limiar é fixo e configurado em \(\mathrm{dB}_{\mathrm{AE}}\); o \textit{software} o converte em códigos com a calibração do canal e o ganho do pré-amplificador (por exemplo, \(80\,\mathrm{dB}_{\mathrm{AE}}\) com 34\,dB equivalem a 155 códigos, ou \(0{,}50\,\mathrm{V}\) no ADC). O ruído de fundo é medido pelo comando RAWSTAT (estatística exata dos códigos brutos numa janela configurável em milissegundos) ou pelo comando LEVEL (nível em códigos, volts e \(\mathrm{dB}_{\mathrm{AE}}\)). Com os pré-amplificadores de 34\,dB, o AMSY-6 registrou ruído RMS de 369 a \(414\,\mu\mathrm{V}\) (51 a \(52\,\mathrm{dB}_{\mathrm{AE}}\)); o limiar de \(80\,\mathrm{dB}_{\mathrm{AE}}\) fica, portanto, cerca de 28\,dB acima do ruído.
+
+	\item \textbf{Visualização:} interface construída com \texttt{tkinter} e \texttt{matplotlib} para apresentar registros e estado da comunicação. Sua atualização assíncrona não integra a latência do instrumento.
+
+	\item \textbf{Aquisição e persistência:} o \textit{dashboard} de aquisição (\texttt{ae\_hit\_dashboard.py} rev 0.6) recebe os datagramas com \textit{buffer} de 8\,MB, decodifica os registros e cria, a cada captura, uma pasta \texttt{AAAA-MM-DD\_HH-MM-SS} com três arquivos: \texttt{hits.csv}, com uma linha por \textit{hit} e 21 colunas (\texttt{hit\_id}, \texttt{rx\_time\_s}, \texttt{pkt\_id}, \texttt{channel}, \texttt{peak}, \texttt{peak\_v}, \texttt{amp\_dbae}, \texttt{counts}, \texttt{rise}, \texttt{rise\_us}, \texttt{duration}, \texttt{duration\_us}, \texttt{energy}, \texttt{energy\_eu}, \texttt{signal\_strength}, \texttt{ss\_nvs}, \texttt{sat}, \texttt{rovl}, \texttt{maxdur}, \texttt{timestamp}, \texttt{raw\_hex}); \texttt{config.json}, com limiar, HDT, HLT, duração máxima, \texttt{pos\_only}, ganho, calibração do ADC e a configuração lida do FPGA (comando GETHITCFG); e \texttt{summary.json}, com os totais por canal, os indicadores e os contadores \texttt{HITCNT} lidos ao parar. O computador numera datagramas e registros na chegada. Sem sequência gerada no dispositivo, as perdas são detectadas pela diferença entre o \texttt{HITCNT} e o total gravado; duplicações e trocas de ordem não são detectáveis individualmente, risco reduzido pelo enlace direto entre a placa e o computador (endereçamento 169.254.0.0/16), sem comutadores.
+\end{itemize}
+
+Para reprodutibilidade, as versões dos componentes usados nos ensaios estão na Tabela~\ref{v2:tab:reprodutibilidade}. Os \textit{scripts} e os exemplos de configuração estão nos repositórios do projeto.
+
+\begingroup
+\footnotesize
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{0.30\textwidth}|>{\raggedright\arraybackslash}p{0.18\textwidth}|>{\raggedright\arraybackslash}p{0.42\textwidth}|}
+	\caption{Versões dos componentes usados nos ensaios.}
+	\label{v2:tab:reprodutibilidade}\\
+	\hline
+	\textbf{Componente} & \textbf{Versão} & \textbf{Observação} \\
+	\hline
+	\endfirsthead
+	\hline
+	\textbf{Componente} & \textbf{Versão} & \textbf{Observação} \\
+	\hline
+	\endhead
+	\hline
+	\endlastfoot
+	Vivado / Vitis Classic & 2024.2 & Síntese, implementação e \textit{firmware} \\
+	\hline
+	\texttt{ae\_hit\_extractor.v} & rev 0.08 & \textit{Pipeline} de 2 estágios na entrada; bit-exato à rev 0.07 \\
+	\hline
+	\texttt{ae\_hit\_axi\_wrapper.v} & rev 0.08 & Registradores \texttt{ZERO\_A/B} (0x8C/0x90), \texttt{MAX\_DUR} (0x80), contadores ROVL e MAXDUR \\
+	\hline
+	\texttt{hit\_to\_axis.v} & rev 0.07 & Palavra de 256 bits com indicador MAXDUR \\
+	\hline
+	\texttt{adc\_ctrl\_axi} / IIR & mapa rev 0.10 & Butterworth de 4ª ordem (2 \textit{biquads}) \\
+	\hline
+	\texttt{momea\_timing.xdc} & --- & Restrição de CDC do monitor de temperatura do MIG \\
+	\hline
+	\texttt{udp\_control.c} & rev 1.0 & Calibração do ADC (SETCAL, GETCAL, RAWSTAT, LEVEL) \\
+	\hline
+	\texttt{hit\_dma\_task.c} & rev 0.07 & Destino = IP de quem enviou START \\
+	\hline
+	\texttt{network.c} & rev 0.13 & DHCP com retorno ao IP fixo 169.254.10.10 \\
+	\hline
+	\texttt{status\_led.c} / \texttt{main.c} & out/2026 & LEDs de estado (LD7 piscando = operacional) \\
+	\hline
+	\textit{Bootloader} SREC SPI & out/2026 & \textit{Bitstream} em 0x0 e \textit{firmware} em 0x400000 da memória QSPI \\
+	\hline
+	\texttt{ae\_hit\_dashboard.py} & rev 0.6 & \textit{Buffer} UDP de 8\,MB; gravação em CSV/JSON; comparação FPGA \(\times\) PC \\
+	\hline
+	\texttt{momea\_hit.py}, \texttt{adc\_cal.py}, \texttt{adc\_cal.json} & calibração de 12/10/2026 & Decodificação de 256 bits; calibração por canal \\
+	\hline
+	\texttt{momea\_burst\_dg832.py} & --- & Geração dos blocos no DG832; registro em \texttt{bursts\_*.csv} \\
+	\hline
+	\hline
+	\hline
+	\hline
+\end{longtable}
+\endgroup
+
+% -------------------------------------------------------------------------------------------------------

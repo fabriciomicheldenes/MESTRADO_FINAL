@@ -1,0 +1,41 @@
+% =======================================================================================================
+% Capítulo 5 - Conclusões e trabalhos futuros
+% =======================================================================================================
+
+Esta dissertação propôs e avaliou uma arquitetura de processamento em FPGA para o monitoramento de falhas em motobombas por EA, na qual o sinal é reduzido a registros de \textit{hits} na própria lógica programável e a condição de operação é inferida por uma rede MLP a partir desses registros. O trabalho partiu de uma limitação concreta da plataforma de aquisição contínua do Projeto MOMEA, o volume de dezenas de gigabytes por hora, e chegou a uma cadeia que transmite poucos quilobytes por segundo e pode decidir na borda.
+
+\section{Síntese das contribuições}
+
+As contribuições podem ser resumidas em quatro resultados:
+
+\begin{enumerate}[label=\textbf{\arabic*.}]
+	\item \textbf{Extrator de \textit{hits} em FPGA equivalente a um sistema comercial.} O extrator, implementado no Artix-7 XC7A35T com as mesmas convenções temporais do Vallen AMSY-6, registrou de 99,94 a 99,96\,\% de 48\,303 estímulos em ensaio simultâneo com o instrumento comercial (que registrou de 96,8 a 97,6\,\%), sem perda na comunicação (0 em 48\,280 registros) e com amplitudes 0,47 a 0,76\,dB acima das do AMSY-6, diferença compatível com a tolerância de ganho dos pré-amplificadores. A redução do volume de dados foi de cerca de 770 vezes na maior taxa ensaiada.
+	\item \textbf{Classificação a partir dos registros, com validação honesta.} Descritores de \textit{hits} agregados em janelas de 5\,s permitiram estimar a frequência de rotação da bomba com erro médio de 4 a 6\,Hz em corridas e séries não vistas. A configuração das válvulas, reconhecida com 89 a 95\,\% de acurácia quando a corrida aparecia no treino, caiu para 21 a 28\,\% quando a corrida inteira foi deixada de fora. O trabalho mostrou que essa diferença decorre do delineamento dos dados, e não do método, e propôs um novo delineamento.
+	\item \textbf{Inferência embarcada verificada por simulação.} O cálculo dos descritores e duas MLPs quantizadas em int8 foram implementados com um único código-fonte para a MicroBlaze e para o Vitis HLS. A implementação reproduziu o modelo de referência bit a bit e, com percentis exatos, a mesma decisão em 100\,\% das 3\,540 janelas. Na simulação RTL do processador, a inferência levou cerca de 2\,ms sem FPU; o IP HLS, 114\,\(\mu\)s, com 656 LUTs após o roteamento. Para o FPGA atual, já com cerca de 92\,\% das LUTs ocupadas pelo extrator, a rota recomendada é a inferência em software na MicroBlaze existente.
+	\item \textbf{Validação externa em base pública.} Na base de rolamentos CWRU, os \textit{hits} detectados com limiar flutuante recuperaram as frequências teóricas de defeito, e a validação que separa rolamentos físicos reduziu a acurácia de 87--92\,\% para 21--63\,\%, reproduzindo, em dados de referência, a lição de validação do estudo da bomba.
+\end{enumerate}
+
+Duas lições atravessam os resultados. A primeira é que a acurácia de um diagnóstico só tem significado quando a validação separa as unidades físicas independentes: corridas, sessões ou rolamentos. A segunda é que o limiar fixo do extrator falha diante de emissão contínua: na bomba, com 70\,\% dos \textit{hits} saturados e muitos truncados pela duração máxima, e na CWRU, em que até 95\,\% dos \textit{hits} de uma gravação foram truncados com limiar fixo e nenhum com limiar flutuante.
+
+\section{Limitações}
+
+\begin{itemize}
+	\item Os ensaios do extrator são elétricos e posteriores ao ponto de injeção; não incluem sensor, acoplamento, propagação estrutural nem cavitação. A referência elétrica medida, as repetições independentes e a varredura de amplitude e de ruído ainda não foram feitas.
+	\item O carimbo de tempo de \textit{hardware} não está implementado, o que limitou a associação entre estímulos e registros ao nível de bloco e impede, por ora, o uso dos instantes dos \textit{hits} medidos no próprio FPGA.
+	\item Os dados da bomba têm uma corrida por condição, ordem fixa, limiar variável entre sessões e saturação do conversor; com o ganho de 34\,dB, o limite do conversor corresponde a cerca de 102 a 103\,dB\(_{\mathrm{AE}}\).
+	\item A inferência embarcada não foi executada na placa; o tempo de parede com a pilha de rede ativa, o consumo de energia e a integração com o \textit{firmware} real dependem do ensaio em \textit{hardware}.
+	\item A base CWRU é de vibração, com defeitos artificiais e poucas unidades físicas; o fator do limiar flutuante foi ajustado com o auxílio dos rótulos.
+\end{itemize}
+
+\section{Trabalhos futuros}
+
+Em ordem de dependência, os próximos passos são:
+\begin{enumerate}[label=\textbf{\arabic*.}]
+	\item implementar o carimbo de tempo de \textit{hardware} e um limiar flutuante no extrator, ambos de baixo custo em lógica;
+	\item completar a caracterização metrológica do extrator (referência elétrica, divisor, pré-amplificador, repetições independentes e ensaios próximos ao limiar e à saturação);
+	\item revisar o ganho do \textit{front-end}, ou adotar ganho ajustável, e estudar filtros passa-banda que separem o ruído da bomba das componentes associadas a vórtices e à cavitação;
+	\item repetir o ensaio da bomba com várias corridas por condição, ordem aleatória, limiar fixo e uma medida independente do estado de cavitação;
+	\item integrar a inferência ao \textit{firmware} do MOMEA e medir, na placa, o tempo de parede e o consumo;
+	\item avaliar a captura seletiva de formas de onda de alguns \textit{hits}, que permitiria combinar descritores e modelos convolucionais sem retomar a transmissão contínua;
+	\item validar o sistema na bancada de cavitação do Itaipu Parquetec e, depois, em turbinas.
+\end{enumerate}
