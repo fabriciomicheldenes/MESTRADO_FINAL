@@ -1,17 +1,8 @@
 % Gerado por ferramentas/importar_relatorios.py a partir de CWRU/RELATORIO_CWRU-10.11.2026/RELATORIO_CWRU.tex.
-% Revisado à mão na dissertação: edite este arquivo, não a fonte.
-\subsection{Objetivo e enquadramento}
+% Revisado à mão na dissertação (versão enxuta): edite este arquivo, não a fonte.
+\subsection{Objetivo}
 \label{cwru:sec:objetivo}
 
-O estudo da bomba (Seção~\ref{sec:mm_bomba}) mostrou que modelos treinados com descritores de \textit{hits} reconhecem bem as condições quando a corrida aparece no treino, mas generalizam mal quando a corrida inteira é deixada de fora, e que os dados tinham problemas de aquisição: 70\,\% dos \textit{hits} saturados e muitos truncados pela duração máxima. Como os dados do ensaio têm uma única corrida por condição, não era possível separar o que é limitação do método do que é limitação dos dados.
+Os dados da bomba têm uma única corrida por condição e problemas de aquisição (saturação e truncamento), o que impede separar as limitações do método das limitações dos dados. A base CWRU \cite{cwru}, referência em diagnóstico de rolamentos, permite testar o mesmo fluxo em dados públicos. Ela também tem poucas unidades físicas independentes (cada rolamento com defeito foi montado uma vez e gravado em quatro cargas), e as acurácias próximas de 100\,\% relatadas com janelas sorteadas caem quando a divisão respeita as gravações ou os rolamentos \cite{smith2015,rauber2021,hendriks2022}.
 
-A base CWRU \cite{cwru} é a referência mais usada em diagnóstico de rolamentos e permite testar o mesmo fluxo em dados públicos e rotulados. Ela tem, porém, uma estrutura parecida com a do ensaio da bomba: cada rolamento com defeito foi montado uma vez e gravado em quatro cargas, de modo que há poucas unidades físicas independentes. Parte da literatura relata acurácias próximas de 100\,\% com janelas sorteadas, e trabalhos posteriores mostraram que esses números caem quando a divisão respeita as gravações ou os rolamentos \cite{smith2015,rauber2021,hendriks2022}.
-
-Os sinais são de vibração (acelerômetros a 48\,kHz), e não de EA. O extrator de \textit{hits} do MOMEA é aplicado aqui como detector de impulsos: os defeitos localizados produzem impactos periódicos, e a lógica de limiar, DDT e rearme se aplica a eles. Os descritores, porém, têm outro significado físico, e as conclusões sobre cavitação não se transferem. O objetivo é responder a três perguntas:
-\begin{enumerate}
-	\item os descritores de \textit{hits} no estilo MOMEA capturam a física do defeito?
-	\item como a acurácia depende da validação, quando as unidades físicas são separadas?
-	\item o fluxo embarcado (MLP int8) preserva a decisão?
-\end{enumerate}
-
-% =======================================================================================================
+Os sinais são de vibração, e não de EA: o extrator de \textit{hits} é aplicado como detector dos impactos periódicos produzidos pelos defeitos localizados, e as conclusões sobre cavitação não se transferem. O estudo responde a três perguntas: (i) os descritores de \textit{hits} capturam a física do defeito? (ii) como a acurácia depende da validação quando as unidades físicas são separadas? (iii) a MLP int8 preserva a decisão?

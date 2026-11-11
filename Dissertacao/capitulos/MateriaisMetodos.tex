@@ -1,15 +1,16 @@
 % =======================================================================================================
-% Capítulo 3 - Materiais e Métodos
-% As seções 3.3 a 3.8 incorporam, revisados, os relatórios do projeto (ver capitulos/importado/).
+% Capítulo 3 - Materiais e Métodos (versão enxuta)
+% As Seções do extrator foram condensadas a partir do artigo (ARTIGO_V2_20pag); as demais incorporam,
+% resumidos, os relatórios do projeto (ver capitulos/importado/).
 % =======================================================================================================
 
-Este capítulo descreve o sistema desenvolvido e os procedimentos usados para avaliá-lo. A Seção~\ref{sec:mm_visao} apresenta a visão geral da proposta e delimita o que já existia no Projeto MOMEA e o que constitui contribuição desta dissertação. A Seção~\ref{sec:mm_antecedentes} resume a plataforma de aquisição contínua que antecedeu este trabalho. As Seções~\ref{sec:mm_decisoes} a~\ref{sec:mm_delineamento} tratam do extrator de \textit{hits} em FPGA: as decisões de projeto, a implementação e o delineamento do ensaio comparativo com um sistema comercial. As Seções~\ref{sec:mm_bomba} a~\ref{sec:mm_cwru} descrevem o uso dos registros de \textit{hits} para classificar condições de operação, a implementação embarcada dessa classificação e a validação externa em uma base pública. A Seção~\ref{sec:mm_ferramentas} lista as ferramentas utilizadas.
+Este capítulo apresenta a visão geral da proposta e seus antecedentes (Seções~\ref{sec:mm_visao} e~\ref{sec:mm_antecedentes}), o extrator de \textit{hits} em FPGA e seu ensaio comparativo com um sistema comercial (Seções~\ref{sec:mm_decisoes} a~\ref{sec:mm_delineamento}), a classificação das condições de operação de uma bomba, sua implementação embarcada e a validação externa (Seções~\ref{sec:mm_bomba} a~\ref{sec:mm_cwru}) e as ferramentas usadas (Seção~\ref{sec:mm_ferramentas}).
 
 % -------------------------------------------------------------------------------------------------------
 \section{Visão geral da proposta}
 \label{sec:mm_visao}
 
-A Figura~\ref{fig:pipeline_proposto} resume a cadeia proposta. O sinal de EA é captado por um sensor piezoelétrico, amplificado e digitalizado a 10\,MSa/s. Em vez de transmitir todas as amostras, a lógica programável do FPGA detecta os \textit{hits} e calcula seus descritores (amplitude, contagens, tempo de subida, duração e energia), de modo que cada \textit{hit} é reduzido a um registro de 32 bytes. Esses registros são então agregados em janelas de tempo, das quais se extraem descritores estatísticos que alimentam uma rede MLP. A classificação pode ocorrer no computador, como nos ensaios com a bomba, ou no próprio FPGA, no processador embarcado MicroBlaze ou em um acelerador gerado por síntese de alto nível (HLS).
+A Figura~\ref{fig:pipeline_proposto} resume a cadeia proposta. O sinal de EA é amplificado e digitalizado a 10\,MSa/s; em vez de transmitir as amostras, a lógica do FPGA detecta os \textit{hits} e reduz cada um a um registro de 32 bytes. Os registros são agregados em janelas de tempo, das quais se extraem descritores estatísticos para uma MLP, executada no computador ou no próprio FPGA, no processador MicroBlaze ou em um acelerador gerado por HLS.
 
 \begin{figure}[htbp]
 	\centering
@@ -41,20 +42,9 @@ A Figura~\ref{fig:pipeline_proposto} resume a cadeia proposta. O sinal de EA é 
 	\label{fig:pipeline_proposto}
 \end{figure}
 
-Essa organização responde a uma questão central do trabalho: por que usar aprendizado de máquina se a detecção já seleciona os trechos que ultrapassam o limiar? As duas etapas têm papéis distintos. A detecção de \textit{hits} é uma etapa de \emph{redução de dados e extração de atributos}: ela descarta o ruído de fundo e resume cada evento em poucos números, mas não interpreta o que os eventos significam. Um único \textit{hit} não indica, por si só, a condição da máquina, porque eventos de mesma amplitude podem vir de cavitação, de impactos mecânicos ou de ruído hidráulico. A condição se manifesta na \emph{população} de \textit{hits} ao longo do tempo (taxa, distribuição de amplitudes e energias, duração, periodicidade), e é essa população que o classificador interpreta. Assim, o limiar decide \emph{o que} é registrado; o modelo decide \emph{o que} os registros indicam.
+As duas etapas têm papéis distintos. A detecção de \textit{hits} reduz os dados e extrai atributos: descarta o ruído de fundo e resume cada evento, mas não o interpreta, pois \textit{hits} de mesma amplitude podem vir de cavitação, de impactos ou de ruído hidráulico. A condição da máquina se manifesta na \emph{população} de \textit{hits} ao longo do tempo (taxa, distribuições de amplitude e energia, duração), e é essa população que o classificador interpreta. O limiar decide \emph{o que} é registrado; o modelo, \emph{o que} os registros indicam.
 
-\subsection{Delimitação das contribuições}
-
-Para deixar claro o que é contribuição desta dissertação, distinguem-se três grupos de elementos:
-\begin{itemize}
-	\item \textbf{pré-existentes no Projeto MOMEA}: sensores, pré-amplificadores e bancada; a plataforma de aquisição contínua MomeaProbe/MomeaCapture, com interface USB~3.0 (Seção~\ref{sec:mm_antecedentes}); e os estudos com redes convolucionais sobre espectrogramas, conduzidos por outro membro da equipe;
-	\item \textbf{desenvolvidos nesta dissertação}: o extrator de \textit{hits} em FPGA, com registro compacto e comunicação por UDP (Seções~\ref{sec:mm_decisoes} e~\ref{sec:mm_implementacao}); sua avaliação em ensaio simultâneo com o sistema comercial Vallen AMSY-6 (Seção~\ref{sec:mm_delineamento}); a classificação das condições de operação de uma bomba a partir dos registros de \textit{hits} (Seção~\ref{sec:mm_bomba}); a implementação da classificação em int8, na MicroBlaze e em lógica dedicada, verificada por simulação (Seção~\ref{sec:mm_embarcado}); e a validação externa do método em uma base pública de rolamentos (Seção~\ref{sec:mm_cwru});
-	\item \textbf{realizados apenas em simulação}: a execução da inferência na placa. O processador MicroBlaze e o acelerador HLS foram verificados por simulação RTL e por síntese, mas não executados no \textit{hardware}, pelos motivos discutidos na Seção~\ref{sec:mm_embarcado}.
-\end{itemize}
-
-\subsection{Bases de dados utilizadas}
-
-A Tabela~\ref{tab:bases} resume as bases usadas, seu tamanho e a forma como foram divididas entre treino e teste. A base de bombas do UWA \textit{System Health Lab}, prevista na qualificação, não foi utilizada: os registros de \textit{hits} do próprio MOMEA e a base CWRU cobriram, respectivamente, a aplicação-alvo e a necessidade de uma referência pública.
+Já existiam no Projeto MOMEA os sensores, os pré-amplificadores, a bancada e a plataforma de aquisição contínua (Seção~\ref{sec:mm_antecedentes}). São contribuições desta dissertação o extrator de \textit{hits} e sua avaliação contra o sistema comercial Vallen AMSY-6, a classificação a partir dos registros, a implementação int8 da classificação e a validação na base CWRU. A inferência embarcada foi verificada por simulação RTL e por síntese, mas não executada na placa (Seção~\ref{sec:mm_embarcado}). A Tabela~\ref{tab:bases} resume as bases de dados.
 
 \begin{table}[htbp]
 	\centering
@@ -73,70 +63,178 @@ A Tabela~\ref{tab:bases} resume as bases usadas, seu tamanho e a forma como fora
 	\end{tabular}
 \end{table}
 
-Em nenhuma das validações \textit{hits} ou janelas de uma mesma gravação foram sorteados livremente entre treino e teste como critério principal, porque isso superestima o desempenho, como se mostra nos Capítulos~\ref{chap:resultados} e na literatura \cite{kaufman2012,roberts2017}. O sorteio aparece apenas como referência, para tornar visível o tamanho desse viés.
+Em nenhuma validação o sorteio livre de \textit{hits} ou janelas de uma mesma gravação entre treino e teste é o critério principal, porque superestima o desempenho \cite{kaufman2012,roberts2017}; ele aparece apenas como referência, para tornar visível o tamanho desse viés.
 
 % -------------------------------------------------------------------------------------------------------
 \section{Antecedentes: aquisição contínua no Projeto MOMEA}
 \label{sec:mm_antecedentes}
 
-Na etapa inicial do Projeto MOMEA, foi desenvolvida a plataforma \textbf{MomeaProbe/MomeaCapture}. O MomeaProbe é o \textit{hardware} de aquisição, com dois conversores A/D de 12 bits a 8\,MSa/s e transmissão por USB~3.0 (Figura~\ref{fig:MomeaProbe12USB}). O MomeaCapture é a aplicação em C++/Qt que recebe, compacta, armazena em banco de dados e exibe os sinais (Figura~\ref{fig:MomeaCapture}). Essa infraestrutura permitiu registrar longas séries temporais contínuas, a partir das quais outro membro da equipe treinou redes convolucionais bidimensionais sobre espectrogramas para classificar regimes de cavitação.
+Na etapa inicial do Projeto MOMEA foi desenvolvida a plataforma MomeaProbe/MomeaCapture: dois conversores A/D de 12 bits a 8\,MSa/s com transmissão integral das amostras por USB~3.0, e uma aplicação em C++/Qt que as recebia, compactava (LZMA) e armazenava. Com 16 bits por amostra, o fluxo é de 32\,MB/s, ou cerca de 2,8\,TB/dia. A plataforma sustentou cerca de 28\,MB/s por 12\,h sem perdas, mas exigia \textit{buffers}, compactação e escrita contínuos no computador, e a análise só ocorria depois da gravação (Figura~\ref{fig:MomeaUSB}). Como os eventos de interesse são esparsos, a maior parte desse volume era ruído de fundo.
 
 \begin{figure}[htbp]
 	\centering
-	\begin{subfigure}[b]{0.38\textwidth}
-		\centering
-		\includegraphics[angle=90, width=\linewidth]{figs/PlacasADC_AD9226.jpeg}
-		\caption{Placas de captura MomeaProbe12USB.}
-		\label{fig:MomeaProbe12USB}
-	\end{subfigure}\hfill
-	\begin{subfigure}[b]{0.58\textwidth}
-		\centering
-		\includegraphics[width=\linewidth]{figs/MomeaCapture.png}
-		\caption{Aplicação MomeaCapture.}
-		\label{fig:MomeaCapture}
-	\end{subfigure}
-	\caption{Plataforma de aquisição contínua que antecedeu este trabalho. Fonte: o autor.}
-	\label{fig:momea_usb}
-\end{figure}
-
-O uso dessa plataforma evidenciou o problema que motivou esta dissertação. A 8 a 10\,MSa/s por canal, com 12 a 16 bits por amostra, cada canal produz de 16 a 20\,MB/s, isto é, dezenas de gigabytes por hora. Manter esse fluxo exigiu, no computador, aquisição em múltiplas \textit{threads}, \textit{buffers} circulares, compactação contínua (LZMA) e escrita de alta vazão em disco. Na Figura~\ref{fig:MomeaUSB}, os dados brutos atravessam todo o caminho até a aplicação e só então são segmentados e analisados, de modo que a análise ocorre depois da gravação, e não em tempo real. A maior parte desse volume corresponde a ruído de fundo entre os eventos de interesse, que são esparsos.
-
-\begin{figure}[htbp]
-	\centering
-	\includegraphics[width=0.95\linewidth]{figs/FluxoOperacaoMOMEAUSB}
-	\caption[Fluxo de operação do sistema Momea USB]{Fluxo de operação do sistema MOMEA com aquisição contínua por USB: os dados brutos são compactados, armazenados em um banco temporário e só depois processados pela aplicação. Fonte: o autor.}
+	\includegraphics[width=0.9\linewidth]{figs/FluxoOperacaoMOMEAUSB}
+	\caption[Fluxo de operação do sistema Momea USB]{Fluxo de operação do sistema MOMEA com aquisição contínua por USB: os dados brutos são compactados, armazenados em um banco temporário e só depois processados. Fonte: o autor.}
 	\label{fig:MomeaUSB}
 \end{figure}
 
-A proposta desta dissertação desloca a redução de dados para antes da transmissão (Figura~\ref{fig:MomeaFPGA}): o FPGA detecta e parametriza os \textit{hits}, e apenas os registros seguem para a aplicação, por Ethernet a 100\,Mb/s. O destaque da figura é a diferença em relação ao fluxo USB: o bloco ``FPGA + HIT'' substitui a transmissão contínua de amostras, e a etapa de compactação deixa de ser necessária. As decisões que levaram a essa arquitetura são detalhadas a seguir.
+A proposta desloca a redução de dados para antes da transmissão (Figura~\ref{fig:MomeaFPGA}): o FPGA detecta e parametriza os \textit{hits}, e apenas os registros seguem por Ethernet, sem etapa de compactação.
 
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=0.9\linewidth]{figs/FluxoOperacaoMOMEAFPGA}
-	\caption[Fluxo de operação do sistema Momea FPGA]{Fluxo de operação do sistema MOMEA com extração de \textit{hits} no FPGA. Em relação à Figura~\ref{fig:MomeaUSB}, o bloco ``FPGA + HIT'' (destacado) substitui a transmissão contínua das amostras. Fonte: o autor.}
+	\includegraphics[width=0.85\linewidth]{figs/FluxoOperacaoMOMEAFPGA}
+	\caption[Fluxo de operação do sistema Momea FPGA]{Fluxo de operação do sistema MOMEA com extração de \textit{hits} no FPGA: o bloco ``FPGA + HIT'' (destacado) substitui a transmissão contínua das amostras. Fonte: o autor.}
 	\label{fig:MomeaFPGA}
 \end{figure}
 
 % -------------------------------------------------------------------------------------------------------
 \section{Arquitetura proposta: decisões de projeto}
 \label{sec:mm_decisoes}
-\input{capitulos/importado/v2_decisoes}
+
+\subsection{Redução de dados na borda}
+\label{subsec:reducao_borda}
+
+No dispositivo de aquisição, cada \textit{hit} é reduzido a um registro. Com taxa média de \textit{hits} \(\lambda_{\mathrm{h}}\), registro de \(B_{\mathrm{reg}}\) bytes, \(m\) registros por pacote, sobrecarga \(B_{\mathrm{ov}}\) por pacote e tráfego auxiliar \(R_{\mathrm{aux}}\), a taxa transmitida é
+\begin{equation}
+	R_{\mathrm{borda}} \approx \lambda_{\mathrm{h}}B_{\mathrm{reg}} + \frac{\lambda_{\mathrm{h}}}{m}B_{\mathrm{ov}} + R_{\mathrm{aux}},
+	\label{eq:taxa_borda}
+\end{equation}
+e há redução enquanto \(R_{\mathrm{borda}}\) for menor que a taxa de amostras. A redução não é constante: depende da atividade, do limiar, dos parâmetros temporais e do empacotamento, e pode desaparecer sob ruído intenso. É também uma redução com perda, e não uma compressão: as amostras descartadas não permitem recalcular os descritores com outro limiar ou DDT.
+
+\subsection{Plataforma e partição}
+\label{subsec:plataforma}
+
+Foi selecionado o Artix-7 XC7A35T (20\,800 LUTs, 41\,600 registradores, 50 blocos de BRAM de 36\,Kb e 90 DSP48E1) \cite{xilinx2020ds180}, na placa Arty A7-35T, com 256\,MB de DDR3 e Ethernet 10/100. O caminho por amostra (filtragem, comparação, máquina de estados e acumuladores) é executado na lógica, com latência de \textit{pipeline} fixa; o controle, de baixa taxa, roda em um MicroBlaze com FreeRTOS. Um Zynq-7000 ofereceria um processador ARM integrado \cite{xilinx2018ds190}, mas a complexidade adicional da integração não se justificava para as funções de controle. A comunicação usa UDP, que não garante entrega, ordem nem ausência de duplicação \cite{postel1980udp}; essas propriedades precisam, portanto, ser tornadas observáveis na aplicação.
+
+\subsection{Verificação instrumental e hierarquia de referências}
+\label{subsec:metodologia_validacao}
+\label{v2:subsec:sistema_referencia_experimento}
+
+Distinguem-se a \emph{verificação instrumental} (se a cadeia elétrica e digital implementa os descritores especificados) e a \emph{validação no domínio}, que exige cavitação real. Esta etapa usa estímulos elétricos controlados, e suas conclusões valem para a cadeia posterior ao ponto de injeção. Há quatro níveis de referência: (i) os valores programados no gerador; (ii) a forma de onda medida por um instrumento independente; (iii) os descritores calculados \textit{off-line} a partir dela; e (iv) os descritores dos instrumentos. O AMSY-6 é instrumento de comparação, e não referência primária. Para cada descritor, a aceitação é avaliada contra uma tolerância \(\tau_x\) definida antes da análise:
+\begin{equation}
+	\left|x_{\mathrm{prop}} - x_{\mathrm{ref}}\right| \leq \tau_x .
+	\label{eq:criterio_aceitacao}
+\end{equation}
 
 % -------------------------------------------------------------------------------------------------------
 \section{Implementação do extrator de \textit{hits}}
 \label{sec:mm_implementacao}
-\input{capitulos/importado/v2_implementacao}
+
+A Tabela~\ref{tab:implementacao} resume a versão ensaiada. No domínio analógico, um pré-amplificador próprio, com ganho medido de 34,00\,dB e corte superior em cerca de 2,5\,MHz, adequa o sinal ao conversor AD9226 (2 canais de 12 bits a 10\,MSa/s), cujo zero e fator de escala foram calibrados por canal. Na lógica, um filtro IIR Butterworth passa-baixas de 4ª ordem precede o extrator, que implementa por canal uma máquina de estados \texttt{IDLE}\(\rightarrow\)\texttt{ACTIVE}\(\rightarrow\)\texttt{CLOSING}\(\rightarrow\)\texttt{LOCKOUT}: os descritores são acumulados em \texttt{ACTIVE} até o último cruzamento, o encerramento segue a Equação~\eqref{eq:ddt_amostras} e o \texttt{LOCKOUT} implementa o HLT re-armável; o registro só é emitido ao fim do rearme. Os acumuladores saturam sem retorno a zero, e indicadores marcam saturação do ADC (SAT), rearme (ROVL) e duração máxima (MAXDUR).
+
+Cada \textit{hit} gera uma palavra de 256 bits (32 bytes) com os descritores, o canal e os indicadores; um campo de 64 bits está reservado ao carimbo de tempo, ainda não implementado. As palavras seguem por AXI-Stream e DMA para a DDR3, e o MicroBlaze, com FreeRTOS e lwIP, envia cada uma em um datagrama UDP. Como não há número de sequência, a perda é tornada observável por contadores independentes: \textit{hits} consolidados na lógica (\texttt{HITCNT}), transferências e falhas de envio no \textit{firmware} e registros recebidos no computador, comparados ao fim de cada captura.
+
+\begin{table}[htbp]
+	\centering
+	\small
+	\caption{Principais características da versão ensaiada.}
+	\label{tab:implementacao}
+	\begin{tabular}{L{0.22\textwidth}L{0.70\textwidth}}
+		\toprule
+		\textbf{Bloco} & \textbf{Implementação} \\
+		\midrule
+		Pré-amplificador & 34,00\,dB medidos; \(-3\,\mathrm{dB}\) em \(\approx 2{,}5\,\mathrm{MHz}\) (AEP5 do AMSY-6: 34,22\,dB e \(\approx 4{,}1\,\mathrm{MHz}\)) \\
+		Conversão A/D & AD9226, 2 \(\times\) 12 bits + OTR, 10\,MSa/s, mesmo relógio; \(\approx 3{,}1\)--\(3{,}2\,\mathrm{mV}\) por código \\
+		Filtro digital & Butterworth passa-baixas de 4ª ordem (2 \textit{biquads}, coeficientes Q3.17), corte de 600\,kHz \\
+		Detector & Magnitude em relação ao zero calibrado; HDT, HLT re-armável e duração máxima configuráveis \\
+		Registro & 256 bits: pico (12), contagens (16), subida e duração (24), energia (48), \textit{Signal Strength} (32), canal, SAT, ROVL, MAXDUR; \textit{timestamp} reservado \\
+		Transporte & AXI DMA \(\rightarrow\) DDR3 \(\rightarrow\) MicroBlaze/FreeRTOS/lwIP \(\rightarrow\) UDP, 1 registro por datagrama \\
+		Recursos & 92\,\% das LUTs; temporização fechada em todos os domínios de relógio \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\subsection{Recursos e latência}
+\label{v2:subsec:utilizacao_recursos}
+A versão ensaiada usa 92\,\% das LUTs, depois que a FIFO de saída foi migrada de LUTRAM para BRAM (antes, 125\,\%), e fecha a temporização em todos os domínios de relógio após a inserção de um \textit{pipeline} de 2 estágios na entrada do extrator. Um novo canal replicaria apenas o filtro e o extrator, sem duplicar a infraestrutura compartilhada (DMA, MicroBlaze, Ethernet e controlador de memória). A convenção de término foi verificada por simulação do HDL com dois pulsos separados por \(G\) amostras de silêncio: \(G = N_{\mathrm{DDT}} - 1\) funde os pulsos em um \textit{hit}, e \(G = N_{\mathrm{DDT}}\) ou \(N_{\mathrm{DDT}} + 1\) gera dois, tanto para \(N_{\mathrm{DDT}} = 20\) quanto para 2500. Com HLT de \(N_{\mathrm{HLT}}\) amostras, o segundo pulso é absorvido (ROVL) até \(G = N_{\mathrm{DDT}} + N_{\mathrm{HLT}} - 1\). O tempo morto após o último cruzamento é, portanto, exatamente \(N_{\mathrm{DDT}} + N_{\mathrm{HLT}}\) amostras, que é também a latência mínima de emissão do registro (2,25\,ms com 250/2000\,\(\mu\)s), à qual se somam o \textit{pipeline}, a consulta ao DMA pelo FreeRTOS e a pilha de rede.
 
 % -------------------------------------------------------------------------------------------------------
 \section{Delineamento experimental do extrator}
 \label{sec:mm_delineamento}
-\input{capitulos/importado/v2_delineamento}
+
+O experimento verifica a cadeia posterior ao ponto de injeção e responde a três questões: (i) a capacidade de detectar os estímulos aplicados, sem fragmentação, fusão ou perda; (ii) o erro dos descritores perante uma referência elétrica independente; e (iii) a concordância entre o sistema proposto e o AMSY-6. Ele não reproduz a fonte física, o sensor, o acoplamento nem a propagação estrutural.
+
+\subsection{Montagem e instrumentos}
+\label{subsec:configuracao_experimental}
+\label{v2:subsec:configuracao_experimental}
+
+Os estímulos foram produzidos por um gerador Rigol DG832 (16 bits, até 125\,MSa/s, estabilidade de \(\pm 1\)\,ppm), comandado por \textit{script} em Python via SCPI, e distribuídos por um divisor e cabos coaxiais RG59, cuja resposta foi levantada de 1\,kHz a 35\,MHz. A referência de forma de onda é um osciloscópio Minipa MVB DSO (100\,MHz, 1\,GSa/s, 8 bits, precisão vertical de cerca de 3\,\%), que domina a incerteza da amplitude de referência e, por consequência, a da energia, cuja incerteza relativa é o dobro, cerca de 6\,\%. No AMSY-6 foi usado um canal da placa ASIP-2.
+
+Os dois planos de injeção foram executados em sessões distintas (Tabela~\ref{tab:sessoes}): \emph{posterior} aos pré-amplificadores, com o gerador a 1\,Vpp ligado diretamente à entrada de cada sistema, e \emph{anterior} a eles, com o divisor alimentando o pré-amplificador de 34\,dB de cada sistema em captura simultânea (sessão R1). Os resultados quantitativos da Seção~\ref{sec:res_extrator} referem-se à sessão R1.
+
+\begin{table}[htbp]
+	\centering
+	\small
+	\caption{Sessões executadas (\textit{bursts} registrados de 16\,101 programados, em 50/200/450\,kHz).}
+	\label{tab:sessoes}
+	\begin{tabular}{L{0.14\textwidth}L{0.36\textwidth}L{0.41\textwidth}}
+		\toprule
+		\textbf{Sessão} & \textbf{Configuração} & \textbf{Registrados} \\
+		\midrule
+		06/10/2026 & AMSY-6; sem pré-amplificador & 15\,578 / 15\,698 / 15\,749 \\
+		13/10/2026 & Sistema proposto; sem pré-amplificador & 16\,038 / 16\,083 / 16\,077 \\
+		15/10/2026 (R1) & Ambos, simultâneos; pré-amplificadores de 34\,dB & Proposto: 16\,094 / 16\,092 / 16\,094 \newline AMSY-6: 15\,580 / 15\,716 / 15\,710 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\subsection{Estímulos e matriz experimental}
+\label{subsec:sinais_teste}
+\label{v2:subsec:sinais_teste}
+
+Cada estímulo é um \textit{burst} senoidal de 10 ciclos com envelope retangular, nas frequências de 50, 200 e 450\,kHz (\(T_{\mathrm{b}} = 200\), 50 e \(22{,}2\,\mu\mathrm{s}\)), com amplitude de cerca de 95\,dB\(_{\mathrm{AE}}\) referida à entrada dos pré-amplificadores. Para cada frequência, foram aplicados blocos de 1, 100, 1000, 5000 e 10\,000 \textit{bursts}, cada um em uma janela de 30\,s, com o \textit{burst} \(i\) do bloco de \(N\) disparado em
+\begin{equation}
+	t_i = (i + 0{,}5)\,\frac{30\,\mathrm{s}}{N},
+	\label{eq:instantes_disparo}
+\end{equation}
+o que corresponde a intervalos nominais de 300\,ms a 3\,ms. A ordem foi fixa (frequências em sequência e taxa crescente). O disparo por \textit{software} é assíncrono à grade de 10\,MHz, de modo que a fase relativa à amostragem varia naturalmente. Não foi somado ruído: o fundo é o ruído próprio das cadeias (369 a 414\,\(\mu\)V RMS no AMSY-6), o que dá relação sinal-ruído de cerca de 40\,dB.
+
+\subsection{Configuração pareada}
+\label{subsec:configuracao_pareada}
+
+Os dois sistemas foram configurados tão proximamente quanto suas arquiteturas permitem, com limiar fixo de 80\,dB\(_{\mathrm{AE}}\) (155 códigos no sistema proposto), DDT de 250\,\(\mu\)s e bloqueio de 2000\,\(\mu\)s (HLT no sistema proposto, RAT no AMSY-6). A Tabela~\ref{tab:pareada} classifica cada parâmetro como equivalente, assemelhado ou não comparável; a comparação é de concordância em aspectos específicos, e não uma calibração de um sistema pelo outro.
+
+\begin{table}[htbp]
+	\centering
+	\small
+	\caption{Configuração pareada e classificação dos parâmetros.}
+	\label{tab:pareada}
+	\label{v2:qua:configuracao_pareada_secao5}
+	\begin{tabular}{L{0.18\textwidth}L{0.30\textwidth}L{0.24\textwidth}L{0.18\textwidth}}
+		\toprule
+		\textbf{Parâmetro} & \textbf{Sistema proposto} & \textbf{AMSY-6} & \textbf{Classificação} \\
+		\midrule
+		Pré-amplificador & 34,00\,dB; \(\approx 2{,}5\,\mathrm{MHz}\) & AEP5; 34,22\,dB; \(\approx 4{,}1\,\mathrm{MHz}\) & Assemelhado \\
+		Conversão A/D & 12 bits, 10\,MSa/s & 16 bits, 40\,MS/s; descritores a 10\,MHz & Assemelhado \\
+		Banda & Passa-baixas digital de 600\,kHz & Analógico + FIR + digital & Assemelhado \\
+		Sinal de decisão & \(|x - z_{\mathrm{c}}|\); contagens no semiciclo positivo & Contagens no limiar positivo & Assemelhado \\
+		Limiar & 80\,dB\(_{\mathrm{AE}}\), fixo & 80\,dB\(_{\mathrm{AE}}\), fixo & Equivalente \\
+		DDT & 250\,\(\mu\)s (2500 amostras) & 250\,\(\mu\)s & Equivalente \\
+		Rearme & HLT re-armável, ROVL & RAT, indicador R & Equivalente \\
+		Cascatas & Ausentes & Presentes & Não comparável \\
+		Duração máxima & 100\,ms, MAXDUR & \(\approx 100\,\mathrm{ms}\) & Equivalente \\
+		Energia & \(\Sigma u^2\) até \(n_\ell\), em eu & \textit{True Energy}, em eu & Assemelhado \\
+		Base temporal & Hora de chegada no computador & Tempo de chegada & Não comparável \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\subsection{Associação e métricas}
+\label{subsec:metricas_comparacao}
+\label{v2:subsec:metricas_comparacao}
+
+Sem carimbo de tempo de \textit{hardware}, a associação entre estímulos e registros foi feita por bloco: contagem de registros por bloco, \textit{hits} com indicador de rearme (estímulo absorvido) e \textit{hits} fundidos (contagens múltiplas de 10). A proporção de detecção é \(\widehat{P}_{\mathrm{D}} = N_{\ge 1}/N_{\mathrm{evt}}\), e as perdas de comunicação são separadas das falhas de detecção pela comparação entre os contadores da lógica e os registros recebidos. Quando nenhuma perda é observada em \(N\) registros, o limite superior unilateral de confiança \(1-\alpha\) para a probabilidade de perda é
+\begin{equation}
+	p_{\mathrm{U}} = 1 - \alpha^{1/N} \approx \frac{-\ln\alpha}{N},
+	\label{v2:eq:limite_zero_falhas}
+\end{equation}
+ou cerca de \(3/N\) para \(\alpha = 0{,}05\). A concordância dos descritores é avaliada por diferenças pareadas e limites de Bland--Altman calculados por condição, sem tratar pulsos repetidos do mesmo bloco como observações independentes \cite{bland1986,bland1999}, e apenas para descritores equivalentes ou assemelhados. As tolerâncias iniciais \(\tau_x\) partem da resolução e da incerteza de cada descritor: \(\pm\)(1 LSB + incerteza de ganho) em amplitude, \(\pm 2\) amostras em duração, \(\pm 1\) em contagens e \(\pm 6\,\%\) em energia, com o orçamento de incerteza estruturado segundo o JCGM~100 \cite{jcgm2008}.
 
 % -------------------------------------------------------------------------------------------------------
 \section{Classificação das condições de operação de uma bomba}
 \label{sec:mm_bomba}
 
-Esta seção descreve o uso dos registros de \textit{hits} do MOMEA para reconhecer as condições de operação de uma bomba ensaiada em bancada. O objetivo é verificar se os descritores extraídos na borda bastam para classificar a condição e, sobretudo, com que confiança o resultado se generaliza para condições não vistas no treino. O modelo é treinado com os \emph{descritores} calculados a partir dos registros de \textit{hits}, e não com o sinal bruto: a cadeia proposta não transmite as amostras, de modo que o classificador precisa funcionar com o que o FPGA entrega.
+Esta seção descreve o uso dos registros de \textit{hits} do MOMEA para reconhecer as condições de operação de uma bomba em bancada. O modelo é treinado com os descritores calculados a partir dos registros, e não com o sinal bruto, porque a cadeia proposta não transmite as amostras.
 
 \input{capitulos/importado/mlp_metodos}
 
@@ -144,7 +242,7 @@ Esta seção descreve o uso dos registros de \textit{hits} do MOMEA para reconhe
 \section{Inferência embarcada e verificação por simulação}
 \label{sec:mm_embarcado}
 
-Nos ensaios da Seção~\ref{sec:mm_bomba}, a classificação ocorre no computador. Esta seção descreve como a mesma cadeia (descritores por janela e MLP) foi levada para o FPGA. Como o acesso às placas foi encerrado antes desta etapa, toda a verificação foi feita por simulação, com critérios de aceitação explícitos em cada nível, desde o modelo de referência em Python até a simulação RTL do processador executando o binário final.
+Esta seção descreve como a cadeia de descritores e MLP foi levada para o FPGA. Como o acesso às placas foi encerrado antes desta etapa, a verificação foi feita por simulação, com critérios de aceitação explícitos em cada nível, do modelo de referência em Python à simulação RTL do processador executando o binário final.
 
 \input{capitulos/importado/sim_metodos}
 
@@ -158,11 +256,4 @@ Nos ensaios da Seção~\ref{sec:mm_bomba}, a classificação ocorre no computado
 \section{Ferramentas e ambiente de desenvolvimento}
 \label{sec:mm_ferramentas}
 
-O \textit{hardware} do extrator usa a placa Arty A7-35T, com o FPGA Artix-7 XC7A35T \cite{xilinx2020ds180}. O desenvolvimento usou o ecossistema da AMD/Xilinx, versão 2022.2:
-\begin{itemize}
-	\item \textbf{Vivado Design Suite}: síntese, implementação, integração de blocos (\textit{IP Integrator}) e simulação lógica (\textit{Vivado Simulator}, xsim). As métricas de utilização de recursos (LUTs, \textit{flip-flops}, BRAMs e DSPs) e de temporização foram obtidas dessa ferramenta \cite{amd_ug900};
-	\item \textbf{Vitis HLS}: síntese de alto nível do núcleo da MLP a partir de C, com simulação C, cossimulação C/RTL e exportação como IP. Diretivas como \textit{pipeline} e desenrolamento de laços controlam o compromisso entre latência e área \cite{amd_ug1399,cong2011hls};
-	\item \textbf{Vitis} e \texttt{mb-gcc}: compilação do \textit{firmware} e dos programas da MicroBlaze \cite{amd_ug984};
-	\item \textbf{Python 3}, com \texttt{numpy}, \texttt{pandas}, \texttt{scipy}, \texttt{matplotlib} e \texttt{scikit-learn} \cite{pedregosa2011}: análise dos registros, treinamento e validação dos modelos, exportação dos pesos e geração das figuras.
-\end{itemize}
-Os \textit{scripts} de cada etapa estão organizados nos repositórios do projeto e permitem reproduzir os resultados do Capítulo~\ref{chap:resultados} a partir dos dados brutos.
+O extrator usa a placa Arty A7-35T, com o FPGA Artix-7 XC7A35T \cite{xilinx2020ds180}, e o desenvolvimento usou o ecossistema da AMD/Xilinx, versão 2022.2: o Vivado, para síntese, implementação, integração de blocos e simulação lógica (xsim) \cite{amd_ug900}; o Vitis HLS, para a síntese do núcleo da MLP a partir de C, com simulação C e cossimulação C/RTL \cite{amd_ug1399}; e o Vitis com \texttt{mb-gcc}, para o \textit{firmware} da MicroBlaze \cite{amd_ug984}. A análise dos registros, o treinamento e a validação dos modelos e as figuras usaram Python 3 com \texttt{numpy}, \texttt{pandas}, \texttt{scipy}, \texttt{matplotlib} e \texttt{scikit-learn} \cite{pedregosa2011}.

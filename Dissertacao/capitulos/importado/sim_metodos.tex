@@ -1,42 +1,11 @@
 % Gerado por ferramentas/importar_relatorios.py a partir de MLP/ARTIGO_SIM_EMBARCADO-10.11.2026/ARTIGO_SIM_EMBARCADO.tex.
-% Revisado à mão na dissertação: edite este arquivo, não a fonte.
-\subsection{Fundamentos}
-\label{sim:sec:fundamentos}
-
-\subsubsection{Descritores de EA por janela}
-
-Cada \textit{hit} é descrito por grandezas clássicas de EA: amplitude de pico em dB\(_{\mathrm{AE}}\) (referida a \(1\,\mu\)V na entrada do pré-amplificador), contagens de cruzamento do limiar, tempo de subida, duração e energia \cite{unnthorsson2013}. O estudo da Seção~\ref{sec:mm_bomba} agregou os \textit{hits} de cada canal em janelas de 5\,s e calculou 18 descritores por canal (36 no total): taxa de \textit{hits}, frações de \textit{hits} saturados e truncados pela duração máxima, energia por segundo, frequência média e, apenas para os \textit{hits} não truncados, a média e os percentis de amplitude, energia, duração, contagens, tempo de subida, frequência média e razão RA (tempo de subida sobre amplitude) \cite{ohno2010} (Seção~\ref{sec:mm_bomba}). Os percentis seguem a definição por interpolação linear entre estatísticas de ordem, a mesma do \texttt{numpy} \cite{hyndman1996}. Descritores indefinidos, como os percentis de um canal sem \textit{hits}, valem NaN e são imputados pela mediana de treino.
-
-\subsubsection{Quantização inteira de redes neurais}
-
-A inferência inteira representa pesos e ativações por inteiros de 8 bits associados a fatores de escala reais, acumula produtos em 32 bits e converte o acumulador para a escala da camada seguinte por uma multiplicação inteira e um deslocamento \cite{jacob2018,krishnamoorthi2018}. Com escala simétrica por camada, sem ponto zero, uma camada densa com ReLU fica
-\begin{equation}
-	\begin{gathered}
-		a_o = \sum_{i} q^{x}_{i}\, q^{W}_{io} + q^{b}_{o}, \qquad
-		M = \mathrm{round}\!\left(2^{31}\,\frac{s_x\, s_W}{s_y}\right), \\
-		q^{y}_{o} = \min\!\left(127,\ \left\lfloor \frac{\max(a_o, 0)\, M + 2^{30}}{2^{31}} \right\rfloor\right),
-	\end{gathered}
-	\label{sim:eq:requant}
-\end{equation}
-em que \(s_x\), \(s_W\) e \(s_y\) são as escalas da entrada, dos pesos e da saída, e o viés é quantizado na escala \(s_x s_W\). A quantização após o treino, sem retreino, é a forma mais simples e costuma custar pouca exatidão em redes pequenas, desde que as escalas de ativação sejam calibradas em dados representativos \cite{nagel2021}. A Equação~\eqref{sim:eq:requant} é inteiramente determinística, o que permite exigir igualdade bit a bit entre implementações.
-
-\subsubsection{Síntese de alto nível e simulação}
-
-O Vitis HLS traduz uma função em C/C++ para RTL, guiado por diretivas de \textit{pipeline}, desenrolamento e interface \cite{amd_ug1399}. O fluxo inclui a simulação C (csim), que executa o testbench sobre o código-fonte, e a cossimulação C/RTL (cosim), que executa o mesmo testbench sobre o RTL gerado em um simulador lógico e compara as saídas. O Vivado permite ainda simular um sistema completo com processador MicroBlaze, carregando o programa (ELF) na memória local para a simulação comportamental \cite{amd_ug900,amd_ug984}. Essa é a forma mais fiel de medir ciclos sem a placa: o processador simulado executa exatamente o binário que iria para o hardware.
-
-% =======================================================================================================
-\subsection{Sistema e modelo}
+% Revisado à mão na dissertação (versão enxuta): edite este arquivo, não a fonte.
+\subsection{Modelos e cadeia embarcada}
 \label{sim:sec:sistema}
 
-\subsubsection{Dados e modelos de referência}
+Os dados são as 56 corridas da Seção~\ref{sec:mm_bomba}; após a harmonização do limiar (canal A \(\ge 65{,}12\,\mathrm{dB_{AE}}\), canal B \(\ge 54{,}99\,\mathrm{dB_{AE}}\)), restam 281\,595 \textit{hits} em 3\,540 janelas de 5\,s. As duas redes têm os hiperparâmetros daquela seção: um regressor da frequência (36-64-32-1, 4\,481 parâmetros) e um classificador das válvulas (36-64-32-7, 4\,679 parâmetros). Para a implantação, ambas foram retreinadas com todas as janelas; o desempenho fora da amostra continua sendo o da Seção~\ref{sec:res_bomba}, e as acurácias ``no treino'' citadas adiante servem apenas para comparar implementações entre si.
 
-Os dados são as 56 corridas do ensaio da bomba (8 frequências do motor, de 20 a 90\,Hz, \(\times\) 7 configurações das válvulas de recalque e sucção), registradas pelo MOMEA com dois canais, ganho de 34\,dB, HDT de \(250\,\mu\)s, HLT de 2\,ms e duração máxima de 100\,ms (Seção~\ref{sec:mm_bomba}). Após a harmonização do limiar (canal A \(\ge 65{,}12\,\mathrm{dB_{AE}}\), canal B \(\ge 54{,}99\,\mathrm{dB_{AE}}\)), restam 281\,595 \textit{hits} em 3\,540 janelas de 5\,s.
-
-As duas redes são as da Seção~\ref{sec:mm_bomba}, com os mesmos hiperparâmetros (ReLU, Adam, \(L_2 = 10^{-3}\), parada antecipada) \cite{pedregosa2011,prechelt1998}: um regressor da frequência (36-64-32-1, 4\,481 parâmetros) e um classificador da configuração das válvulas (36-64-32-7, 4\,679 parâmetros). Para a implementação, ambas foram retreinadas com todas as janelas; esses são os modelos de implantação. O desempenho fora da amostra é o da Seção~\ref{sec:res_bomba} e não muda com o retreino. Os números de acurácia ``no treino'' citados adiante servem apenas para comparar implementações entre si, nunca como estimativa de desempenho.
-
-\subsubsection{Cadeia embarcada}
-
-A Figura~\ref{sim:fig:cadeia} mostra a cadeia proposta. A lógica do MOMEA continua produzindo os registros de \textit{hit}. A MicroBlaze converte cada registro em unidades físicas, aplica o limiar harmonizado e acumula o \textit{hit} na janela corrente. A cada 5\,s, fecha a janela, calcula os 36 descritores, padroniza e quantiza a entrada e executa as duas redes, em software ou no acelerador HLS. O resultado, uma frequência em Hz e uma classe de válvulas, pode seguir em um datagrama de estado junto com os registros.
+Na cadeia embarcada (Figura~\ref{sim:fig:cadeia}), a lógica do MOMEA continua produzindo os registros. A MicroBlaze converte cada registro em unidades físicas, aplica o limiar harmonizado e acumula o \textit{hit} na janela corrente; a cada 5\,s, calcula os 36 descritores, padroniza e quantiza a entrada e executa as duas redes, em \textit{software} ou no acelerador HLS.
 
 \begin{figure}[htbp]
 	\centering
@@ -61,17 +30,14 @@ A Figura~\ref{sim:fig:cadeia} mostra a cadeia proposta. A lógica do MOMEA conti
 		\draw[seta] (mbn) -- (out);
 		\draw[seta] (hls.south) to[out=-150, in=-30] (out.south);
 	\end{tikzpicture}
-	\caption{Cadeia embarcada. Em azul, lógica dedicada; em laranja, software na MicroBlaze. O núcleo int8 tem uma única fonte em C, que compila para a MicroBlaze ou é sintetizada como IP pelo Vitis HLS.}
+	\caption{Cadeia embarcada. Em azul, lógica dedicada; em laranja, \textit{software} na MicroBlaze. O núcleo int8 tem uma única fonte em C, que compila para a MicroBlaze ou é sintetizada como IP pelo Vitis HLS.}
 	\label{sim:fig:cadeia}
 \end{figure}
 
-% =======================================================================================================
 \subsection{Implementação}
 \label{sim:sec:implementacao}
 
-\subsubsection{Conversão dos registros e descritores}
-
-O registro traz o pico em códigos do conversor (\(|x - z_c|\)), as contagens, o tempo de subida e a duração em amostras de 10\,MSa/s e a energia bruta \(\sum u^2\) em 48 bits. Com o fator de calibração do canal \(v_c\) (volts por código) e o ganho do pré-amplificador \(G = 10^{34/20}\), a conversão é
+\paragraph{Conversão e descritores.} O registro traz o pico em códigos (\(|x - z_c|\)), as contagens, o tempo de subida e a duração em amostras e a energia bruta \(\sum u^2\) em 48 bits. Com o fator de calibração do canal \(v_c\) (volts por código) e o ganho \(G = 10^{34/20}\),
 \begin{equation}
 	V_p = p\, v_c, \qquad
 	A = 20 \log_{10}\frac{V_p}{G \cdot 1\,\mu\mathrm{V}}, \qquad
@@ -79,30 +45,25 @@ O registro traz o pico em códigos do conversor (\(|x - z_c|\)), as contagens, o
 	t = \frac{n}{f_s},
 	\label{sim:eq:conversao}
 \end{equation}
-com \(E\) em unidades de energia (eu) e \(f_s = 10\,\)MSa/s. Os fatores \(1/(G \cdot 1\,\mu\mathrm{V})\) e \((v_c/G)^2/(f_s \cdot 10^{-14})\) são calculados uma vez por canal, de modo que cada \textit{hit} custa um \(\log_{10}\) na conversão.
+com \(E\) em eu e \(f_s = 10\,\)MSa/s; os fatores constantes são calculados uma vez por canal. Cada \textit{hit} atualiza contagens e somas da janela e, se não foi truncado, guarda sete valores para os percentis. No modo \textbf{exato}, esses valores ficam em vetores de até 1\,024 posições por canal, ordenados por \textit{heapsort} ao fechar a janela e interpolados como no \texttt{numpy} \cite{hyndman1996} (65,6\,kB); no modo \textbf{histograma}, cada variável tem um histograma de largura fixa (10,3\,kB e custo constante por \textit{hit}), alternativa para taxas altas de \textit{hits}.
 
-Ao entrar na janela, o \textit{hit} atualiza contagens (total, saturados, truncados) e somas (energia, amplitude). Se não foi truncado pela duração máxima, contribui também com sete valores para os percentis: amplitude e os logaritmos de energia, duração, contagens, tempo de subida e RA, além da frequência média. Há dois modos de guardar esses valores:
-\begin{itemize}
-	\item \textbf{exato}: os valores ficam em vetores de até 1\,024 posições por canal; ao fechar a janela, cada vetor é ordenado por \textit{heapsort} (sem recursão nem memória extra) e o percentil é interpolado como no \texttt{numpy}. Ocupa 65,6\,kB para os dois canais;
-	\item \textbf{histograma}: cada variável tem um histograma de largura fixa (por exemplo, amplitude de 40 a 110\,dB em passos de 0,25\,dB, logaritmos em passos de 0,025 a 0,05), com 2\,564 posições de 16 bits por canal. O percentil supõe distribuição uniforme dentro de cada classe. Ocupa 10,3\,kB, independentemente da taxa de \textit{hits}, e custa tempo constante por \textit{hit}.
-\end{itemize}
-Os dados atuais têm no máximo 50 \textit{hits} por canal por janela, porque o rearme do detector limita a cadência (Seção~\ref{sec:mm_bomba}); o modo exato basta para eles. O histograma é a alternativa para taxas altas, como as de 333 \textit{hits}/s por canal já registradas sem perda pelo MOMEA em ensaio elétrico.
+\paragraph{Quantização.} A entrada é padronizada em ponto flutuante, saturada em \(\pm 8\) desvios e quantizada como \(q^x = \mathrm{rint}(z \cdot 127/8)\). Os pesos usam escala simétrica por camada (\(s_W = \max|W|/127\)), e as escalas das ativações foram calibradas no percentil 99,9 do máximo por janela. Cada camada densa com ReLU acumula em 32 bits e requantiza por uma multiplicação inteira e um deslocamento \cite{jacob2018,krishnamoorthi2018}:
+\begin{equation}
+	\begin{gathered}
+		a_o = \sum_{i} q^{x}_{i}\, q^{W}_{io} + q^{b}_{o}, \qquad
+		M = \mathrm{round}\!\left(2^{31}\,\frac{s_x\, s_W}{s_y}\right), \\
+		q^{y}_{o} = \min\!\left(127,\ \left\lfloor \frac{\max(a_o, 0)\, M + 2^{30}}{2^{31}} \right\rfloor\right),
+	\end{gathered}
+	\label{sim:eq:requant}
+\end{equation}
+em que \(s_x\), \(s_W\) e \(s_y\) são as escalas da entrada, dos pesos e da saída. A camada de saída mantém o acumulador de 32 bits, convertido em Hz (regressor) ou usado no \(\arg\max\) (classificador). Como a Equação~\eqref{sim:eq:requant} é determinística, pode-se exigir igualdade bit a bit entre implementações; para isso, a quantização da entrada foi emulada em Python com as mesmas operações em precisão simples e o mesmo arredondamento do C \cite{goldberg1991,ieee754}, e o C foi compilado sem contração em FMA.
 
-\subsubsection{Quantização}
+\paragraph{Núcleo int8 com fonte única.} As duas redes são escritas como laços de multiplicação e acumulação, com pesos em vetores constantes gerados do modelo treinado. O mesmo arquivo compila com \texttt{gcc} no computador, com \texttt{mb-gcc} para a MicroBlaze e no Vitis HLS como função de topo. No HLS, cada laço interno tem \textit{pipeline} com intervalo de iniciação 1, os pesos viram ROMs e a interface é AXI4-Lite; a escolha privilegia área, pois uma decisão a cada 5\,s não justifica paralelismo.
 
-A imputação, a padronização e a quantização da entrada são feitas em ponto flutuante de 32 bits: \(z = (x - \mu)\,\sigma^{-1}\), saturado em \(\pm 8\) desvios, e \(q^x = \mathrm{rint}(z\, \cdot 127/8)\). Os pesos usam escala simétrica por camada (\(s_W = \max|W|/127\)) e as escalas das ativações ocultas foram calibradas no percentil 99,9 do máximo por janela, na rede em ponto flutuante. A requantização segue a Equação~\eqref{sim:eq:requant}, com \(M < 2^{31}\) e deslocamento de 31 bits. A camada de saída mantém o acumulador de 32 bits, convertido em Hz por uma multiplicação e uma soma (regressor) ou usado diretamente na decisão por \(\arg\max\) (classificador).
-
-Para que a igualdade bit a bit fosse um critério alcançável, a quantização da entrada foi emulada em Python com as mesmas operações em precisão simples e o mesmo arredondamento (metade para par) do C, e os literais de ponto flutuante dos cabeçalhos gerados reproduzem exatamente os valores de 32 bits \cite{goldberg1991,ieee754}. O C foi compilado sem contração de multiplicação e soma em FMA (\texttt{-ffp-contract=off}).
-
-\subsubsection{Núcleo int8 com fonte única}
-
-O núcleo implementa as duas redes em sequência, com as camadas escritas como laços de multiplicação e acumulação. Pesos e vieses são vetores constantes gerados a partir do modelo treinado. O mesmo arquivo compila com \texttt{gcc} no computador, com \texttt{mb-gcc} para a MicroBlaze e no Vitis HLS como função de topo. Para o HLS, cada laço interno tem \textit{pipeline} com intervalo de iniciação 1 (uma multiplicação-acumulação por ciclo), os pesos viram ROMs, e entradas, saídas e controle são expostos em AXI4-Lite. Essa escolha privilegia área sobre latência: uma decisão a cada 5\,s não justifica paralelismo.
-
-% =======================================================================================================
-\subsection{Metodologia de verificação por simulação}
+\subsection{Verificação por simulação}
 \label{sim:sec:verificacao}
 
-A verificação foi organizada em seis níveis, cada um com sua referência e seu critério de aceitação (Tabela~\ref{sim:tab:niveis}). Os níveis V1 a V3 usam todos os dados disponíveis; V4 e V5 usam subconjuntos, porque a simulação RTL é lenta.
+A verificação foi organizada em seis níveis, cada um com sua referência e seu critério de aceitação (Tabela~\ref{sim:tab:niveis}). Os níveis V1 a V3 usam todos os dados; V4 e V5 usam subconjuntos, porque a simulação RTL é lenta.
 
 \begin{table}[htbp]
 	\centering
@@ -115,22 +76,12 @@ A verificação foi organizada em seis níveis, cada um com sua referência e se
 		\midrule
 		V0 & Exportação do modelo & Rede em ponto flutuante reconstruída a partir dos pesos exportados, contra o \texttt{scikit-learn} & Diferença numérica desprezível; classes iguais \\
 		V1 & Inferência em C no PC & 3\,540 janelas; float32 contra Python e int8 contra a emulação inteira & int8 bit a bit; float32 com diferença \(< 10^{-2}\)\,Hz \\
-		V2 & Cadeia completa no PC & 281\,595 \textit{hits} \(\to\) descritores em C \(\to\) MLP int8, contra \texttt{janelas\_descritores.csv} e as saídas int8 do Python & Erro normalizado \(\le 10^{-3}\); NaN idênticos; mesma classe e nível \\
+		V2 & Cadeia completa no PC & 281\,595 \textit{hits} \(\to\) descritores em C \(\to\) MLP int8, contra os descritores e as saídas int8 do Python & Erro normalizado \(\le 10^{-3}\); NaN idênticos; mesma classe e nível \\
 		V3 & Núcleo HLS & csim e cosim C/RTL (Verilog, xsim) com 256 janelas & Acumuladores e classe idênticos \\
 		V4 & Implementação do IP & Síntese e roteamento fora de contexto no XC7A35T, 100\,MHz & Temporização atendida \\
-		V5 & Programa na MicroBlaze & Simulação RTL do processador executando o ELF final; até 2 janelas reais (163 \textit{hits}) e 2 vetores para a MLP & Resultados idênticos aos da execução no PC; ciclos medidos \\
+		V5 & Programa na MicroBlaze & Simulação RTL do processador executando o ELF final; até 2 janelas reais (163 \textit{hits}) e 2 vetores para a MLP & Resultados idênticos aos do PC; ciclos medidos \\
 		\bottomrule
 	\end{tabular}
 \end{table}
 
-\subsubsection{Simulação RTL da MicroBlaze}
-
-O nível V5 é o que substitui a medição em placa. Um sistema mínimo foi montado por \textit{script} no Vivado 2022.2 para a mesma peça do MOMEA (xc7a35ticsg324-1L): MicroBlaze v11 com \textit{pipeline} de cinco estágios, sem caches e sem depuração, com \textit{barrel shifter}, multiplicador de 64 bits, divisor e instruções de comparação de padrões; 128\,kB de memória local (LMB) em BRAM; e um AXI GPIO de 32 bits. Foram simuladas duas configurações, sem FPU e com FPU estendida (conversões e raiz quadrada).
-
-O programa de teste escreve uma marca no GPIO antes e depois de cada etapa: processar os \textit{hits} de uma janela, fechar a janela e executar a MLP. O testbench registra o ciclo de clock de cada mudança do GPIO, e a diferença entre marcas dá os ciclos da etapa, incluindo a escrita no GPIO (alguns ciclos). Ao fim de cada janela, o programa escreve também a classe, os 24 bits menos significativos do acumulador de frequência e o número de descritores fora da tolerância. A mesma fonte, compilada para o computador, imprime essas marcas, e a sequência simulada tem de ser idêntica à do computador. Cada ELF foi compilado em \textit{little-endian} com as opções de instrução da configuração (por exemplo, \texttt{-mxl-multiply-high} e, com FPU, \texttt{-mhard-float}), convertido pelo Vivado na imagem da BRAM e simulado em xsim a partir de um único \textit{snapshot} elaborado por configuração, sem instrumentação de depuração.
-
-A simulação RTL de um processador completo é lenta, da ordem de milhares de ciclos por segundo. Por isso, a carga foi reduzida ao necessário para medir custos que são praticamente determinísticos: com FPU, duas janelas reais (163 \textit{hits}) para a cadeia e dois vetores para a MLP; sem FPU, em que cada operação de ponto flutuante é emulada e a simulação é muito mais longa, a primeira dessas janelas (81 \textit{hits}) e o primeiro vetor. A correção sobre todas as janelas já foi estabelecida nos níveis V1 e V2 com o mesmo código-fonte; o nível V5 confirma que o binário compilado para o processador se comporta igual e mede seu custo.
-
-Como a memória é local e de um ciclo, sem caches nem DDR, e não há interrupções nem a pilha de rede concorrendo, os ciclos medidos representam o melhor caso do código. No firmware real, com a recepção dos registros e o UDP, o tempo de parede será maior.
-
-% =======================================================================================================
+O nível V5 substitui a medição em placa. Um sistema mínimo foi montado no Vivado 2022.2 para a mesma peça do MOMEA (xc7a35ticsg324-1L): MicroBlaze v11 com \textit{pipeline} de cinco estágios, sem caches, com \textit{barrel shifter}, multiplicador e divisor, 128\,kB de memória local em BRAM e um GPIO de 32 bits; foram simuladas as configurações sem FPU e com FPU estendida \cite{amd_ug984}. O programa escreve uma marca no GPIO antes e depois de cada etapa (processar os \textit{hits}, fechar a janela, executar a MLP), e o testbench registra o ciclo de cada mudança; ao fim de cada janela, escreve também a classe e parte do acumulador, e a sequência simulada tem de ser idêntica à do computador \cite{amd_ug900}. Como a memória é local e não há interrupções nem pilha de rede, os ciclos medidos são o melhor caso do código; no \textit{firmware} real, o tempo de parede será maior.

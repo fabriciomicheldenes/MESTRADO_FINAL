@@ -1,59 +1,35 @@
 % =======================================================================================================
-% Capítulo 1 - Introdução (dissertação)
+% Capítulo 1 - Introdução (versão enxuta)
 % Convenção de siglas: na primeira ocorrência, nome em português, termo em inglês (quando houver) e
-% sigla; depois, só a sigla. Ex.: Emissão Acústica (EA), Aprendizado de Máquina (AM),
-% Rede Neural Multicamadas (Multilayer Perceptron, MLP).
+% sigla; depois, só a sigla.
 % =======================================================================================================
 
-\section{Formulação do problema}
+\section{Problema e motivação}
 \label{sec:formulacao}
-
-A detecção em estágio inicial de falhas em equipamentos industriais é essencial para assegurar a integridade dos ativos, prolongar a vida útil dos componentes mecânicos, reduzir custos operacionais e prevenir paradas inesperadas \cite{mba2006development}. Dentre esses equipamentos, as bombas hidráulicas se sobressaem pela ampla utilização na indústria e em sistemas de abastecimento, nos quais desempenham papel central no transporte de fluidos \cite{liu2023review}.
-
-Entre os fenômenos que comprometem a eficiência e a confiabilidade das bombas centrífugas, a cavitação é um dos mais relevantes. Ela ocorre quando a pressão estática em uma região do escoamento cai abaixo da pressão de vapor do líquido na temperatura de operação. Formam-se então bolhas de vapor que, ao migrarem para zonas de pressão mais elevada, colapsam e liberam energia de forma intensa e localizada \cite{brennen1995}. Os impactos repetidos causam erosão, trincas e desgaste superficial no impulsor e degradam a curva característica de vazão.
-
-Além dos danos mecânicos diretos, a cavitação gera ruído e vibração elevados, o que amplia o risco de falha. Por isso, a detecção e o monitoramento desse fenômeno são um problema de relevância científica e tecnológica, com implicações diretas na segurança dos sistemas de bombeamento e na economia industrial \cite{liu2023review}.
-
-A detecção por meios não invasivos tem importância particular, porque não interrompe a operação nem exige desmontagens. Técnicas baseadas em \textbf{Emissão Acústica (EA)} têm-se mostrado promissoras: elas captam as ondas elásticas geradas pelo colapso de bolhas e pela erosão incipiente e oferecem elevada sensibilidade já nas fases iniciais da falha \cite{Neill1997Detection,Alfayez2005ndt,FernandezOsete2024}. Essa sensibilidade tem um custo: os sinais de EA ocupam a faixa de dezenas de quilohertz a cerca de 1\,MHz e precisam ser amostrados a vários megahertz, o que produz volumes de dados muito maiores que os de vibração \cite{grosse2008acoustic}.
-
-\section{Motivação e justificativa}
 \label{sec:motivacao}
 
-O Projeto MOMEA (Monitoramento Online de Rotores de Turbinas pelo Método de Emissão Acústica), conduzido pelo Itaipu Parquetec em parceria com a Itaipu Binacional, busca desenvolver soluções para o monitoramento da cavitação e para a identificação de regiões propensas à formação de trincas em rotores de turbinas hidráulicas. Os métodos tradicionais de monitoramento dependem de inspeções físicas ou da interpretação especializada de sinais, o que limita a detecção precoce. Abordagens de Aprendizado de Máquina (AM) permitem analisar automaticamente os dados de sensores instalados em campo e identificar padrões anormais antes que se tornem críticos \cite{manikandan2023vibration,liu2023review}.
+A cavitação é um dos fenômenos que mais comprometem bombas centrífugas e turbinas hidráulicas. Quando a pressão local cai abaixo da pressão de vapor do líquido, formam-se bolhas que colapsam ao atingir regiões de pressão mais alta, causando erosão, trincas, ruído e perda de desempenho \cite{brennen1995,liu2023review}. Detectá-la cedo, sem interromper a operação, é relevante para a segurança e para a manutenção preditiva \cite{mba2006development}.
 
-A detecção de falhas por meio de sinais baseia-se na observação de que a cavitação altera as características acústicas, vibracionais e de pressão do escoamento. Sensores instalados em diferentes pontos da bomba registram essas variações, e algoritmos de AM e de Aprendizado Profundo (\textit{Deep Learning}, DL) extraem delas atributos relevantes para classificar o estado do equipamento \cite{liu2023review,lecun2015deep}.
+A Emissão Acústica (EA) é uma técnica adequada a essa tarefa: ela capta as ondas elásticas geradas pelo colapso das bolhas e pela erosão incipiente e é sensível já nas fases iniciais da falha \cite{Neill1997Detection,Alfayez2005ndt,FernandezOsete2024}. Essa sensibilidade tem um custo. Os sinais de EA ocupam a faixa de dezenas de quilohertz a cerca de 1\,MHz e precisam ser amostrados a vários megahertz \cite{grosse2008acoustic}. No Projeto MOMEA (Monitoramento Online de Rotores de Turbinas pelo Método de Emissão Acústica), do Itaipu Parquetec e da Itaipu Binacional, a aquisição contínua a 8\,MSa/s por canal produziu dezenas de gigabytes por hora e exigiu compactação e gravação contínuas no computador, com a análise feita só depois da gravação (Seção~\ref{sec:mm_antecedentes}).
 
-Levar esse diagnóstico para junto da máquina, porém, esbarra no volume de dados. Na etapa inicial do Projeto MOMEA, a aquisição contínua a 8\,MSa/s por canal produziu dezenas de gigabytes por hora e exigiu, no computador, compactação contínua e escrita de alta vazão, com a análise feita apenas depois da gravação (Seção~\ref{sec:mm_antecedentes}). A literatura de sistemas embarcados de EA aponta o mesmo problema e a mesma direção de solução. \citeonline{kang2015} implementaram em FPGA um sistema multinúcleo para diagnosticar rolamentos em tempo real a partir de sinais de EA em taxas de ultrassom; \citeonline{wirtz2018} desenvolveram um sistema de medição de EA de baixo custo baseado em FPGA, que processa os dados em tempo real para controlar um processo; e \citeonline{toumi2022fpga} embarcaram em um FPGA Zynq-7000 a extração de características por envelope e uma rede neural para classificar defeitos de rolamentos. Em comum, esses trabalhos deslocam para o \textit{hardware} reconfigurável a etapa que reduz o sinal a poucos atributos, de modo que apenas a informação relevante segue adiante.
-
-Os \textit{Field-Programmable Gate Arrays} (FPGAs) são adequados a essa tarefa por combinarem paralelismo, latência determinística e eficiência energética superior à de soluções baseadas em CPU ou GPU para cargas de tamanho fixo \cite{trimberger2015three,Shawahna2019}. Na prática da EA, a redução de dados mais estabelecida é a detecção de \textit{hits}: o sinal só é registrado quando ultrapassa um limiar, e cada evento é resumido por descritores como amplitude, duração, contagens e energia \cite{unnthorsson2013,vallen2022}. Essa é a técnica adotada neste trabalho, implementada na lógica programável. Resta saber se os descritores assim obtidos bastam para reconhecer a condição de operação da máquina e se a classificação pode ser executada no próprio FPGA, que é o que esta dissertação investiga.
+A literatura de sistemas embarcados aponta uma saída: deslocar para o \textit{hardware} reconfigurável a etapa que reduz o sinal a poucos atributos, de modo que apenas a informação relevante siga adiante \cite{kang2015,wirtz2018,toumi2022fpga}. Os \textit{Field-Programmable Gate Arrays} (FPGAs) combinam paralelismo e latência determinística, o que os torna adequados a essa função \cite{trimberger2015three,Shawahna2019}. Na prática da EA, a redução mais estabelecida é a detecção de \textit{hits}: o sinal só é registrado quando ultrapassa um limiar, e cada evento é resumido por amplitude, duração, contagens e energia \cite{unnthorsson2013,vallen2022}. Resta saber se esses descritores bastam para reconhecer a condição de operação da máquina por Aprendizado de Máquina (AM) e se essa classificação pode ser executada no próprio FPGA.
 
 \section{Objetivos}
 \label{sec:objetivos}
 
-O objetivo geral desta dissertação é desenvolver e avaliar uma arquitetura de processamento em FPGA para a detecção de falhas em motobombas por EA, na qual os sinais são reduzidos a registros de \textit{hits} na lógica programável e a condição de operação é inferida por uma Rede Neural Multicamadas (\textit{Multilayer Perceptron}, MLP) a partir desses registros.
-
-Os objetivos específicos são:
+O objetivo geral é desenvolver e avaliar uma arquitetura de processamento em FPGA para a detecção de falhas em motobombas por EA, na qual os sinais são reduzidos a registros de \textit{hits} na lógica programável e a condição de operação é inferida por uma Rede Neural Multicamadas (\textit{Multilayer Perceptron}, MLP) a partir desses registros. Os objetivos específicos são:
 \begin{enumerate}[label=\textbf{\arabic*.}]
-	\item \textbf{Implementar a extração de \textit{hits} em FPGA}: detectar e parametrizar \textit{hits} de EA na lógica programável de um Artix-7, transmitindo um registro compacto por evento, com as mesmas convenções temporais de um sistema comercial.
-	\item \textbf{Avaliar o extrator contra um sistema comercial}: comparar, em ensaio simultâneo com estímulos elétricos controlados, a detecção, os descritores, a integridade da comunicação e a redução de dados em relação ao Vallen AMSY-6.
-	\item \textbf{Classificar condições de operação a partir dos registros}: treinar MLPs com descritores de \textit{hits} agregados em janelas, usando dados de uma bomba em bancada, e avaliar a generalização com validações que separem corridas e sessões independentes.
-	\item \textbf{Embarcar a classificação}: quantizar o modelo em int8 e implementá-lo no processador MicroBlaze e em lógica dedicada gerada por síntese de alto nível, verificando por simulação a fidelidade ao modelo de referência, a latência e o uso de recursos.
-	\item \textbf{Validar o método em base pública}: aplicar a mesma cadeia a uma base de referência de defeitos em rolamentos, para separar as limitações do método das limitações dos dados do ensaio.
+	\item implementar a extração de \textit{hits} em um FPGA Artix-7, com registro compacto por evento e as mesmas convenções temporais de um sistema comercial;
+	\item avaliar o extrator em ensaio simultâneo com o sistema comercial Vallen AMSY-6, quanto a detecção, descritores, integridade da comunicação e redução de dados;
+	\item treinar MLPs com descritores de \textit{hits} de uma bomba em bancada e avaliar a generalização com validações que separem corridas e sessões independentes;
+	\item quantizar o modelo em int8 e implementá-lo no processador MicroBlaze e em lógica dedicada, verificando por simulação a fidelidade, a latência e o uso de recursos;
+	\item validar o método em uma base pública de defeitos em rolamentos.
 \end{enumerate}
 
-\section{Contribuições}
+\section{Contribuições e organização do texto}
 \label{sec:contribuicoes}
-
-As contribuições desta dissertação são:
-\begin{itemize}
-	\item um extrator de \textit{hits} de EA em FPGA de baixo custo, com convenções temporais equivalentes às de um instrumento comercial, comunicação por UDP observável quanto a perdas e redução de cerca de 770 vezes no volume de dados (Seções~\ref{sec:mm_implementacao} e~\ref{sec:res_extrator});
-	\item um protocolo de comparação simultânea com o sistema comercial, com associação de eventos, limites de confiança para perdas e análise de concordância por descritor (Seções~\ref{sec:mm_delineamento} e~\ref{sec:res_extrator});
-	\item a demonstração de que descritores de \textit{hits} permitem estimar a condição de operação de uma bomba, acompanhada de uma análise crítica da validação, que mostra quando o resultado se generaliza e quando apenas reconhece a corrida (Seções~\ref{sec:mm_bomba} e~\ref{sec:res_bomba});
-	\item uma cadeia de inferência int8 com fonte única para MicroBlaze e Vitis HLS e uma metodologia de verificação em seis níveis, culminando na simulação RTL do processador, que permite avaliar a implementação sem acesso à placa (Seções~\ref{sec:mm_embarcado} e~\ref{sec:res_embarcado});
-	\item a validação externa do método na base CWRU, que confirma as conclusões sobre validação e evidencia a necessidade de um limiar flutuante no extrator (Seções~\ref{sec:mm_cwru} e~\ref{sec:res_cwru}).
-\end{itemize}
-
-\section{Organização do texto}
 \label{sec:organizacao}
 
-O Capítulo~\ref{chap:fundamentacao} apresenta os fundamentos de EA e da detecção de \textit{hits}, de AM e de redes MLP e de FPGAs, com os trabalhos relacionados de cada tema. O Capítulo~\ref{chap:metodos} descreve a arquitetura proposta, sua implementação, o delineamento dos ensaios, os dados e os métodos de classificação, de implementação embarcada e de validação. O Capítulo~\ref{chap:resultados} apresenta e discute os resultados, e o Capítulo~\ref{chap:conclusoes} reúne as conclusões, as limitações e os trabalhos futuros.
+As contribuições são: um extrator de \textit{hits} de EA em FPGA de baixo custo, equivalente a um instrumento comercial na faixa ensaiada e com redução de cerca de 770 vezes no volume de dados; a demonstração de que descritores de \textit{hits} permitem estimar a condição de operação de uma bomba, com uma análise crítica de quando o resultado se generaliza; uma cadeia de inferência int8 com fonte única para MicroBlaze e Vitis HLS, verificada em seis níveis até a simulação RTL do processador; e a validação externa do método na base CWRU.
+
+O Capítulo~\ref{chap:fundamentacao} apresenta os fundamentos de EA e de detecção de \textit{hits}, de redes MLP e de FPGAs. O Capítulo~\ref{chap:metodos} descreve a arquitetura proposta, os ensaios, os dados e os métodos de classificação, de implementação embarcada e de validação. O Capítulo~\ref{chap:resultados} apresenta e discute os resultados, e o Capítulo~\ref{chap:conclusoes} reúne as conclusões e os trabalhos futuros.

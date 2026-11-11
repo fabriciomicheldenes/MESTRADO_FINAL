@@ -37,15 +37,15 @@ As páginas citadas são as dos PDFs anotados (versão de fevereiro de 2026). O 
 | 32 | Guilherme | "Melhorar a transição do assunto" (três paradigmas) | Nova frase de transição apresentando os três paradigmas com referências. |
 | 36–37 | Guilherme | "Algoritmo 1 / pseudo-algoritmo"; "??? Não está explicado isso" | O pseudoalgoritmo virou Algoritmo 1, citado no texto; explicados \(J_{\mathcal{B}}(\theta)\) e a inicialização (Xavier/He). |
 | 38 | Guilherme | A seção de FPGA deve vir antes da subseção de MLP em FPGA; precisa de referências | Subseção "MLP em FPGA para diagnóstico de falhas" movida para o fim da seção de FPGA; referências na abertura. |
-| 43 | Guilherme | Figura 8 não referenciada; puxar a Figura 9 para o início | Figura do CLB citada no texto (legenda corrigida: "CBL" → CLB); figura do fluxo de desenvolvimento movida para o início da subseção. |
+| 43 | Guilherme | Figura 8 não referenciada; puxar a Figura 9 para o início | Figura do CLB citada no texto (legenda corrigida: "CBL" → CLB); figura do fluxo de desenvolvimento movida para o início da subseção. Na versão enxuta, a figura do CLB foi retirada. |
 | 46 | Pedro | "Já tens libs para implementar MLP no FPGA?" | Resposta na Seção 4.5: núcleo próprio em C com fonte única para MicroBlaze e Vitis HLS (em vez de FINN/hls4ml), com verificação bit a bit. |
-| 51 | Guilherme | Qual o tamanho das bases, número de entradas, % treino e teste? | Nova Tabela 5 (bases, tamanho, divisão treino/teste); detalhes nas Seções 3.6 e 3.8. |
-| 53 | Guilherme | Incluir uma figura do pipeline | Nova Figura 10 (cadeia proposta), com cores distinguindo o que já existia e o que é contribuição. |
+| 51 | Guilherme | Qual o tamanho das bases, número de entradas, % treino e teste? | Nova Tabela 3 (bases, tamanho, divisão treino/teste); detalhes nas Seções 3.6 e 3.8. |
+| 53 | Guilherme | Incluir uma figura do pipeline | Nova Figura 7 (cadeia proposta), com cores distinguindo o que já existia e o que é contribuição. |
 | 54–55 | Pedro | "Foi explorada a granularidade das janelas?"; "MLP convolucional?"; "o que seria a fase de Mineração?" | Metodologia da qualificação substituída pelos métodos efetivamente usados; janelas de 5 s e sensibilidade a 2 s (Seções 3.6 e 4.2); sem "MLP convolucional". |
 | 57 | Pedro | Verificar as métricas | Métricas definidas por estudo: detecção, perdas com limite de confiança, concordância (extrator); MAE, acurácia, acurácia balanceada, F1 e acerto por corrida (bomba); fidelidade bit a bit, ciclos e recursos (embarcado). |
-| 57–58 | Guilherme | Marcar onde começa o fluxo; legenda; trechos riscados | Figura da metodologia antiga substituída pela Figura 10; trechos riscados removidos. |
+| 57–58 | Guilherme | Marcar onde começa o fluxo; legenda; trechos riscados | Figura da metodologia antiga substituída pela Figura 7; trechos riscados removidos. |
 | 58 | Guilherme | Quanto tempo de coleta é necessário para detectar um defeito? | Resposta na Seção 4.5 ("Quanto tempo de coleta é necessário..."). |
-| 59 | Guilherme | Deixar claro o que já estava implementado e o que é a contribuição | Seção 3.1.1 "Delimitação das contribuições" e Seção 3.2 "Antecedentes". **Conferir com o autor** a atribuição de cada item. |
+| 59 | Guilherme | Deixar claro o que já estava implementado e o que é a contribuição | Seção 3.1 (parágrafo de delimitação das contribuições e Figura 7) e Seção 3.2 "Antecedentes". **Conferir com o autor** a atribuição de cada item. |
 | 60 | Guilherme | Aumentar a figura | Figuras do MomeaProbe/MomeaCapture refeitas como subfiguras. |
 | 62–63 | Pedro e Guilherme | Latência? A análise não é em tempo real? Os dados vão para o banco e depois são analisados? | Resposta na Seção 4.5 ("O sistema opera em tempo real?") e na Seção 3.2: com o FPGA, os registros chegam à aplicação à medida que os eventos ocorrem; a decisão é por janela. |
 | 63 | Guilherme | Padronizar o nome da técnica; destacar a diferença da figura FPGA em relação à USB | Nome padronizado (detecção de *hits*); legenda e texto da Figura 13 destacam o bloco "FPGA + HIT". |
@@ -65,7 +65,16 @@ As páginas citadas são as dos PDFs anotados (versão de fevereiro de 2026). O 
 ## 4. Pendências para o autor
 
 1. Confirmar o título e a banca/data da folha de aprovação (em vermelho no PDF).
-2. Confirmar a delimitação das contribuições (Seção 3.1.1): o que é seu, o que é do projeto e o que é de outros membros.
+2. Confirmar a delimitação das contribuições (Seção 3.1): o que é seu, o que é do projeto e o que é de outros membros.
 3. Conferir referências sem DOI que não foram encontradas no Crossref (podem estar corretas, mas convém checar): `santos2025modelagem`, `haykin2001redes`, `libralao2003tecnicas`, `fayyad1996data`, `shapiro:2003`, `salami2020power`, `jaiswal2024multilayer`, `yan2024survey`, `wang2024review`, `Li2023SurveyFPGA`, `silva2024detecccao`, `Gomes2018`, `Galli2017`, `AnaliseVibracoesMotobomba2021`.
 4. Completar a descrição da bancada da bomba (trechos `\completar{...}` em vermelho na Seção 3.6).
-5. Revisão final de estilo das Seções 3.3 a 3.5 (texto vindo do relatório do FPGA): as frases prescritivas mais evidentes foram convertidas, mas o tom ainda é de relatório técnico em alguns parágrafos.
+5. Revisão final de estilo das Seções 4.1 a 4.4 (texto vindo dos relatórios): o tom ainda é de relatório técnico em alguns parágrafos.
+
+## 5. Versão enxuta (branch `dissertacao/versao-enxuta`)
+
+Introdução, Fundamentação Teórica e Materiais e Métodos foram reduzidos ao essencial (de cerca de 110 para 28 páginas; total de 178 para 95 páginas); Resultados e Conclusões não mudaram. A versão completa continua no branch `dissertacao/versao-inicial`.
+
+* Introdução: três seções (problema e motivação, objetivos, contribuições e organização).
+* Fundamentação: EA e trabalhos relacionados (com a tabela de síntese), nova Seção 2.2 de *hits* condensada (`FundamentacaoTeorica/04-Hits.tex`), AM e MLP sem o histórico e sem os trechos comentados, FPGA com arquitetura, fluxo, quantização e MLP em FPGA. Saíram a figura de paradigmas de AM, a figura do CLB, a lista longa de otimizações e a tabela de otimização de MLP em FPGA (os trabalhos continuam citados em um parágrafo).
+* Materiais e Métodos: o extrator (Seções 3.3 a 3.5) foi condensado a partir do artigo de 20 páginas, **sem a subseção "Arquitetura inicial baseada em streaming contínuo"**; os antecedentes USB ficam resumidos na Seção 3.2. Os métodos da bomba, da inferência embarcada e do CWRU foram resumidos, mantendo todos os rótulos citados nos Resultados.
+* Os arquivos `importado/v2_decisoes.tex`, `v2_implementacao.tex`, `v2_delineamento.tex` e `v2_hits_fundamentos.tex` não são mais incluídos, mas foram mantidos no repositório.

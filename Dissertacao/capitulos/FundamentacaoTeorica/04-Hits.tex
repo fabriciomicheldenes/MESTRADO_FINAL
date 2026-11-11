@@ -1,0 +1,59 @@
+% Seção 2.2 - Detecção e parametrização de hits (versão enxuta; o título está no Main.tex)
+
+A cadeia de medição determina os descritores tanto quanto a fonte: amplitude, forma de onda e espectro medidos dependem da propagação, do sensor, do acoplamento e da configuração do instrumento. Por isso, comparar instrumentos exige registrar ganho, banda, limiar e parâmetros temporais, referidos ao mesmo ponto da cadeia.
+
+\subsection{Definição operacional do \textit{hit}}
+\label{subsec:formalizacao_hit}
+
+Um \textit{hit} é uma unidade de detecção em um único canal, sem correspondência biunívoca com um evento físico: uma fonte pode gerar \textit{hits} em vários sensores, e parâmetros temporais inadequados podem fragmentar uma resposta ou fundir respostas distintas \cite{unnthorsson2013}. Seja \(x[n]\) o código do ADC, amostrado com período \(\Delta t = 1/f_{\mathrm{s}}\). No sistema proposto, o sinal de decisão é a magnitude em relação ao zero calibrado do canal, \(z_{\mathrm{c}}\),
+\begin{equation}
+	u[n] = \left| x[n] - z_{\mathrm{c}} \right|,
+	\label{eq:sinal_decisao}
+\end{equation}
+e há cruzamento ascendente do limiar \(V_{\mathrm{th}}\) quando \(u[n-1] < V_{\mathrm{th}}\) e \(u[n] \geq V_{\mathrm{th}}\). Sejam \(n_0\) o primeiro cruzamento e \(n_\ell\) o último do mesmo \textit{hit}. O temporizador de definição (DDT, implementado como HDT) é reiniciado a cada amostra acima do limiar, e o \textit{hit} se encerra na \(N_{\mathrm{DDT}}\)-ésima amostra consecutiva de silêncio, com
+\begin{equation}
+	N_{\mathrm{DDT}} = \left\lceil T_{\mathrm{DDT}} f_{\mathrm{s}} \right\rceil.
+	\label{eq:ddt_amostras}
+\end{equation}
+
+\subsection{Descritores}
+\label{subsec:descritores_hit}
+\label{v2:subsec:energia_ea}
+
+Com \(v[n]\) a tensão referida à entrada do pré-amplificador, os descritores são:
+\begin{itemize}
+	\item \textbf{amplitude de pico}, \(V_{\mathrm{pico}} = \max|v[n]|\), em dB\(_{\mathrm{AE}}\), isto é, \(A = 20\log_{10}(V_{\mathrm{pico}}/1\,\mu\mathrm{V})\);
+	\item \textbf{tempo de subida}, do primeiro cruzamento até a primeira ocorrência do pico;
+	\item \textbf{duração}, \(t_{\mathrm{dur}} = (n_\ell - n_0)\Delta t\), sem incluir a espera pelo DDT;
+	\item \textbf{contagens}, número de cruzamentos ascendentes do limiar no \textit{hit};
+	\item \textbf{energia}, na forma quadrática que o AMSY-6 denomina \textit{True Energy} \cite{vallen2022},
+	\begin{equation}
+		E_{\mathrm{V^2s}} \approx \Delta t\,K_q^2 \sum_{n=n_0}^{n_\ell} u^2[n], \qquad E_{\mathrm{eu}} = \frac{E_{\mathrm{V^2s}}}{10^{-14}\,\mathrm{V^2s}},
+		\label{eq:true_energy}
+	\end{equation}
+	em que \(K_q\) converte um código em volts referidos à entrada; e
+	\item \textbf{\textit{Signal Strength}}, \(\Delta t\,K_q\sum|u[n]|\), em nVs.
+\end{itemize}
+Como \(K_q\) entra ao quadrado, a energia é o descritor mais sensível à calibração. Ela descreve o sinal elétrico, e não a energia mecânica liberada pela fonte.
+
+\subsection{Parâmetros temporais}
+\label{subsec:parametros_temporizacao}
+
+As nomenclaturas da literatura e do AMSY-6 não coincidem integralmente \cite{unnthorsson2013,vallen2022}. A Tabela~\ref{tab:parametros_temporizacao} resume a correspondência adotada. O ponto mais delicado é o RAT do AMSY-6, que combina o bloqueio após o \textit{hit} com o agrupamento de \textit{hits} em cascatas; o sistema proposto reproduz o bloqueio e o indicador de rearme, mas não as cascatas. O limiar também interfere na segmentação: valores altos reduzem os \textit{hits} de ruído, mas excluem respostas fracas.
+
+\begin{table}[htbp]
+	\centering
+	\small
+	\caption{Correspondência entre os parâmetros temporais do sistema proposto e do AMSY-6.}
+	\label{tab:parametros_temporizacao}
+	\begin{tabular}{L{0.20\textwidth}L{0.34\textwidth}L{0.36\textwidth}}
+		\toprule
+		\textbf{Função} & \textbf{Sistema proposto} & \textbf{AMSY-6} \\
+		\midrule
+		Encerramento & HDT: expira na \(N_{\mathrm{DDT}}\)-ésima amostra de silêncio & DDT; convenção equivalente \\
+		Bloqueio e rearme & HLT re-armável: cruzamento no bloqueio reinicia a espera e marca o \textit{hit} com ROVL & RAT com indicador R; bloqueio equivalente \\
+		Cascatas & Não implementadas & Descritores de cascata; não comparáveis \\
+		Duração máxima & 100\,ms, indicador MAXDUR & \textit{Timeout} de \(\approx 100\,\mathrm{ms}\) \\
+		\bottomrule
+	\end{tabular}
+\end{table}

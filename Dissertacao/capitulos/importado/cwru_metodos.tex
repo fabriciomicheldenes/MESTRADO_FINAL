@@ -1,67 +1,20 @@
 % Gerado por ferramentas/importar_relatorios.py a partir de CWRU/RELATORIO_CWRU-10.11.2026/RELATORIO_CWRU.tex.
-% Revisado à mão na dissertação: edite este arquivo, não a fonte.
+% Revisado à mão na dissertação (versão enxuta): edite este arquivo, não a fonte.
 \subsection{Base de dados}
 \label{cwru:sec:dados}
 
-Foram usados os sinais do acelerômetro do lado do acionamento (DE) dos conjuntos \textit{48k Drive End Bearing Fault Data} e \textit{Normal Baseline Data} \cite{cwru}. O rolamento é um 6205-2RS JEM SKF, com frequências de defeito iguais a 5,4152 (pista interna, BPFI), 3,5848 (pista externa, BPFO) e 2,3570 (esfera, BSF) vezes a frequência de rotação. O subconjunto tem delineamento cruzado completo:
-\begin{itemize}
-	\item máquina sã (N) nas cargas de 0 a 3\,HP (1\,797 a 1\,730\,rpm);
-	\item defeitos por eletroerosão na pista interna (IR), na esfera (B) e na pista externa centrada na zona de carga (OR@6h), com diâmetros de 0,007, 0,014 e 0,021~polegada, nas quatro cargas.
-\end{itemize}
-São 40 gravações, de cerca de 10\,s (5\,s na carga 0), que somam 295,7\,MB. As posições de 3h e 12h da pista externa ficaram de fora, porque não existem para o diâmetro de 0,014~polegada.
+Foram usados os sinais do acelerômetro do lado do acionamento (DE), a 48\,kHz, dos conjuntos \textit{48k Drive End Bearing Fault Data} e \textit{Normal Baseline Data} \cite{cwru}. O rolamento é um 6205-2RS JEM SKF, com frequências de defeito de 5,4152 (pista interna, BPFI), 3,5848 (pista externa, BPFO) e 2,3570 (esfera, BSF) vezes a frequência de rotação. O subconjunto tem delineamento cruzado completo: máquina sã (N) e defeitos por eletroerosão na pista interna (IR), na esfera (B) e na pista externa na zona de carga (OR@6h), com diâmetros de 0,007, 0,014 e 0,021~polegada, nas cargas de 0 a 3\,HP. São 40 gravações de cerca de 10\,s. As inconsistências conhecidas dos arquivos foram tratadas explicitamente: arquivos com variáveis de outras gravações (usou-se sempre a de número igual ao do arquivo), um arquivo com apenas 1,3\,s, uma rotação ausente (usou-se a nominal) e cinco gravações com saturação em \(\pm 3{,}418\,g\), em fração desprezível. Cada gravação foi dividida em janelas de 0,25\,s (cerca de 7 rotações), sem sobreposição, num total de 1\,376 janelas: 140 da máquina sã, 396 de IR, 420 de B e 420 de OR.
 
-\subsubsection{Anomalias encontradas}
-
-Os arquivos têm inconsistências conhecidas, que foram tratadas explicitamente:
-\begin{itemize}
-	\item alguns \texttt{.mat} trazem sinais de outras gravações (\texttt{175.mat} contém também \texttt{X217}; \texttt{217.mat} contém \texttt{X215}; \texttt{99.mat} contém \texttt{X098}). Usou-se sempre a variável cujo número coincide com o do arquivo;
-	\item o \texttt{174.mat} (IR, 0,007~polegada, carga 0) só contém a variável \texttt{X173}, com 1,3\,s; ela foi usada, com 5 janelas;
-	\item o \texttt{98.mat} não traz a rotação gravada; usou-se a nominal (1\,772\,rpm);
-	\item cinco gravações têm amostras repetidas exatamente em \(\pm 3{,}418\,g\) (de 4 a 77 amostras), indício de saturação da aquisição. Outras gravações passam de 7\,\(g\), de modo que o limite não é o mesmo em todas. A fração afetada é desprezível, mas o fato ecoa a saturação observada nos ensaios da bomba.
-\end{itemize}
-
-Cada gravação foi dividida em janelas de 0,25\,s (12\,000 amostras, cerca de 7 rotações), sem sobreposição, num total de 1\,376 janelas: 140 da máquina sã, 396 de IR, 420 de B e 420 de OR.
-
-% =======================================================================================================
 \subsection{Métodos}
 \label{cwru:sec:metodos}
 
-\subsubsection{Extrator de \textit{hits}}
-
-O extrator reproduz a lógica do MOMEA sobre \(|x - \bar{x}|\):
-\begin{itemize}
-	\item o \textit{hit} começa no primeiro cruzamento do limiar;
-	\item ele termina após DDT amostras sem cruzamento;
-	\item segue-se um bloqueio (HLT) rearmável: um cruzamento durante o bloqueio o reinicia e marca o próximo \textit{hit} com o indicador ROVL;
-	\item \textit{hits} mais longos que a duração máxima são truncados (MAXDUR).
-\end{itemize}
-Os tempos foram escalados para 48\,kHz: DDT e HLT de 1\,ms (48 amostras) e duração máxima de 20\,ms. Cada \textit{hit} gera amplitude de pico, tempo de subida, duração, contagens (cruzamentos ascendentes do limiar positivo) e energia \(\sum u^2/f_s\).
-
-Foram comparados dois limiares:
-\begin{itemize}
-	\item \textbf{fixo}, de 0,3\,\(g\), cerca de 1,4 vez o percentil 99,9 de \(|x|\) da máquina sã. É como o MOMEA opera hoje;
-	\item \textbf{flutuante}, igual a 1,5 vez o RMS da janela anterior (causal), com mínimo de 0,3\,\(g\). É análogo ao limiar flutuante de sistemas comerciais de EA \cite{vallen2022} e implementável na lógica com uma média de \(x^2\) por janela.
-\end{itemize}
-O fator 1,5 e o DDT foram escolhidos por varredura (fator de 1,5 a 3; DDT de 0,5 e 1\,ms), pelo critério de a ordem do intervalo entre \textit{hits} coincidir com BPFO e BPFI. Esse critério usa os rótulos de classe e é, portanto, uma escolha de projeto informada pelos dados. Ele não usa, porém, a divisão de treino e teste de nenhuma validação.
-
-\subsubsection{Descritores}
+O extrator reproduz a lógica do MOMEA sobre \(|x - \bar{x}|\) (início no primeiro cruzamento, término após o DDT, HLT re-armável com ROVL e truncamento por MAXDUR), com os tempos escalados para 48\,kHz: DDT e HLT de 1\,ms e duração máxima de 20\,ms. Foram comparados dois limiares: \textbf{fixo}, de 0,3\,\(g\), como o MOMEA opera hoje; e \textbf{flutuante}, de 1,5 vez o RMS da janela anterior (causal), com mínimo de 0,3\,\(g\), análogo ao de sistemas comerciais de EA \cite{vallen2022} e implementável na lógica. O fator 1,5 e o DDT foram escolhidos por varredura, pelo critério de a ordem do intervalo entre \textit{hits} coincidir com BPFO e BPFI; o critério usa os rótulos, mas não a divisão de treino e teste de nenhuma validação.
 
 Três grupos de descritores foram calculados por janela:
 \begin{itemize}
 	\item \textbf{clássicos} (8): RMS, pico, fator de crista, curtose, assimetria e fatores de forma, de impulso e de folga;
-	\item \textbf{envelope} (7): curtose do envelope e amplitude do espectro do envelope, em dB acima da mediana do espectro, em 1\(\times\) e 2\(\times\) BPFO, BPFI e 2\(\times\)BSF. O envelope é a transformada de Hilbert do sinal filtrado entre 1 e 10\,kHz, e as frequências usam a rotação gravada \cite{randall2011};
-	\item \textbf{\textit{hits}} (14): taxa, frações truncadas e com ROVL, percentis de amplitude (dB re 1\,m\(g\)), energia, duração, contagens, subida, frequência média e, como descritores de periodicidade, a ordem do intervalo entre \textit{hits}, \((1/\mathrm{mediana}\,\Delta t)/f_r\), e seu coeficiente de variação.
+	\item \textbf{envelope} (7): curtose do envelope e amplitudes do espectro do envelope (filtro de 1 a 10\,kHz) em 1\(\times\) e 2\(\times\) BPFO, BPFI e 2\(\times\)BSF, em dB acima da mediana \cite{randall2011};
+	\item \textbf{\textit{hits}} (14): taxa, frações truncadas e com ROVL, percentis dos descritores e, como medidas de periodicidade, a ordem do intervalo entre \textit{hits}, \((1/\mathrm{mediana}\,\Delta t)/f_r\), e seu coeficiente de variação.
 \end{itemize}
-Os descritores de \textit{hits} foram calculados com os dois limiares. Janelas sem \textit{hits} recebem valores de ausência (taxa zero e amplitude igual ao limiar), e não a mediana de treino, que as faria parecer defeituosas.
 
-\subsubsection{Modelos e validação}
-
-A MLP tem os mesmos hiperparâmetros do estudo da bomba: camadas de 64 e 32 neurônios, ReLU, Adam, \(L_2 = 10^{-3}\) e parada antecipada \cite{pedregosa2011}. Uma floresta aleatória (RF) serve de referência. As tarefas foram duas: quatro classes (N, IR, B, OR) e dez classes (tipo e diâmetro). Três validações, com independência crescente, foram comparadas:
-\begin{itemize}
-	\item \textbf{janelas sorteadas} (5 partes estratificadas): janelas da mesma gravação ficam no treino e no teste;
-	\item \textbf{carga deixada de fora} (LOLO, 4 partes): separa gravações, mas não rolamentos, porque o mesmo rolamento com defeito foi gravado nas quatro cargas;
-	\item \textbf{diâmetro deixado de fora} (LOSO, 3 partes, só em quatro classes): cada par tipo--diâmetro é um rolamento físico distinto, de modo que o teste contém rolamentos nunca vistos. A máquina sã de teste é uma carga diferente em cada parte (0, 1 e 2), retirada do treino. É o análogo do LORO do estudo da bomba.
-\end{itemize}
-As métricas são a acurácia por janela e a acurácia por gravação, por voto majoritário das janelas.
-
-% =======================================================================================================
+A MLP tem os hiperparâmetros do estudo da bomba \cite{pedregosa2011}, e uma \textit{Random Forest} serve de referência. As tarefas são quatro classes (N, IR, B, OR) e dez classes (tipo e diâmetro), com três validações de independência crescente: \textbf{janelas sorteadas} (5 partes estratificadas); \textbf{carga deixada de fora} (LOLO, 4 partes), que separa gravações, mas não rolamentos; e \textbf{diâmetro deixado de fora} (LOSO, 3 partes, só em quatro classes), em que o teste contém rolamentos físicos nunca vistos, análogo ao LORO da bomba. As métricas são a acurácia por janela e por gravação (voto majoritário).
