@@ -1,0 +1,48 @@
+1) Lendo corridas...
+  [aviso] subpasta '01_20HZ-REC100-25SUC_EA_MOMEA12FPGA' diz 100-25; vale a pasta '100REC_50SUC' (100-50)
+  [aviso] subpasta '01_30HZ-REC100-25SUC_EA_MOMEA12FPGA' diz 100-25; vale a pasta '100REC_50SUC' (100-50)
+  [aviso] subpasta '01_40HZ-REC100-25SUC_EA_MOMEA12FPGA' diz 100-25; vale a pasta '100REC_50SUC' (100-50)
+  [aviso] subpasta '01_50HZ-REC100-25SUC_EA_MOMEA12FPGA' diz 100-25; vale a pasta '100REC_50SUC' (100-50)
+  [aviso] subpasta '01_60HZ-REC100-25SUC_EA_MOMEA12FPGA' diz 100-25; vale a pasta '100REC_50SUC' (100-50)
+  [aviso] subpasta '01_70HZ-REC100-25SUC_EA_MOMEA12FPGA' diz 100-25; vale a pasta '100REC_50SUC' (100-50)
+  [aviso] subpasta '01_80HZ-REC100-25SUC_EA_MOMEA12FPGA' diz 100-25; vale a pasta '100REC_50SUC' (100-50)
+  [aviso] subpasta '01_90HZ-REC100-25SUC_EA_MOMEA12FPGA' diz 100-25; vale a pasta '100REC_50SUC' (100-50)
+   56 corridas, 283618 hits
+2-3) Janelas de 5 s, harmonização: sim (A >= 65.12 dBAE, B >= 54.99 dBAE)
+   3540 janelas × 36 descritores; faltantes: 6.7%
+4) Validação
+    BLOCOS freq   MLP   5 folds    5.3 s
+    BLOCOS freq   RF    5 folds    4.6 s
+    BLOCOS freq   GB    5 folds    1.1 s
+    BLOCOS config MLP   5 folds    2.9 s
+    BLOCOS config RF    5 folds    2.2 s
+    BLOCOS config GB    5 folds    4.4 s
+    LORO   freq   MLP  56 folds   29.7 s
+    LORO   freq   RF   56 folds   38.6 s
+    LORO   freq   GB   56 folds   10.1 s
+    LORO   config MLP  56 folds   25.2 s
+    LORO   config RF   56 folds   24.6 s
+    LORO   config GB   56 folds   47.0 s
+    LOSO   freq   MLP   7 folds    3.9 s
+    LOSO   freq   RF    7 folds    5.9 s
+    LOSO   freq   GB    7 folds    1.9 s
+5) Importância por permutação (BLOCOS)
+6) k-means / PCA
+7) Figuras e relatório
+esquema tarefa modelo  n_janelas   acc  acc_bal  F1_macro  acc_rec  acc_suc  acc_corrida  MAE_Hz  RMSE_Hz    R2  acc_nivel  acc_10Hz  MAE_Hz_corrida  acc_nivel_corrida
+ BLOCOS config     GB       3540 0.934    0.933     0.933    0.948    0.964        1.000     NaN      NaN   NaN        NaN       NaN             NaN                NaN
+ BLOCOS config    MLP       3540 0.888    0.888     0.888    0.919    0.946        1.000     NaN      NaN   NaN        NaN       NaN             NaN                NaN
+ BLOCOS config     RF       3540 0.945    0.944     0.944    0.958    0.970        1.000     NaN      NaN   NaN        NaN       NaN             NaN                NaN
+ BLOCOS   freq     GB       3540   NaN      NaN       NaN      NaN      NaN          NaN   1.161    2.977 0.983      0.952     0.988           0.410              0.982
+ BLOCOS   freq    MLP       3540   NaN      NaN       NaN      NaN      NaN          NaN   2.061    4.474 0.962      0.927     0.991           0.865              0.982
+ BLOCOS   freq     RF       3540   NaN      NaN       NaN      NaN      NaN          NaN   1.079    2.841 0.985      0.943     0.990           0.523              0.982
+   LORO config     GB       3540 0.224    0.221     0.209    0.546    0.532        0.232     NaN      NaN   NaN        NaN       NaN             NaN                NaN
+   LORO config    MLP       3540 0.280    0.279     0.276    0.573    0.594        0.304     NaN      NaN   NaN        NaN       NaN             NaN                NaN
+   LORO config     RF       3540 0.210    0.208     0.194    0.535    0.530        0.179     NaN      NaN   NaN        NaN       NaN             NaN                NaN
+   LORO   freq     GB       3540   NaN      NaN       NaN      NaN      NaN          NaN   4.965    8.026 0.879      0.608     0.949           4.838              0.625
+   LORO   freq    MLP       3540   NaN      NaN       NaN      NaN      NaN          NaN   5.608   10.562 0.790      0.691     0.918           4.975              0.714
+   LORO   freq     RF       3540   NaN      NaN       NaN      NaN      NaN          NaN   4.846    7.872 0.883      0.612     0.942           4.724              0.589
+   LOSO   freq     GB       3540   NaN      NaN       NaN      NaN      NaN          NaN   4.209    7.716 0.888      0.701     0.951           3.935              0.714
+   LOSO   freq    MLP       3540   NaN      NaN       NaN      NaN      NaN          NaN   5.094    8.925 0.850      0.698     0.939           4.394              0.768
+   LOSO   freq     RF       3540   NaN      NaN       NaN      NaN      NaN          NaN   4.232    7.801 0.885      0.691     0.951           4.013              0.679
+Concluído em 282 s. Saída: I:\Momea\2026\Artigo\Relatorio_Artigo\MLP\resultados

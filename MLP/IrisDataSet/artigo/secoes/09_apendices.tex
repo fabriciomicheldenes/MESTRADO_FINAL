@@ -1,0 +1,248 @@
+﻿% =======================================================================================================
+\appendix
+\section{Derivação completa da retropropagação}
+\label{ap:backprop}
+
+Esta seção apresenta a derivação passo a passo, com as dimensões de cada objeto. A notação segue o
+\secao{sec:mlp}.
+
+\subsection{Notação e dimensões}
+
+\begin{itemize}
+	\item $m$: número de amostras no minilote; $d$: número de atributos; $C$: número de classes;
+	\item $n_l$: número de neurônios da camada $l$, com $n_0 = d$ e $n_L = C$;
+	\item $\bX \in \R^{m\times d}$, com uma amostra por linha;
+	\item $\bW^{(l)} \in \R^{n_{l-1}\times n_l}$, $\bb^{(l)} \in \R^{n_l}$;
+	\item $\bZ^{(l)} \in \R^{m\times n_l}$ e $\bA^{(l)} = f_l(\bZ^{(l)}) \in \R^{m\times n_l}$;
+	\item $\bY \in \{0,1\}^{m\times C}$ (rótulos em \emph{one-hot}) e $\bP \in (0,1)^{m\times C}$
+	      (probabilidades previstas).
+\end{itemize}
+
+A perda é a média das entropias cruzadas mais a penalidade $L_2$:
+\begin{equation}
+	\Loss = \frac{1}{m}\sum_{i=1}^{m}\ell_i + \frac{\lambda}{2}\sum_{l=1}^{L}\left\|\bW^{(l)}\right\|_F^2,
+	\qquad
+	\ell_i = -\sum_{k=1}^{C} y_{ik}\log p_{ik}.
+	\label{eq:ap-perda}
+\end{equation}
+
+\subsection{Gradiente da entropia cruzada em relação aos logits}
+
+A softmax da amostra $i$ é
+\begin{equation}
+	p_{ik} = \frac{e^{z_{ik}}}{S_i},
+	\qquad S_i = \sum_{j=1}^{C} e^{z_{ij}}.
+\end{equation}
+
+Derivando em relação a um logit $z_{i\ell}$, com a regra do quociente:
+\begin{align}
+	\frac{\partial p_{ik}}{\partial z_{i\ell}}
+	&= \frac{\delta_{k\ell}\,e^{z_{ik}}S_i - e^{z_{ik}}e^{z_{i\ell}}}{S_i^2} \nonumber\\
+	&= \frac{e^{z_{ik}}}{S_i}\delta_{k\ell} - \frac{e^{z_{ik}}}{S_i}\frac{e^{z_{i\ell}}}{S_i}
+	= p_{ik}\left(\delta_{k\ell} - p_{i\ell}\right),
+	\label{eq:ap-jacobiano}
+\end{align}
+com $\delta_{k\ell}=1$ se $k=\ell$ e $0$ caso contrário. Agora derive a perda da amostra:
+\begin{align}
+	\frac{\partial \ell_i}{\partial z_{i\ell}}
+	&= -\sum_{k=1}^{C} y_{ik}\frac{1}{p_{ik}}\frac{\partial p_{ik}}{\partial z_{i\ell}}
+	= -\sum_{k=1}^{C} y_{ik}\left(\delta_{k\ell} - p_{i\ell}\right) \nonumber\\
+	&= -\sum_{k=1}^{C} y_{ik}\delta_{k\ell} + p_{i\ell}\sum_{k=1}^{C} y_{ik}
+	= -y_{i\ell} + p_{i\ell},
+	\label{eq:ap-pmenosy}
+\end{align}
+onde se usou $\sum_k y_{ik}=1$, válido porque os rótulos são \emph{one-hot}. Logo,
+\begin{equation}
+	\frac{\partial \Loss}{\partial \bZ^{(L)}} = \frac{1}{m}\left(\bP - \bY\right) \;\equiv\; \bm{\Delta}^{(L)}.
+	\label{eq:ap-deltaL}
+\end{equation}
+
+O fator $1/m$ vem de a perda ser uma média. Ele é frequentemente esquecido em implementações
+manuais, e o sintoma é uma taxa de aprendizado que ``precisa'' ser $m$ vezes maior.
+
+\subsection{Retropropagando o erro}
+
+Suponha conhecido $\bm{\Delta}^{(l)} = \partial\Loss/\partial\bZ^{(l)}$. Para obter o erro da
+camada anterior, aplica-se a regra da cadeia em duas etapas.
+
+\paragraph{Passo 1: da pré-ativação para a ativação da camada anterior.} Como
+$\bZ^{(l)} = \bA^{(l-1)}\bW^{(l)} + \mathbf{1}\bb^{(l)\top}$,
+\begin{equation}
+	\frac{\partial \Loss}{\partial \bA^{(l-1)}} = \bm{\Delta}^{(l)}\,\bW^{(l)\top}
+	\;\in\; \R^{m\times n_{l-1}}.
+	\label{eq:ap-dA}
+\end{equation}
+
+\paragraph{Passo 2: da ativação para a pré-ativação.} Como a ativação é aplicada elemento a
+elemento, $\bA^{(l-1)} = f_{l-1}(\bZ^{(l-1)})$ e
+\begin{equation}
+	\bm{\Delta}^{(l-1)} = \frac{\partial \Loss}{\partial \bA^{(l-1)}} \odot f_{l-1}'\!\left(\bZ^{(l-1)}\right),
+	\label{eq:ap-rec}
+\end{equation}
+com $\odot$ o produto de Hadamard. Substituindo \equacao{eq:ap-dA} em \equacao{eq:ap-rec}:
+\begin{equation}
+	\boxed{\;\bm{\Delta}^{(l-1)} = \left(\bm{\Delta}^{(l)}\bW^{(l)\top}\right)\odot f_{l-1}'\!\left(\bZ^{(l-1)}\right)\;}
+	\label{eq:ap-rec-final}
+\end{equation}
+
+\subsection{Gradientes dos parâmetros}
+
+Para os pesos, $\partial z_{ij}^{(l)}/\partial W_{ab}^{(l)} = A_{ia}^{(l-1)}$ se $b=j$ e $0$ caso
+contrário. Aplicando a regra da cadeia:
+\begin{equation}
+	\frac{\partial \Loss}{\partial W_{ab}^{(l)}}
+	= \sum_{i=1}^{m}\frac{\partial \Loss}{\partial z_{ib}^{(l)}}\frac{\partial z_{ib}^{(l)}}{\partial W_{ab}^{(l)}}
+	= \sum_{i=1}^{m}\Delta_{ib}^{(l)}A_{ia}^{(l-1)},
+\end{equation}
+que em forma matricial é
+\begin{equation}
+	\frac{\partial \Loss}{\partial \bW^{(l)}} = \bA^{(l-1)\top}\bm{\Delta}^{(l)} \;\in\; \R^{n_{l-1}\times n_l}.
+	\label{eq:ap-gradW}
+\end{equation}
+
+Para os vieses, $\partial z_{ij}^{(l)}/\partial b_j^{(l)} = 1$ para toda amostra, logo
+\begin{equation}
+	\frac{\partial \Loss}{\partial \bb^{(l)}} = \sum_{i=1}^{m}\bm{\Delta}^{(l)}_{i,:}
+	= \mathbf{1}_m^{\top}\bm{\Delta}^{(l)} \;\in\; \R^{n_l}.
+	\label{eq:ap-gradb}
+\end{equation}
+
+\subsection{Efeito da regularização}
+
+Derivando o termo $\frac{\lambda}{2}\|\bW^{(l)}\|_F^2 = \frac{\lambda}{2}\sum_{a,b}(W_{ab}^{(l)})^2$:
+\begin{equation}
+	\frac{\partial}{\partial \bW^{(l)}}\left[\frac{\lambda}{2}\left\|\bW^{(l)}\right\|_F^2\right]
+	= \lambda\,\bW^{(l)}.
+\end{equation}
+Somando a \equacao{eq:ap-gradW}:
+\begin{equation}
+	\frac{\partial \Loss}{\partial \bW^{(l)}} = \bA^{(l-1)\top}\bm{\Delta}^{(l)} + \lambda\bW^{(l)}.
+	\label{eq:ap-gradW-reg}
+\end{equation}
+
+\subsection{Algoritmo e complexidade}
+
+O cálculo completo é:
+
+\begin{enumerate}
+	\item \textbf{propagação direta}: para $l=1,\dots,L$, calcule e armazene $\bZ^{(l)}$ e
+	      $\bA^{(l)}$; calcule $\bP$;
+	\item \textbf{erro de saída}: $\bm{\Delta}^{(L)} = (\bP-\bY)/m$;
+	\item \textbf{para $l=L,\dots,1$}: calcule $\partial\Loss/\partial\bW^{(l)}$ e
+	      $\partial\Loss/\partial\bb^{(l)}$; se $l>1$, calcule $\bm{\Delta}^{(l-1)}$;
+	\item \textbf{atualize} os parâmetros com o otimizador escolhido.
+\end{enumerate}
+
+Cada passo custa $O(m\,n_{l-1}n_l)$ para a camada $l$; o total é
+$O\!\left(m\sum_l n_{l-1}n_l\right)$, proporcional ao número de parâmetros multiplicado pelo
+tamanho do minilote. A memória necessária é a das ativações armazenadas,
+$O\!\left(m\sum_l n_l\right)$.
+
+\subsection{Estabilidade numérica}
+
+Calcular $p_{ik}$ diretamente pode estourar quando os logits são grandes, porque $e^{z}$ cresce
+muito rápido. A implementação usa o truque do \emph{log-sum-exp}: subtrai-se o maior logit antes de
+exponenciar,
+\begin{equation}
+	p_{ik} = \frac{\exp\!\left(z_{ik} - \max_j z_{ij}\right)}{\sum_j \exp\!\left(z_{ij} - \max_j z_{ij}\right)},
+\end{equation}
+o que não altera o resultado matemático (numerador e denominador são multiplicados pelo mesmo
+fator) mas evita \emph{overflow}. No cálculo da perda, usa-se
+$\log p_{ik} = z_{ik} - \log\sum_j e^{z_{ij}}$, que é estável mesmo quando $p_{ik}$ é muito
+pequeno.
+
+\subsection{Caso de uma amostra}
+
+Para uso em SGD puro, $m=1$ e todos os somatórios sobre amostras desaparecem:
+\begin{equation}
+	\bm{\delta}^{(L)} = \bp - \by, \qquad
+	\bm{\delta}^{(l-1)} = \left(\bm{\delta}^{(l)}\bW^{(l)\top}\right)\odot f'\!\left(\bz^{(l-1)}\right),
+\end{equation}
+\begin{equation}
+	\frac{\partial \ell}{\partial \bW^{(l)}} = \ba^{(l-1)}\bm{\delta}^{(l)\top} + \lambda\bW^{(l)},
+	\qquad
+	\frac{\partial \ell}{\partial \bb^{(l)}} = \bm{\delta}^{(l)}.
+\end{equation}
+É comum, na prática, usar a forma com $m=1$ e uma taxa de aprendizado menor, já que o gradiente
+de uma amostra é uma estimativa ruidosa do gradiente verdadeiro.
+
+% =======================================================================================================
+\section{Tabelas auxiliares}
+\label{ap:tabelas}
+
+\begin{table}[htbp]
+	\centering
+	\caption{Pesos da camada de entrada de uma rede $4$--$8$--$3$ treinada em todos os dados
+	(valores arredondados).}
+	\label{tab:pesos}
+	\small
+	\input{tabelas/tab_pesos.tex}
+\end{table}
+
+\begin{table}[htbp]
+	\centering
+	\caption{Hiperparâmetros do modelo principal e dos modelos de referência.}
+	\label{tab:hiper}
+	\small
+	\begin{tabular}{L{3.4cm} L{10.2cm}}
+		\toprule
+		\textbf{Modelo} & \textbf{Configuração} \\
+		\midrule
+		MLP &
+		padronização $+$ 16 neurônios, ativação \emph{tanh}, $\alpha=10^{-2}$, Adam,
+		$\eta_0=10^{-3}$, máximo de 3000 épocas \\
+		RF &
+		padronização $+$ 400 árvores, folha mínima de 1 amostra, semente 42 \\
+		GB &
+		padronização $+$ 300 estimadores, taxa $0{,}06$, profundidade 3, subamostra $0{,}9$ \\
+		LR &
+		padronização $+$ regressão logística multinomial, $C=10$, máximo de 2000 iterações \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+% =======================================================================================================
+\section{Como reproduzir}
+\label{ap:repro}
+
+\subsection{Requisitos}
+
+O código foi executado com Python 3.15 e as bibliotecas listadas em \texttt{requirements.txt} do
+projeto: NumPy 2.5, pandas 3.1, scikit-learn 1.9, SciPy 1.18, Matplotlib 3.11 e joblib 1.6. Não há
+dependência de GPU nem de bibliotecas de aprendizado profundo: toda a rede é implementada em
+NumPy/scikit-learn.
+
+\subsection{Execução}
+
+A partir da pasta \texttt{MLP/}:
+
+\begin{lstlisting}[language=bash,caption={Comandos para reproduzir a análise e compilar o relatório.},label={lst:repro}]
+.venv/Scripts/python.exe iris/mlp_iris.py
+cd iris/artigo
+pdflatex relatorio.tex
+pdflatex relatorio.tex
+\end{lstlisting}
+
+O script grava as figuras em \texttt{artigo/figuras/}, as tabelas em \texttt{artigo/tabelas/}, os
+números em \texttt{artigo/numeros.tex} e as métricas em CSV na pasta \texttt{resultados/}. A
+execução completa leva cerca de quatro minutos.
+
+\subsection{Estrutura dos arquivos}
+
+\begin{lstlisting}[caption={Organização da pasta \texttt{iris/}.},label={lst:estrutura}]
+iris/
+  mlp_iris.py            codigo completo da analise
+  resultados/            metricas em CSV, resumo em Markdown, log
+  artigo/
+    relatorio.tex        documento principal
+    numeros.tex          macros geradas pela execucao
+    secoes/              texto por secao
+    figuras/             figuras em PNG (220 dpi)
+    tabelas/             tabelas em LaTeX (booktabs)
+\end{lstlisting}
+
+\subsection{Como citar os números}
+
+O arquivo \texttt{numeros.tex} define macros como \verb|\accMLP| e \verb|\erroGrad|, usadas ao
+longo do texto. Se o script for reexecutado com outra semente, os valores mudam e o documento é
+recompilado automaticamente com os novos números --- não há transcrição manual para desatualizar.

@@ -1,0 +1,7 @@
+﻿[fpu] Vivado (projeto + imagens): rc=0, 28 s
+[fpu] compile: rc=0, 3 s
+[fpu] elaborate: rc=0, 18 s
+[fpu] mlp: 717157 ciclos simulados em 352 s; marca final 1f000000; resultados iguais ao PC: True
+[fpu] cadeia_hist: 1358313 ciclos simulados em 671 s; marca final 0f00001c; resultados iguais ao PC: True
+[fpu] cadeia_exato: 1335562 ciclos simulados em 752 s; marca final 0f000000; resultados iguais ao PC: True
+gravado I:\Momea\2026\Artigo\Relatorio_Artigo\MLP\embarcado\microblaze\sim\resultados\ciclos_mb_fpu.csv

@@ -1,0 +1,17 @@
+Janelas: 3540; descritores: 36; classes CFG: ['100-100', '100-25', '100-50', '100-75', '25-100', '50-100', '75-100']
+Parâmetros por rede: FREQ 4481, CFG 4679
+
+FREQ (regressor, Hz)
+  |sklearn - float32 C-ref| máx = 7.25e-13 Hz
+  |sklearn - int8|          máx = 11.793 Hz, média = 0.806 Hz
+  nível arredondado (10 Hz) igual sklearn x int8: 96.64 %
+  MAE treino (só referência, não é desempenho): sklearn 1.54 Hz, int8 1.81 Hz
+
+CFG (classificador, 7 classes)
+  classe igual sklearn x float32: 100.00 %
+  classe igual sklearn x int8:    98.16 %
+  acurácia treino (só referência): sklearn 92.8 %, int8 92.5 %
+
+Quantização
+  FREQ: S_IN=0.06299  s_w=['0.004291', '0.006782', '0.006428']  s_act=['0.04612', '0.0405']  M=[12584912, 16584693]
+  CFG: S_IN=0.06299  s_w=['0.008162', '0.01347', '0.01515']  s_act=['0.08606', '0.1513']  M=[12829167, 16454718]

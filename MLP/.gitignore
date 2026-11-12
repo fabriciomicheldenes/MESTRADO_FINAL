@@ -1,0 +1,27 @@
+# MLP — só fontes (12/11/2026). Os auxiliares de LaTeX (*.aux, *.log, *.out...)
+# já são ignorados pelo .gitignore da raiz do repositório.
+
+# ambientes e caches Python
+.venv/
+__pycache__/
+*.pyc
+
+# datasets (fora do repositório; ver README.md)
+*/Dados/
+
+# saídas da síntese HLS e da simulação do MicroBlaze
+*/embarcado/hls/proj_*/
+*/embarcado/hls/*log*.txt
+*/embarcado/hls/vitis_hls.log
+*/embarcado/microblaze/sim/elf/
+*.elf
+*.exe
+
+# vetores de teste gerados por exportar_hits.py a partir de Dados/
+# (os .h do modelo em embarcado/gerado/ ficam: são a rede treinada)
+*/embarcado/gerado/*.bin
+
+# pacotes e builds gerados
+*.zip
+_iris_build/
+_teste_write.txt

@@ -1,0 +1,5 @@
+﻿[soft] Vivado (projeto + imagens): rc=0, 29 s
+[soft] compile: rc=0, 4 s
+[soft] elaborate: rc=0, 21 s
+[soft] cadeia_exato: 4232352 ciclos simulados em 1650 s; marca final 0f000000; resultados iguais ao PC: True
+gravado I:\Momea\2026\Artigo\Relatorio_Artigo\MLP\embarcado\microblaze\sim\resultados\ciclos_mb_soft_cadeia_exato.csv

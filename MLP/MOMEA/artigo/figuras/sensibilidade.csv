@@ -1,0 +1,55 @@
+var,esq,tar,mod,v
+"principal
+(5 s, corte)",LORO,config,GB,0.22372881355932203
+"principal
+(5 s, corte)",LORO,config,MLP,0.280225988700565
+"principal
+(5 s, corte)",LORO,config,RF,0.21016949152542372
+"principal
+(5 s, corte)",LORO,freq,GB,4.965052470266305
+"principal
+(5 s, corte)",LORO,freq,MLP,5.6083948160065376
+"principal
+(5 s, corte)",LORO,freq,RF,4.846259806004191
+"principal
+(5 s, corte)",LOSO,freq,GB,4.208561299718064
+"principal
+(5 s, corte)",LOSO,freq,MLP,5.094221742877338
+"principal
+(5 s, corte)",LOSO,freq,RF,4.231545810173402
+"sem corte
+de limiar",LORO,config,GB,0.21864406779661016
+"sem corte
+de limiar",LORO,config,MLP,0.2830508474576271
+"sem corte
+de limiar",LORO,config,RF,0.21073446327683615
+"sem corte
+de limiar",LORO,freq,GB,4.972901765389378
+"sem corte
+de limiar",LORO,freq,MLP,5.443932993426322
+"sem corte
+de limiar",LORO,freq,RF,4.846309151354384
+"sem corte
+de limiar",LOSO,freq,GB,4.216017452983194
+"sem corte
+de limiar",LOSO,freq,MLP,5.082023277400517
+"sem corte
+de limiar",LOSO,freq,RF,4.23247817049983
+"janela
+2 s",LORO,config,GB,0.19169293111211166
+"janela
+2 s",LORO,config,MLP,0.2770148581719946
+"janela
+2 s",LORO,config,RF,0.20846465556055832
+"janela
+2 s",LORO,freq,GB,5.601296057345184
+"janela
+2 s",LORO,freq,MLP,5.098029278121759
+"janela
+2 s",LORO,freq,RF,5.735728824878112
+"janela
+2 s",LOSO,freq,GB,5.021094185729369
+"janela
+2 s",LOSO,freq,MLP,5.013390960751962
+"janela
+2 s",LOSO,freq,RF,4.858253466753688

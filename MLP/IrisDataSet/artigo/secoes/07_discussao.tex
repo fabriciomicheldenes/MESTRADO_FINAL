@@ -1,0 +1,145 @@
+% =======================================================================================================
+\section{Discussão}
+\label{sec:discussao}
+
+Os resultados são simples de resumir e difíceis de interpretar. A rede acerta cerca de $97\,\%$
+das amostras e erra três de quarenta e cinco no teste. Uma regressão logística acerta um pouco
+mais, e ambos os resultados devem ser lidos com a mesma desconfiança saudável. Esta seção discute
+o que os números significam, o que eles não significam e o que fazer com eles.
+
+\subsection{Por que a rede não supera a regressão logística}
+
+O resultado mais desconfortável --- e mais instrutivo --- é que a MLP não é superior a um modelo
+linear. Há três evidências independentes apontando na mesma direção.
+
+\paragraph{Evidência 1: a ativação identidade funciona tão bem quanto qualquer outra.}
+Na \tabela{tab:ativacoes}, uma rede com ativação identidade na camada oculta --- que é
+matematicamente equivalente a uma regressão logística multinomial --- obtém $96{,}0\,\%$ de
+acurácia e a \emph{menor} entropia cruzada de todas as configurações ($0{,}083$). Se a não
+linearidade estivesse capturando estrutura real, ela deveria produzir probabilidades melhores. Não
+produz.
+
+\paragraph{Evidência 2: as fronteiras de decisão são retas.}
+A \figura{fig:fronteira-comparacao} mostra que a MLP e a regressão logística produzem fronteiras
+praticamente idênticas no plano da pétala. A rede \emph{poderia} desenhar curvas; ela escolhe
+retas, porque a regularização e os dados não justificam o contrário.
+
+\paragraph{Evidência 3: a capacidade não ajuda.}
+A \tabela{tab:arquiteturas} mostra que a acurácia é plana entre 35 e 9\,091 parâmetros. Se o
+problema exigisse uma fronteira curva, redes maiores deveriam vencer. Elas não vencem --- e as
+maiores perdem ligeiramente, por variância.
+
+A explicação é geométrica: as três classes do Iris estão organizadas ao longo de uma direção
+principal, com a \emph{setosa} separada e as outras duas quase separadas por um plano. Um modelo
+linear já expressa essa estrutura; camadas ocultas adicionam graus de liberdade que o problema não
+usa.
+
+\subsection{Então para que serve a MLP aqui?}
+
+Seria um erro concluir que a MLP é inútil. O que o experimento mostra é mais específico: \emph{neste
+conjunto de dados}, a rede não tem vantagem. Ela continua sendo o modelo adequado quando:
+
+\begin{itemize}
+	\item a fronteira é comprovadamente não linear (dados de sensores, imagens, séries temporais
+	      com regimes);
+	\item há interações entre atributos que um modelo aditivo não captura;
+	\item o volume de dados é suficiente para estimar os parâmetros extras --- o que não é o caso
+	      de 150 amostras;
+	\item há mais de uma dezena de atributos relevantes, situação em que a rede pode aprender
+	      representações intermediárias.
+\end{itemize}
+
+O valor didático do Iris está justamente aí: ele mostra que \emph{mais modelo} não é sinônimo de
+\emph{melhor modelo}. Escolher a complexidade certa é parte do problema, não um detalhe posterior.
+
+\subsection{O papel da validação}
+
+A diferença entre a estimativa de validação cruzada ($96{,}8\,\%$) e a de teste ($93{,}3\,\%$) é o
+lembrete de que nenhuma estimativa é exata. Três fontes de incerteza atuam em conjunto:
+
+\begin{enumerate}
+	\item \textbf{amostragem}: 45 amostras de teste produzem um intervalo de confiança de quase 16
+	      pontos percentuais;
+	\item \textbf{partição}: a validação cruzada depende de como as dobras são formadas; o desvio
+	      entre dobras foi de cerca de 3 pontos;
+	\item \textbf{seleção}: a configuração foi escolhida olhando os resultados de validação
+	      cruzada, o que introduz um viés otimista de magnitude desconhecida.
+\end{enumerate}
+
+A terceira fonte é a mais sutil. Quando se testam 9 arquiteturas, 4 ativações e 17 valores de
+$\alpha$, o melhor resultado entre centenas de combinações é necessariamente favorecido pelo acaso.
+A forma rigorosa de lidar com isso é a \emph{validação cruzada aninhada}: uma cruzada externa
+estima o desempenho e uma interna seleciona hiperparâmetros, tudo dentro de cada dobra externa.
+Neste relatório, o conjunto de teste reservado cumpre parcialmente esse papel, mas uma única
+divisão ainda é uma amostra de tamanho 1 do processo de divisão.
+
+\subsection{Limitações do estudo}
+
+\begin{itemize}
+	\item \textbf{uma única divisão treino/teste}. Repetir a divisão 30 vezes e reportar a
+	      distribuição das acurácias daria uma estimativa mais estável que um único número;
+	\item \textbf{sem análise de calibração}. Acurácia e entropia cruzada não mostram se as
+	      probabilidades são confiáveis. Um diagrama de confiabilidade (\emph{reliability diagram})
+	      e o escore de Brier completariam o diagnóstico;
+	\item \textbf{importância por permutação com atributos correlacionados}. Comprimento e largura
+	      da pétala têm correlação $0{,}96$; a importância de um é subestimada porque o outro
+	      substitui a informação. Métodos como SHAP lidam melhor com esse caso;
+	\item \textbf{apenas um conjunto de dados}. As conclusões sobre arquitetura e regularização
+	      valem para o Iris. Não devem ser extrapoladas para outros domínios sem verificação;
+	\item \textbf{sem busca exaustiva}. A varredura de hiperparâmetros foi em grade, não bayesiana,
+	      e não incluiu \emph{dropout}, \emph{batch normalization} ou \emph{learning rate schedule}.
+\end{itemize}
+
+Nenhuma dessas limitações invalida os resultados; elas delimitam o alcance das afirmações. Um
+relatório que não as declara está incompleto, não importa quão bom seja o número.
+
+\subsection{O que o Iris não permite concluir}
+
+Vale ser explícito sobre algumas conclusões que \emph{não} podem ser tiradas deste estudo:
+
+\begin{itemize}
+	\item que redes neurais são piores que modelos lineares em geral;
+	\item que arquiteturas profundas não funcionam;
+	\item que a regularização não importa;
+	\item que o número de parâmetros deve ser sempre pequeno.
+\end{itemize}
+
+O que se pode afirmar é mais modesto e mais útil: em um problema com 150 amostras, quatro
+atributos e classes quase linearmente separáveis, uma rede pequena é suficiente e um modelo
+linear é competitivo. A complexidade do modelo deve acompanhar a complexidade do problema --- e a
+única forma de saber é medir.
+
+\subsection{Lições práticas}
+
+O estudo sugere um roteiro para quem vai aplicar uma MLP a um problema tabular:
+
+\begin{enumerate}
+	\item \textbf{olhe os dados antes}. Um gráfico de dispersão e uma matriz de correlação evitam
+	      semanas de ajuste inútil;
+	\item \textbf{comece simples}. Uma regressão logística é um \emph{baseline} obrigatório; se a
+	      rede não a supera, a rede não se justifica;
+	\item \textbf{padronize dentro do pipeline}. O pré-processamento deve ser ajustado apenas no
+	      treino de cada dobra;
+	\item \textbf{reserve um teste}. E não o olhe até o final;
+	\item \textbf{varie uma coisa por vez}. Arquitetura, ativação e regularização interagem, mas
+	      varreduras simultâneas escondem qual fator causou o quê;
+	\item \textbf{reporte incerteza}. Uma acurácia sem intervalo de confiança é uma meia-verdade;
+	\item \textbf{verifique o gradiente}. Se você implementou a retropropagação, compare com
+	      diferenças finitas antes de confiar no resultado;
+	\item \textbf{compare com o custo}. A MLP levou 40 vezes mais tempo que a regressão logística
+	      para um resultado ligeiramente pior. Em produção, isso importa.
+\end{enumerate}
+
+\subsection{Trabalhos futuros}
+
+Três extensões naturais deste estudo são:
+
+\begin{itemize}
+	\item \textbf{validação cruzada aninhada} com correção para múltiplas comparações, para
+	      quantificar o viés de seleção;
+	\item \textbf{calibração}: curvas de confiabilidade, escore de Brier e \emph{temperature
+	      scaling}, que mostram se a rede sabe \emph{o quanto} está incerta;
+	\item \textbf{extensão para outros conjuntos}: repetir o protocolo em bases com fronteiras
+	      comprovadamente não lineares (por exemplo, \emph{two moons}, \emph{circles} e dados de
+	      sensores) para contrastar com o que foi observado no Iris.
+\end{itemize}

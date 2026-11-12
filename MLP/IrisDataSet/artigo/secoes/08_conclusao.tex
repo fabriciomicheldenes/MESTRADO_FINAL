@@ -1,0 +1,55 @@
+% =======================================================================================================
+\section{Conclusão}
+\label{sec:conclusao}
+
+Este relatório construiu, treinou, avaliou e interpretou uma rede perceptron multicamadas para o
+conjunto de dados Iris. O percurso foi deliberadamente completo: da formulação do neurônio
+artificial à derivação da retropropagação, do protocolo de validação à comparação estatística com
+modelos alternativos.
+
+\paragraph{O que foi feito.} Uma rede com uma camada oculta de 16 neurônios, ativação tangente
+hiperbólica e regularização $L_2$ foi ajustada com o otimizador Adam sobre \nTreino{} amostras
+padronizadas. A seleção de arquitetura, ativação e regularização foi feita por validação cruzada
+estratificada repetida, com o pré-processamento dentro do \texttt{Pipeline} para evitar vazamento.
+O desempenho final foi medido uma única vez em \nTeste{} amostras reservadas.
+
+\paragraph{O que foi obtido.} A acurácia média em validação cruzada foi de \accMLP{}, com desvio de
+\sdMLP{} entre dobras. No conjunto de teste, a rede acertou \accTeste{} das amostras (intervalo de
+confiança de $95\,\%$: \icLo{} a \icHi{}), com $F_1$ macro de \fmacroTeste{} e entropia cruzada de
+\llteste{}. Os erros se concentram na fronteira entre \emph{versicolor} e \emph{virginica}, e a
+\emph{setosa} foi classificada sem erro.
+
+\paragraph{O que foi verificado.} A implementação da retropropagação foi validada por diferenças
+centrais, com erro relativo máximo de \erroGrad{} --- muito abaixo do limiar de $10^{-4}$. Uma
+implementação independente em NumPy, com o gradiente escrito à mão, reproduziu a mesma acurácia da
+biblioteca (\accNumpy{}). A concordância entre duas implementações independentes é a evidência
+mais forte de que o resultado não é artefato de código.
+
+\paragraph{O que foi aprendido.} Três conclusões se destacam, e nenhuma delas é sobre ``acertar
+mais''.
+
+\begin{enumerate}
+	\item \textbf{a complexidade deve acompanhar o problema}. No Iris, uma rede de 35 parâmetros
+	      iguala ou supera redes de 9\,091 parâmetros. O excesso de capacidade não trouxe ganho,
+	      trouxe variância;
+	\item \textbf{o modelo mais simples é um adversário honesto}. A regressão logística
+	      (\accLR{}) superou a rede por uma margem pequena mas consistente
+	      ($p=\pLR$). Em um problema quase linearmente separável, um modelo linear é a linha de
+	      base que qualquer método mais complexo precisa justificar;
+	\item \textbf{a incerteza é parte do resultado}. A diferença de $3{,}5$ pontos entre validação
+	      cruzada e teste, e o intervalo de confiança de 16 pontos percentuais, mostram que
+	      reportar um único número seria enganoso. A avaliação honesta inclui a variabilidade.
+\end{enumerate}
+
+\paragraph{Contribuições.} O trabalho deixa um artefato reproduzível: o script
+\texttt{mlp\_iris.py}, que executa a análise de ponta a ponta e gera todas as figuras, tabelas e
+números citados neste documento. Deixa também uma exposição didática da matemática da MLP, com
+derivação completa no apêndice, e um protocolo de avaliação que pode ser transplantado para outros
+conjuntos tabulares.
+
+\paragraph{Consideração final.} O Iris é frequentemente apresentado como um problema resolvido, e
+é --- mas o que ele ensina não é que as redes neurais funcionam. Ensina que a escolha do modelo é
+uma decisão informada por evidência, que a avaliação correta é mais difícil que o treinamento e
+que um resultado negativo, bem medido, vale mais que um resultado positivo mal medido. Uma rede
+que acerta $97\,\%$ e sabe explicar por que não acerta $100\,\%$ é mais útil que uma que reporta
+$99{,}9\,\%$ sem saber de onde veio o número.

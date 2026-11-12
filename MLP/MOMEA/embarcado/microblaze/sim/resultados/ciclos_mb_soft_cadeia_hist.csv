@@ -1,0 +1,5 @@
+config,programa,etapa,indice,ciclos,hits,confere_pc,ciclos_totais
+soft,cadeia_hist,hits_total,0,3671155,81,True,4190211
+soft,cadeia_hist,hit_medio,0,45322.9,81,True,4190211
+soft,cadeia_hist,fechar_janela,0,214316,,True,4190211
+soft,cadeia_hist,mlp_int8_com_quantizacao,0,205381,,True,4190211

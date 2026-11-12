@@ -1,0 +1,296 @@
+﻿% =======================================================================================================
+% Relatório técnico: redes MLP aplicadas ao conjunto de dados Iris
+% Figuras e tabelas geradas por ../mlp_iris.py (pastas figuras/ e tabelas/).
+% Compilar com pdflatex (duas vezes, para sumário e referências cruzadas).
+% =======================================================================================================
+\documentclass[12pt,a4paper]{article}
+
+% ---------- Codificação, fonte e idioma ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[brazilian]{babel}
+
+% ---------- Matemática ----------
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{bm}
+
+% ---------- Layout ----------
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{microtype}
+\usepackage{setspace}
+\onehalfspacing
+\setlength{\parindent}{1.25cm}
+\setlength{\emergencystretch}{3em}
+
+% ---------- Figuras e tabelas ----------
+\usepackage{graphicx}
+\graphicspath{{figuras/}}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{longtable}
+\usepackage{caption}
+\usepackage{subcaption}
+\captionsetup{font=small,labelfont=bf}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+
+% ---------- Cores, listas e código ----------
+\usepackage{xcolor}
+\usepackage{enumitem}
+\setlist[itemize]{topsep=2pt,itemsep=2pt,parsep=0pt}
+\setlist[enumerate]{topsep=2pt,itemsep=2pt,parsep=0pt}
+\usepackage{listings}
+\lstdefinestyle{py}{
+	language=Python,
+	basicstyle=\ttfamily\footnotesize,
+	keywordstyle=\color[rgb]{0.10,0.20,0.65}\bfseries,
+	commentstyle=\color[rgb]{0.35,0.45,0.35}\itshape,
+	stringstyle=\color[rgb]{0.55,0.20,0.10},
+	numbers=left, numberstyle=\tiny\color{gray}, numbersep=6pt,
+	frame=single, framerule=0.4pt, rulecolor=\color{gray!60},
+	backgroundcolor=\color{gray!4},
+	breaklines=true, columns=fullflexible, keepspaces=true,
+	showstringspaces=false, tabsize=4, upquote=true,
+	extendedchars=true, inputencoding=utf8,
+	literate=%
+	{á}{{\'a}}1 {â}{{\^a}}1 {ã}{{\~a}}1 {à}{{\`a}}1
+	{Á}{{\'A}}1 {Â}{{\^A}}1 {Ã}{{\~A}}1
+	{é}{{\'e}}1 {ê}{{\^e}}1 {É}{{\'E}}1
+	{í}{{\'i}}1 {ó}{{\'o}}1 {ô}{{\^o}}1 {õ}{{\~o}}1 {Ó}{{\'O}}1
+	{ú}{{\'u}}1 {ç}{{\c{c}}}1 {Ç}{{\c{C}}}1
+}
+\lstset{style=py}
+
+% ---------- Desenhos ----------
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,calc,fit,backgrounds}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+% ---------- Teoremas ----------
+\theoremstyle{definition}
+\newtheorem{definicao}{Definição}[section]
+\newtheorem{exemplo}{Exemplo}[section]
+\theoremstyle{plain}
+\newtheorem{teorema}{Teorema}[section]
+\newtheorem{proposicao}{Proposição}[section]
+\theoremstyle{remark}
+\newtheorem*{observacao}{Observação}
+
+% ---------- Referências e links ----------
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,
+            urlcolor=blue!60!black,bookmarksnumbered]{hyperref}
+\usepackage{url}
+
+% ---------- Comandos auxiliares ----------
+\newcommand{\completar}[1]{\textcolor{red}{[#1]}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\dd}{\,\mathrm{d}}
+\newcommand{\Loss}{\mathcal{L}}
+\newcommand{\bW}{\bm{W}}
+\newcommand{\bX}{\bm{X}}
+\newcommand{\bY}{\bm{Y}}
+\newcommand{\bZ}{\bm{Z}}
+\newcommand{\bA}{\bm{A}}
+\newcommand{\bP}{\bm{P}}
+\newcommand{\bg}{\bm{g}}
+\newcommand{\bb}{\bm{b}}
+\newcommand{\bz}{\bm{z}}
+\newcommand{\ba}{\bm{a}}
+\newcommand{\bx}{\bm{x}}
+\newcommand{\by}{\bm{y}}
+\newcommand{\bp}{\bm{p}}
+\newcommand{\bdelta}{\bm{\delta}}
+\newcommand{\T}{^{\!\top}}
+\newcommand{\softmax}{\operatorname{softmax}}
+\newcommand{\relu}{\operatorname{ReLU}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\mathbb{V}\mathrm{ar}}
+\newcommand{\indic}{\mathbb{I}}
+\newcommand{\argmax}{\operatorname*{arg\,max}}
+\newcommand{\argmin}{\operatorname*{arg\,min}}
+\newcommand{\secao}[1]{Seção~\ref{#1}}
+\newcommand{\figura}[1]{Figura~\ref{#1}}
+\newcommand{\tabela}[1]{Tabela~\ref{#1}}
+\newcommand{\equacao}[1]{Equação~\eqref{#1}}
+
+% Números produzidos pela execução de mlp_iris.py
+\input{numeros.tex}
+
+% =======================================================================================================
+\title{\textbf{Redes neurais perceptron multicamadas aplicadas ao conjunto de dados Iris}\\[2mm]
+	\large Um estudo didático com derivações matemáticas, experimentos controlados e validação estatística}
+\author{\completar{Nome do autor} \\ \completar{Instituição} \\ \texttt{\completar{email}}}
+\date{\today}
+
+% =======================================================================================================
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+Este relatório apresenta, de forma detalhada e didática, o funcionamento de uma rede neural
+\emph{perceptron multicamadas} (MLP) aplicada ao conjunto de dados Iris, de Fisher. O texto parte
+da formulação do neurônio artificial e chega ao treinamento completo por retropropagação, cobrindo
+a função de custo, as funções de ativação, os otimizadores, a regularização e o protocolo de
+avaliação. Cada etapa é acompanhada de derivação matemática e de um experimento numérico
+reproduzível.
+
+Os experimentos usam as 150 amostras, quatro atributos contínuos e três espécies do Iris, com
+divisão estratificada de 70\,\% para treino (\nTreino{} amostras) e 30\,\% para teste
+(\nTeste{} amostras) e validação cruzada estratificada repetida (5 dobras $\times$ 5 repetições,
+25 ajustes). A rede adotada tem uma camada oculta com 16 neurônios e ativação tangente hiperbólica,
+totalizando \parametrosMLP{} parâmetros treináveis. Ela alcança acurácia média de \accMLP{} na
+validação cruzada e de \accTeste{} no conjunto de teste, com $F_1$ macro de \fmacroTeste{} e entropia
+cruzada de \llteste{}. Uma verificação numérica do gradiente confirma a implementação da
+retropropagação com erro relativo máximo de \erroGrad{}, e uma implementação manual em NumPy
+reproduz exatamente a acurácia do scikit-learn (\accNumpy{} contra \accSklearn{}).
+
+O relatório também discute o que esse resultado significa. O Iris é quase linearmente separável e
+tem apenas quatro dimensões: uma regressão logística atinge \accLR{}, portanto a MLP não é
+superior a um modelo linear neste problema (diferença de $-0{,}67$ ponto percentual,
+$p=\pLR$ no teste de Wilcoxon). Essa constatação, longe de invalidar a rede, delimita com precisão
+o que um MLP agrega e o que não agrega --- e é justamente o tipo de conclusão que só uma avaliação
+honesta produz. O material inclui ainda estudo de arquiteturas, funções de ativação, regularização
+$L_2$, curvas de aprendizado, fronteiras de decisão, importância de atributos e análise dos pesos
+aprendidos.
+
+\vspace{2mm}
+\noindent\textbf{Palavras-chave:} redes neurais; perceptron multicamadas; retropropagação; Iris;
+validação cruzada; aprendizado de máquina; didático.
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+\listoffigures
+\listoftables
+\newpage
+
+% =======================================================================================================
+\input{secoes/01_introducao.tex}
+\input{secoes/02_dados.tex}
+\input{secoes/03_fundamentos.tex}
+\input{secoes/04_metodologia.tex}
+\input{secoes/05_implementacao.tex}
+\input{secoes/06_resultados.tex}
+\input{secoes/07_discussao.tex}
+\input{secoes/08_conclusao.tex}
+\input{secoes/09_apendices.tex}
+
+% =======================================================================================================
+\begin{thebibliography}{99}
+\addcontentsline{toc}{section}{Referências}
+
+\bibitem{fisher1936}
+FISHER, R. A. The use of multiple measurements in taxonomic problems.
+\emph{Annals of Eugenics}, v.~7, n.~2, p.~179--188, 1936.
+
+\bibitem{anderson1935}
+ANDERSON, E. The irises of the Gaspé Peninsula.
+\emph{Bulletin of the American Iris Society}, v.~59, p.~2--5, 1935.
+
+\bibitem{mcculloch1943}
+McCULLOCH, W. S.; PITTS, W. A logical calculus of the ideas immanent in nervous activity.
+\emph{Bulletin of Mathematical Biophysics}, v.~5, p.~115--133, 1943.
+
+\bibitem{rosenblatt1958}
+ROSENBLATT, F. The perceptron: a probabilistic model for information storage and organization
+in the brain. \emph{Psychological Review}, v.~65, n.~6, p.~386--408, 1958.
+
+\bibitem{minsky1969}
+MINSKY, M.; PAPERT, S. \emph{Perceptrons: an introduction to computational geometry}.
+Cambridge: MIT Press, 1969.
+
+\bibitem{rumelhart1986}
+RUMELHART, D. E.; HINTON, G. E.; WILLIAMS, R. J. Learning representations by back-propagating
+errors. \emph{Nature}, v.~323, p.~533--536, 1986.
+
+\bibitem{cybenko1989}
+CYBENKO, G. Approximation by superpositions of a sigmoidal function.
+\emph{Mathematics of Control, Signals and Systems}, v.~2, p.~303--314, 1989.
+
+\bibitem{hornik1989}
+HORNIK, K.; STINCHCOMBE, M.; WHITE, H. Multilayer feedforward networks are universal
+approximators. \emph{Neural Networks}, v.~2, n.~5, p.~359--366, 1989.
+
+\bibitem{lecun1998}
+LECUN, Y.; BOTTOU, L.; ORR, G. B.; MÜLLER, K.-R. Efficient backprop.
+In: \emph{Neural Networks: Tricks of the Trade}. Berlin: Springer, 1998. p.~9--50.
+
+\bibitem{glorot2010}
+GLOROT, X.; BENGIO, Y. Understanding the difficulty of training deep feedforward neural
+networks. In: \emph{Proceedings of AISTATS}, 2010. p.~249--256.
+
+\bibitem{he2015}
+HE, K.; ZHANG, X.; REN, S.; SUN, J. Delving deep into rectifiers: surpassing human-level
+performance on ImageNet classification. In: \emph{Proceedings of ICCV}, 2015. p.~1026--1034.
+
+\bibitem{srivastava2014}
+SRIVASTAVA, N.; HINTON, G.; KRIZHEVSKY, A.; SUTSKEVER, I.; SALAKHUTDINOV, R. Dropout: a simple
+way to prevent neural networks from overfitting. \emph{Journal of Machine Learning Research},
+v.~15, p.~1929--1958, 2014.
+
+\bibitem{kingma2015}
+KINGMA, D. P.; BA, J. Adam: a method for stochastic optimization.
+In: \emph{Proceedings of ICLR}, 2015.
+
+\bibitem{prechelt1998}
+PRECHELT, L. Early stopping --- but when?
+In: \emph{Neural Networks: Tricks of the Trade}. Berlin: Springer, 1998. p.~55--69.
+
+\bibitem{breiman2001}
+BREIMAN, L. Random forests. \emph{Machine Learning}, v.~45, p.~5--32, 2001.
+
+\bibitem{friedman2001}
+FRIEDMAN, J. H. Greedy function approximation: a gradient boosting machine.
+\emph{Annals of Statistics}, v.~29, n.~5, p.~1189--1232, 2001.
+
+\bibitem{pedregosa2011}
+PEDREGOSA, F. et al. Scikit-learn: machine learning in Python.
+\emph{Journal of Machine Learning Research}, v.~12, p.~2825--2830, 2011.
+
+\bibitem{bishop2006}
+BISHOP, C. M. \emph{Pattern recognition and machine learning}. New York: Springer, 2006.
+
+\bibitem{goodfellow2016}
+GOODFELLOW, I.; BENGIO, Y.; COURVILLE, A. \emph{Deep learning}. Cambridge: MIT Press, 2016.
+
+\bibitem{haykin2009}
+HAYKIN, S. \emph{Neural networks and learning machines}. 3.~ed. New York: Pearson, 2009.
+
+\bibitem{kaufman2012}
+KAUFMAN, S.; ROSSET, S.; PERLICH, C.; STITES, B. Leakage in data mining: formulation, detection,
+and avoidance. \emph{ACM Transactions on Knowledge Discovery from Data}, v.~6, n.~4, p.~1--21, 2012.
+
+\bibitem{roberts2017}
+ROBERTS, D. R. et al. Cross-validation strategies for data with temporal, spatial, hierarchical,
+or phylogenetic structure. \emph{Ecography}, v.~40, n.~8, p.~913--929, 2017.
+
+\bibitem{dietterich1998}
+DIETTERICH, T. G. Approximate statistical tests for comparing supervised classification learning
+algorithms. \emph{Neural Computation}, v.~10, n.~7, p.~1895--1923, 1998.
+
+\bibitem{demsar2006}
+DEMŠAR, J. Statistical comparisons of classifiers over multiple data sets.
+\emph{Journal of Machine Learning Research}, v.~7, p.~1--30, 2006.
+
+\bibitem{kohavi1995}
+KOHAVI, R. A study of cross-validation and bootstrap for accuracy estimation and model selection.
+In: \emph{Proceedings of IJCAI}, 1995. p.~1137--1143.
+
+\bibitem{sklearn-iris}
+SCIKIT-LEARN. \emph{The Iris dataset}. Exemplo da documentação oficial.
+Disponível em: \url{https://scikit-learn.org/1.4/auto_examples/datasets/plot_iris_dataset.html}.
+Acesso em: 2026.
+
+\bibitem{sklearn-mlp}
+SCIKIT-LEARN. \emph{sklearn.neural\_network.MLPClassifier}.
+Disponível em: \url{https://scikit-learn.org/stable/modules/generated/sklearn.neural_network.MLPClassifier.html}.
+Acesso em: 2026.
+
+\end{thebibliography}
+
+\end{document}

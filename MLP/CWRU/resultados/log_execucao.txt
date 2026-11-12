@@ -1,0 +1,108 @@
+1) Leitura
+  [aviso] IR014_0__174.mat: sem X174_DE_time; usando X173_DE_time
+   40 gravações
+2-3) Hits e descritores por janela
+   1376 janelas; por classe: {'B': 420, 'OR': 420, 'IR': 396, 'N': 140}
+4) Validação
+  4 classes  sorteada classicos MLP: acc=0.868 (por gravação 0.875)
+  4 classes  sorteada classicos RF: acc=0.895 (por gravação 0.925)
+  4 classes  sorteada envelope  MLP: acc=0.865 (por gravação 0.900)
+  4 classes  sorteada envelope  RF: acc=0.874 (por gravação 0.900)
+  4 classes  sorteada hits_fixo MLP: acc=0.871 (por gravação 0.900)
+  4 classes  sorteada hits_fixo RF: acc=0.887 (por gravação 0.950)
+  4 classes  sorteada hits      MLP: acc=0.892 (por gravação 0.925)
+  4 classes  sorteada hits      RF: acc=0.905 (por gravação 0.925)
+  4 classes  sorteada todos     MLP: acc=0.898 (por gravação 0.900)
+  4 classes  sorteada todos     RF: acc=0.919 (por gravação 0.900)
+  4 classes  LOLO     classicos MLP: acc=0.825 (por gravação 0.825)
+  4 classes  LOLO     classicos RF: acc=0.864 (por gravação 0.875)
+  4 classes  LOLO     envelope  MLP: acc=0.852 (por gravação 0.900)
+  4 classes  LOLO     envelope  RF: acc=0.858 (por gravação 0.900)
+  4 classes  LOLO     hits_fixo MLP: acc=0.823 (por gravação 0.850)
+  4 classes  LOLO     hits_fixo RF: acc=0.844 (por gravação 0.800)
+  4 classes  LOLO     hits      MLP: acc=0.821 (por gravação 0.825)
+  4 classes  LOLO     hits      RF: acc=0.879 (por gravação 0.900)
+  4 classes  LOLO     todos     MLP: acc=0.884 (por gravação 0.875)
+  4 classes  LOLO     todos     RF: acc=0.896 (por gravação 0.875)
+  4 classes  LOSO     classicos MLP: acc=0.212 (por gravação 0.256)
+  4 classes  LOSO     classicos RF: acc=0.284 (por gravação 0.282)
+  4 classes  LOSO     envelope  MLP: acc=0.629 (por gravação 0.667)
+  4 classes  LOSO     envelope  RF: acc=0.580 (por gravação 0.590)
+  4 classes  LOSO     hits_fixo MLP: acc=0.246 (por gravação 0.205)
+  4 classes  LOSO     hits_fixo RF: acc=0.353 (por gravação 0.385)
+  4 classes  LOSO     hits      MLP: acc=0.457 (por gravação 0.436)
+  4 classes  LOSO     hits      RF: acc=0.533 (por gravação 0.513)
+  4 classes  LOSO     todos     MLP: acc=0.414 (por gravação 0.385)
+  4 classes  LOSO     todos     RF: acc=0.543 (por gravação 0.513)
+  10 classes sorteada classicos MLP: acc=0.861 (por gravação 0.875)
+  10 classes sorteada classicos RF: acc=0.901 (por gravação 0.950)
+  10 classes sorteada envelope  MLP: acc=0.808 (por gravação 0.875)
+  10 classes sorteada envelope  RF: acc=0.839 (por gravação 0.925)
+  10 classes sorteada hits_fixo MLP: acc=0.879 (por gravação 0.950)
+  10 classes sorteada hits_fixo RF: acc=0.901 (por gravação 0.975)
+  10 classes sorteada hits      MLP: acc=0.895 (por gravação 0.975)
+  10 classes sorteada hits      RF: acc=0.915 (por gravação 0.975)
+  10 classes sorteada todos     MLP: acc=0.913 (por gravação 0.975)
+  10 classes sorteada todos     RF: acc=0.932 (por gravação 0.975)
+  10 classes LOLO     classicos MLP: acc=0.754 (por gravação 0.725)
+  10 classes LOLO     classicos RF: acc=0.831 (por gravação 0.875)
+  10 classes LOLO     envelope  MLP: acc=0.795 (por gravação 0.900)
+  10 classes LOLO     envelope  RF: acc=0.816 (por gravação 0.900)
+  10 classes LOLO     hits_fixo MLP: acc=0.805 (por gravação 0.825)
+  10 classes LOLO     hits_fixo RF: acc=0.817 (por gravação 0.875)
+  10 classes LOLO     hits      MLP: acc=0.836 (por gravação 0.875)
+  10 classes LOLO     hits      RF: acc=0.847 (por gravação 0.925)
+  10 classes LOLO     todos     MLP: acc=0.868 (por gravação 0.875)
+  10 classes LOLO     todos     RF: acc=0.870 (por gravação 0.900)
+5) MLP int8 (LOLO)
+  fold   n  acc_float  acc_int8  concordancia  n_entradas  macs grupo
+carga0 185   0.778378  0.772973      0.994595          14  3072  hits
+carga1 391   0.884910  0.882353      0.997442          14  3072  hits
+carga2 400   0.857500  0.857500      0.995000          14  3072  hits
+carga3 400   0.742500  0.737500      0.995000          14  3072  hits
+carga0 185   0.864865  0.859459      0.983784          29  4032 todos
+carga1 391   0.905371  0.905371      1.000000          29  4032 todos
+carga2 400   0.890000  0.887500      0.997500          29  4032 todos
+carga3 400   0.867500  0.865000      0.992500          29  4032 todos
+6) Figuras
+{
+ "gravacoes": 40,
+ "janelas": 1376,
+ "janelas_por_classe": {
+  "B": 420,
+  "OR": 420,
+  "IR": 396,
+  "N": 140
+ },
+ "limiar_g": 0.3,
+ "ddt": 48,
+ "hlt": 48,
+ "maxdur": 960,
+ "janela_s": 0.25,
+ "gravacoes_com_saturacao": [
+  "B014_2__191.mat",
+  "B021_2__228.mat",
+  "B021_3__229.mat",
+  "IR021_1__214.mat",
+  "IR021_2__215.mat"
+ ],
+ "ordem_ihi_mediana": {
+  "IR": 5.265599276664089,
+  "B": 5.497368707373918,
+  "OR": 3.5982008995502244
+ },
+ "int8": {
+  "acc_float": {
+   "hits": 0.8158222160779706,
+   "todos": 0.8819339272136587
+  },
+  "acc_int8": {
+   "hits": 0.812581478537361,
+   "todos": 0.8793325758623073
+  },
+  "concordancia": {
+   "hits": 0.9955092624593903,
+   "todos": 0.993445945945946
+  }
+ }
+}

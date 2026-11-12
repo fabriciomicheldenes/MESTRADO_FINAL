@@ -1,0 +1,4 @@
+config,programa,etapa,indice,ciclos,hits,confere_pc,ciclos_totais
+soft,mlp,mlp_float32_2redes,0,3353499,,True,3559150
+soft,mlp,quantizacao_entrada,0,66296,,True,3559150
+soft,mlp,nucleo_int8_2redes,0,139042,,True,3559150

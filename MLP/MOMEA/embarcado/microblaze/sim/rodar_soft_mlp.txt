@@ -1,0 +1,5 @@
+﻿[soft] Vivado (projeto + imagens): rc=0, 29 s
+[soft] compile: rc=0, 4 s
+[soft] elaborate: rc=0, 22 s
+[soft] mlp: 3559150 ciclos simulados em 1400 s; marca final 1f000000; resultados iguais ao PC: True
+gravado I:\Momea\2026\Artigo\Relatorio_Artigo\MLP\embarcado\microblaze\sim\resultados\ciclos_mb_soft_mlp.csv

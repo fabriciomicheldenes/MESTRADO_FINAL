@@ -1,0 +1,92 @@
+% =======================================================================================================
+\section{Introdução}
+\label{sec:intro}
+
+Uma rede neural artificial é, antes de tudo, uma composição de funções afins e funções não lineares
+aplicadas em sequência. Essa descrição simples esconde o essencial: ao empilhar camadas, a rede
+deixa de ser um modelo linear e passa a representar fronteiras de decisão curvas, interações entre
+atributos e representações internas que não foram programadas por ninguém. O preço dessa
+flexibilidade é um conjunto maior de parâmetros a estimar e a necessidade de um protocolo de
+avaliação rigoroso, porque um modelo flexível demais decora o conjunto de treino com facilidade.
+
+Este relatório estuda a rede \emph{perceptron multicamadas} (\emph{multilayer perceptron}, MLP) no
+conjunto de dados Iris, um dos mais antigos e mais citados da estatística e do aprendizado de
+máquina. O Iris é pequeno --- 150 amostras, quatro atributos, três classes --- e isso é uma
+vantagem didática: permite ver o modelo inteiro, do gradiente ao peso individual, sem esconder
+nada atrás de poder computacional. Também permite um luxo raro em aprendizado de máquina:
+comparar a rede com alternativas simples e verificar, com honestidade, se ela realmente agrega.
+
+\subsection{Motivação}
+
+O perceptron foi proposto por Rosenblatt \cite{rosenblatt1958} como um modelo de neurônio capaz de
+aprender a partir de exemplos, e sua limitação foi demonstrada por Minsky e Papert
+\cite{minsky1969}: sem camadas ocultas, ele só separa classes linearmente separáveis. A solução
+veio com o algoritmo de retropropagação, popularizado por Rumelhart, Hinton e Williams
+\cite{rumelhart1986}, que mostrou como calcular o gradiente do erro em relação a \emph{todos} os
+pesos de uma rede com camadas ocultas. A partir daí, a MLP se tornou o modelo padrão para dados
+tabulares de dimensão moderada e a base conceitual das redes profundas atuais
+\cite{bishop2006,goodfellow2016}.
+
+Duas propriedades fazem da MLP um objeto de estudo especialmente instrutivo:
+
+\begin{itemize}
+	\item \textbf{aproximação universal}: uma única camada oculta, com neurônios suficientes, aproxima
+	      qualquer função contínua em um domínio compacto \cite{cybenko1989,hornik1989}. A arquitetura,
+	      portanto, não é o limite prático; o limite é a quantidade de dados e a qualidade da
+	      generalização;
+	\item \textbf{treinamento por gradiente}: todos os parâmetros são ajustados por um procedimento
+	      iterativo e diferenciável, o que torna o custo, o otimizador e a inicialização partes do
+	      modelo --- e não detalhes de implementação.
+\end{itemize}
+
+\subsection{Por que o Iris}
+
+O conjunto Iris foi coletado por Edgar Anderson e popularizado por Ronald Fisher em 1936
+\cite{anderson1935,fisher1936}. Ele descreve 150 flores de três espécies do gênero \emph{Iris}
+(\emph{I. setosa}, \emph{I. versicolor} e \emph{I. virginica}), com quatro medidas em centímetros:
+comprimento e largura da sépala e comprimento e largura da pétala. A variável resposta é a espécie,
+portanto um problema de classificação com três classes.
+
+O conjunto tem uma propriedade que o torna ideal para este relatório: duas das quatro variáveis
+(dimensões da pétala) já separam quase perfeitamente as classes, enquanto as outras duas
+(dimensões da sépala) são bem menos informativas. Isso permite observar o efeito da arquitetura,
+da regularização e da poda de atributos sem que o problema fique artificialmente difícil.
+
+\subsection{Objetivos}
+
+O objetivo geral é construir, avaliar e interpretar uma MLP para o Iris, com ênfase no
+entendimento e não apenas no resultado. Os objetivos específicos são:
+
+\begin{enumerate}
+	\item apresentar a formulação matemática da rede: propagação direta, função de custo,
+	      retropropagação, otimização e regularização;
+	\item descrever o conjunto Iris e verificar, por análise exploratória, o que torna o problema
+	      fácil ou difícil;
+	\item definir um protocolo de avaliação que não vaze informação entre treino e teste;
+	\item medir o efeito de arquitetura, ativação, regularização e taxa de aprendizado;
+	\item comparar a MLP com alternativas (regressão logística, floresta aleatória e
+	      \emph{gradient boosting}) sob as mesmas condições;
+	\item verificar a implementação por meio de checagem numérica do gradiente e de uma
+	      implementação independente em NumPy;
+	\item discutir o que o resultado significa --- inclusive quando ele não favorece a rede neural.
+\end{enumerate}
+
+\subsection{Organização e reprodutibilidade}
+
+O \secao{sec:dados} descreve os dados; o \secao{sec:mlp} apresenta os fundamentos matemáticos; o
+\secao{sec:metodo} define o protocolo experimental; o \secao{sec:impl} discute a implementação; o
+\secao{sec:resultados} apresenta os resultados; o \secao{sec:discussao} discute limites e
+interpretações; o \secao{sec:conclusao} conclui. Os apêndices trazem a derivação completa da
+retropropagação, trechos de código e tabelas auxiliares.
+
+Todos os números, figuras e tabelas deste relatório são produzidos pelo script
+\texttt{mlp\_iris.py}, que acompanha este documento. A semente aleatória é fixa ($42$) e a execução
+completa leva cerca de quatro minutos em um computador comum. As tabelas marcadas como
+``geradas automaticamente'' são incorporadas diretamente dos arquivos produzidos pelo script, de
+modo que texto e resultado não podem divergir sem que a reexecução falhe.
+
+\begin{observacao}
+Este é um relatório sobre um método, não sobre um campeonato. A pergunta não é apenas ``qual modelo
+acerta mais'', mas ``o que a rede aprendeu, com que confiança e a que custo''. Por isso há tanto
+espaço dedicado a validação, intervalos de confiança e testes estatísticos.
+\end{observacao}

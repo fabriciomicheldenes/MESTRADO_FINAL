@@ -1,0 +1,28 @@
+% Gerado por embarcado/figuras_sim.py a partir de ciclos_mb.csv e dos ELFs. NÃO EDITAR.
+\newcommand{\mbMlpIntSoftUs}{2\,053}
+\newcommand{\mbMlpIntFpuUs}{1\,463}
+\newcommand{\mbHitSoft}{38\,287}
+\newcommand{\mbHitFpu}{4\,232}
+\newcommand{\mbCargaEnsaioMax}{1}
+\newcommand{\mbMlpFloatSoft}{3\,353\,499}
+\newcommand{\mbMlpFloatFpu}{212\,130}
+\newcommand{\mbQuantSoft}{66\,296}
+\newcommand{\mbQuantFpu}{7\,232}
+\newcommand{\mbMlpIntSoft}{139\,042}
+\newcommand{\mbMlpIntFpu}{139\,042}
+\newcommand{\mbHitHistSoft}{45\,323}
+\newcommand{\mbHitHistFpu}{5\,122}
+\newcommand{\mbFecharSoft}{749\,938}
+\newcommand{\mbFecharFpu}{117\,676}
+\newcommand{\mbFecharHistSoft}{214\,316}
+\newcommand{\mbFecharHistFpu}{91\,974}
+\newcommand{\mbParagrafoMlp}{Sem FPU, a inferência em float32 custou 3\,353\,499 ciclos (33{,}5\,ms), 16 vezes a inferência int8, porque cada operação de ponto flutuante é emulada em software. Com FPU, o float32 caiu para 212\,130 ciclos, 1{,}5 vezes o int8. O núcleo int8 não usa ponto flutuante e custou exatamente o mesmo nas duas configurações (139\,042 ciclos, ou 15{,}5 ciclos por multiplicação-acumulação dos 8\,960 pesos); a diferença entre elas está na quantização da entrada, com algumas dezenas de operações de ponto flutuante, que custou 66\,296 ciclos sem FPU e 7\,232 com FPU.}
+\newcommand{\mbParagrafoCarga}{O custo por \textit{hit} é dominado pelos logaritmos, emulados em software sem FPU: 38\,287 ciclos sem FPU e 4\,232 com FPU, no modo exato. O histograma custa um pouco mais por \textit{hit} (45\,323 e 5\,122 ciclos), porque calcula o índice da classe, mas fecha a janela mais depressa (214\,316 contra 749\,938 ciclos sem FPU), porque não ordena: sem FPU, cada comparação da ordenação é uma chamada à biblioteca de ponto flutuante. Na taxa dos ensaios, cerca de 16 \textit{hits}/s nos dois canais, a cadeia completa ocupa 0{,}80\,\% da CPU sem FPU e 0{,}12\,\% com FPU. A 333 \textit{hits}/s por canal (666 no total), a ocupação chega a 25{,}7\,\% sem FPU e 2{,}9\,\% com FPU; nesse regime, a FPU passa a ser recomendável, ou o cálculo dos logaritmos por tabela.}
+\newcommand{\mbTextoMin}{36{,}2}
+\newcommand{\mbTextoMax}{42{,}4}
+\newcommand{\mbTextoExatoSoft}{42{,}0}
+\newcommand{\mbTextoExatoFpu}{36{,}2}
+\newcommand{\mbTextoHistSoft}{42{,}4}
+\newcommand{\mbTextoHistFpu}{36{,}7}
+\newcommand{\mbParagrafoRota}{Na MicroBlaze sem FPU, a inferência int8 leva 2\,053\,\(\mu\)s, 0{,}041\,\% de uma janela, e mesmo o float32 emulado (33{,}5\,ms) seria aceitável; a rota em software não exige nenhum recurso adicional de lógica.}
+\newcommand{\mbFatorHls}{18}

@@ -1,0 +1,94 @@
+{
+  "quant": {
+    "dif_media": -0.21798292671993047,
+    "dif_abs_media": 0.8059571693557708,
+    "dif_abs_max": 11.793285450823937,
+    "dif_p95": 2.2843993590907044,
+    "nivel_igual": 0.9663841807909604,
+    "classe_igual": 0.981638418079096,
+    "mae_f32_treino": 1.5404489385206148,
+    "mae_q8_treino": 1.810607958351293
+  },
+  "cadeia_exato": {
+    "classe_igual": 1.0,
+    "nivel_igual": 1.0,
+    "hz_dif_max": 1.1753791215475928,
+    "erro_norm_max": 6.1936184195543774e-06,
+    "nan_divergentes": 0,
+    "acuracia_cfg_treino": 0.9245762711864407
+  },
+  "cadeia_hist": {
+    "classe_igual": 0.9737288135593221,
+    "nivel_igual": 0.961864406779661,
+    "hz_dif_max": 6.38663609261917,
+    "erro_norm_max": 0.15230093203414177,
+    "nan_divergentes": 0,
+    "acuracia_cfg_treino": 0.9214689265536723
+  },
+  "mb_cadeia": {
+    "soft/cadeia_exato": {
+      "ciclos_hit": 38286.83950617284,
+      "fechar": 749938.0,
+      "mlp": 205342.0,
+      "hits_jan": 81.0,
+      "confere": true
+    },
+    "soft/cadeia_hist": {
+      "ciclos_hit": 45322.9012345679,
+      "fechar": 214316.0,
+      "mlp": 205381.0,
+      "hits_jan": 81.0,
+      "confere": true
+    },
+    "fpu/cadeia_exato": {
+      "ciclos_hit": 4232.128834355828,
+      "fechar": 117676.0,
+      "mlp": 146075.5,
+      "hits_jan": 81.5,
+      "confere": true
+    },
+    "fpu/cadeia_hist": {
+      "ciclos_hit": 5121.981595092025,
+      "fechar": 91973.5,
+      "mlp": 146105.5,
+      "hits_jan": 81.5,
+      "confere": true
+    }
+  },
+  "mb_mlp": {
+    "soft": {
+      "float32": 3353499.0,
+      "quant": 66296.0,
+      "int8": 139042.0,
+      "confere": true
+    },
+    "fpu": {
+      "float32": 212130.0,
+      "quant": 7232.0,
+      "int8": 139042.0,
+      "confere": true
+    }
+  },
+  "carga_pct": {
+    "soft/cadeia_exato": {
+      "16": 0.8036454320987654,
+      "666": 25.69009111111111,
+      "2000": 76.76473501234567
+    },
+    "soft/cadeia_hist": {
+      "16": 0.8091058197530864,
+      "666": 30.26899162222222,
+      "2000": 90.72974186913581
+    },
+    "fpu/cadeia_exato": {
+      "16": 0.12046436134969325,
+      "666": 2.8713481036809814,
+      "2000": 8.517007968711658
+    },
+    "fpu/cadeia_hist": {
+      "16": 0.1295675055214724,
+      "666": 3.458855542331288,
+      "2000": 10.29157899018405
+    }
+  }
+}
